@@ -92,6 +92,9 @@ def parser():
     aws = commands.add_parser("collect-aws-iam", help="Normalize the explicitly bounded synthetic IAM export profile; no AWS account calls.")
     aws.add_argument("--exports", type=Path, required=True)
     output(aws)
+    kubernetes = commands.add_parser("collect-kubernetes-rbac", help="Normalize the synthetic read-only Kubernetes RBAC profile; no kubeconfig or cluster calls.")
+    kubernetes.add_argument("--exports", type=Path, required=True)
+    output(kubernetes)
     submit = commands.add_parser("submit", help="Print a local structural preview only; not anonymized or approved for publication.")
     submit.add_argument("result", type=Path)
     submit.add_argument("--dry-run", action="store_true", required=True)
@@ -114,7 +117,12 @@ def main(argv=None):
         if command == "conformance":
             from .conformance import reference_response, run_suite
             if arguments.conformance_action == "adapter":
-                sys.stdout.write(canonical(reference_response(json.load(sys.stdin))).decode("ascii") + "\n")
+                from .model import read_json
+                try:
+                    response = reference_response(read_json(sys.stdin))
+                except (GraphError, ValueError, RecursionError):
+                    response = {"contract_version": "1.0-draft", "status": "error", "error": "INVALID_GRAPH_OR_PARAMETERS"}
+                sys.stdout.write(canonical(response).decode("ascii") + "\n")
                 return 0
             report = run_suite(arguments.tool, arguments.suite, arguments.out, arguments.timeout)
             print(json.dumps({"passed": report["passed"], "failed": report["failed"], "cases": report["case_count"], "suite_hash": report["suite_hash"]}, sort_keys=True))
@@ -127,6 +135,10 @@ def main(argv=None):
             from .connectors.aws_iam import ingest
             graph = ingest(arguments.exports)
             emit(arguments.out, canonical(graph) + b"\n", arguments.force, tuple(arguments.exports.glob("*.json")))
+        elif command == "collect-kubernetes-rbac":
+            from .connectors.kubernetes_rbac import ingest
+            graph = ingest(arguments.exports)
+            emit(arguments.out, canonical(graph) + b"\n", arguments.force, (arguments.exports,))
         elif command == "synth":
             graph = validate(classic() if arguments.classic else synth(arguments.principals, arguments.resources, arguments.seed))
             payload = canonical(graph) + b"\n"

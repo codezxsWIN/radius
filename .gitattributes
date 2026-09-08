@@ -1,0 +1,11 @@
+* text=auto eol=lf
+PREREGISTRATION.md -text
+research/RUN_PLAN.md -text
+*.png -text
+*.jpg -text
+*.jpeg -text
+*.gif -text
+*.webp -text
+*.zip -text
+*.whl -text
+*.gz -text

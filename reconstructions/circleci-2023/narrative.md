@@ -31,7 +31,7 @@ Control class: `approval_required`. Every control graph is a hypothetical interv
 
 No reviewed source supplies the full preincident credential population and action universe; rank1/1 in a minimal graph has no decile evidentiary value.
 
-Assumed completions illustrate the issue: adding nine zero-reach credentials makes the target uniquely rank1/10; adding nine equal-reach credentials makes its tie-compatible rank range1-10/10. Neither completion is observed, and neither may be cited as evidence the target was historically in the top decile.
+Two executed assumed completions add the SAME one unreported resource and nine credentials, holding the completed universe fixed at two pairs. Under session-theft-aware the target remains1/2. Nine zero-reach credentials put it uniquely rank1/10; nine credentials granted both pairs put it uniquely rank10/10. Input/output files for both completions are saved. Neither completion is observed; they demonstrate nonidentifiability rather than historical ranking.
 
 ## Sources
 

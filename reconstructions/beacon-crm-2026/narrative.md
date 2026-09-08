@@ -1,10 +1,10 @@
 # Beacon CRM 2026 AWS key incident
 
-Evidence grade: **A: primary organization assessment plus regulator corroboration**. All graphs are fictional and were executed by the reference engine.
+Evidence grade: **A: primary final report, commissioned independent attestation and regulator corroboration**. All graphs are fictional and were executed by the reference engine.
 
 ## Public Record
 
-Beacon's retained August 12 assessment describes a probable compromised AWS access key, potentially exposed in public JavaScript build artifacts. The organization assessed that its customer database and attachment data were copied and likely downloaded readably, but explicitly said exact objects, destination and definitive object attribution could not be determined from available logs.
+Beacon's September final report preserves the assessment of a probable compromised AWS access key, potentially exposed in public JavaScript build artifacts. Pages5/17 describe a database copy and transfer-volume evidence suggesting a broad download, while retaining uncertainty about exact objects and definitive exfiltration. The commissioned CYFOR attestation on page21 confirms that the credential was disabled July29 and its account subsequently deleted; it expressly does not prove whether the copies ultimately left. The report supplies no complete preincident authorization inventory.
 
 ## Explicit Assumptions
 
@@ -31,11 +31,12 @@ Control class: `revoke`. Every control graph is a hypothetical intervention, not
 
 No reviewed source supplies the full preincident credential population and action universe; rank1/1 in a minimal graph has no decile evidentiary value.
 
-Assumed completions illustrate the issue: adding nine zero-reach credentials makes the target uniquely rank1/10; adding nine equal-reach credentials makes its tie-compatible rank range1-10/10. Neither completion is observed, and neither may be cited as evidence the target was historically in the top decile.
+Two executed assumed completions add the SAME one unreported resource and nine credentials, holding the completed universe fixed at two pairs. Under session-theft-aware the target remains1/2. Nine zero-reach credentials put it uniquely rank1/10; nine credentials granted both pairs put it uniquely rank10/10. Input/output files for both completions are saved. Neither completion is observed; they demonstrate nonidentifiability rather than historical ranking.
 
 ## Sources
 
 - [Cyber-security Incident Update](https://www.beaconcrm.org/incident) (2026-09-03 final update; 2026-08-12 technical assessment retained; accessed2026-09-09).
+- [Beacon Cyber Security Incident Final Report - September 2026](https://www.beaconcrm.org/incident-report) (2026-09-03; attestation dated 2026-08-27; accessed2026-09-09).
 - [Guidance for charities affected by the Beacon cyber security incident](https://www.gov.uk/government/news/guidance-for-charities-affected-by-the-beacon-cyber-security-incident) (2026-08-07; accessed2026-09-09).
 
 See ../../RECONSTRUCTION_METHOD.md for the challenge and exclusion protocol.

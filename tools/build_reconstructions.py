@@ -17,8 +17,8 @@ CASES = [
      "narrative":"Mandiant traced the incidents it investigated to compromised customer credentials, often from historical infostealer infections, and reported that the impacted accounts lacked MFA. The approximately 165 organizations were notified as potentially exposed; that number is not treated here as a confirmed compromise count or graph denominator.",
      "assumptions":["A single fictional customer account is the starting credential, not a representation of every notified organization.","One database-export resource/read operation abstracts the supported table access; real table/action inventory is unknown.","Sensitivity=1 and absence of other principals in the minimal graph are assumptions, not observed tenant properties.","A hypothetical independently possessed authentication device is assumed unavailable to the attacker; generic MFA presence alone is not equated with this guarantee."],
      "boundary":"The infostealer compromise precedes the model; platform vulnerabilities are not required for the modeled credential-use segment."},
-    {"id":"beacon-crm-2026","title":"Beacon CRM 2026 AWS key incident","grade":"A: primary organization assessment plus regulator corroboration","sources":["BEACON-PRIMARY","BEACON-REGULATOR"],"kind":"key","resource":"backup-collection","action":"read","control":"revoke",
-     "narrative":"Beacon's retained August 12 assessment describes a probable compromised AWS access key, potentially exposed in public JavaScript build artifacts. The organization assessed that its customer database and attachment data were copied and likely downloaded readably, but explicitly said exact objects, destination and definitive object attribution could not be determined from available logs.",
+    {"id":"beacon-crm-2026","title":"Beacon CRM 2026 AWS key incident","grade":"A: primary final report, commissioned independent attestation and regulator corroboration","sources":["BEACON-PRIMARY","BEACON-FINAL","BEACON-REGULATOR"],"kind":"key","resource":"backup-collection","action":"read","control":"revoke",
+     "narrative":"Beacon's September final report preserves the assessment of a probable compromised AWS access key, potentially exposed in public JavaScript build artifacts. Pages5/17 describe a database copy and transfer-volume evidence suggesting a broad download, while retaining uncertainty about exact objects and definitive exfiltration. The commissioned CYFOR attestation on page21 confirms that the credential was disabled July29 and its account subsequently deleted; it expressly does not prove whether the copies ultimately left. The report supplies no complete preincident authorization inventory.",
      "assumptions":["One fictional backup-collection/read unit represents the assessed exposed collection; it is not 1000 independently enumerated databases.","The key is assumed to authorize that abstract read. Actual IAM role, bucket policy, KMS permissions and account inventory are unavailable.","Sensitivity=1 is an investigator choice; no claim is made about records, subjects or bytes.","Revocation removes this key's authentication transition; rotation latency and alternate persistence are not modeled."],
      "boundary":"Authorization-level backup access is modeled after acquisition of the key; the probable JavaScript exposure mechanism is not independently reenacted."},
     {"id":"mlflow-cve-2026-64849","title":"MLflow CVE-2026-64849 post-acquisition scenario","grade":"B: vulnerability capability, not an identified victim incident","sources":["MLFLOW-CVE","MLFLOW-ADVISORY"],"kind":"token","resource":"assumed-workload-data","action":"read","control":"remove-grant",
@@ -54,6 +54,32 @@ def make_graph(case):
     return validate(builder.graph)
 
 
+def rank_completions(graph, folder):
+    results = {}
+    target_id = next(node["id"] for node in graph["nodes"] if node["kind"] == "credential")
+    for completion in ("nine-zero-reach", "nine-broader-reach"):
+        builder = Builder();builder.graph = deepcopy(graph)
+        builder.node("unreported-background-resource", "resource", "collection", actions=["read"], sensitivity=1)
+        for index in range(9):
+            principal = f"background-{index}"
+            builder.identity(principal, "service_principal")
+            if completion == "nine-broader-reach":
+                builder.binding(f"background-grant-{index}", principal, [(node["id"], node["actions"]) for node in builder.graph["nodes"] if node["kind"] == "resource"])
+        changed = validate(builder.graph)
+        response = reference_response(request(changed, "session-theft-aware"))
+        from fractions import Fraction
+        target = next(record for record in response["credentials"] if record["credential_id"] == target_id)
+        score = Fraction(target["canonical_radius"])
+        higher = sum(Fraction(record["canonical_radius"]) > score for record in response["credentials"])
+        at_least = sum(Fraction(record["canonical_radius"]) >= score for record in response["credentials"])
+        results[completion] = {"target_best_rank": higher + 1, "target_worst_rank": at_least, "population": len(response["credentials"]), "absolute_reach": target["absolute_reach"], "universe_size": target["universe_size"], "canonical_radius": target["canonical_radius"], "model": "session-theft-aware"}
+        (folder / f"rank-{completion}-input.json").write_bytes(canonical(changed) + b"\n")
+        (folder / f"rank-{completion}-output.json").write_bytes(canonical(response) + b"\n")
+    assert results["nine-zero-reach"]["target_best_rank"] == results["nine-zero-reach"]["target_worst_rank"] == 1
+    assert results["nine-broader-reach"]["target_best_rank"] == results["nine-broader-reach"]["target_worst_rank"] == 10
+    return results
+
+
 def main():
     sources=json.loads((ROOT/"reconstructions/sources.json").read_text())["sources"]
     source_map={item["id"]:item for item in sources}
@@ -72,7 +98,7 @@ def main():
         controls={model:reference_response(request(changed,model)) for model in REQUIRED_MODELS}
         for value in (*outputs.values(),*controls.values()):
             if value["status"]!="ok":raise AssertionError("Reconstruction graph failed core analysis")
-        ranking={"preincident_top_decile":"not_identifiable","reason":"No reviewed source supplies the full preincident credential population and action universe; rank1/1 in a minimal graph has no decile evidentiary value.","assumed_completion_stress_test":{"nine_zero_reach_backgrounds":{"target_best_rank":1,"target_worst_rank":1,"population":10},"nine_equal_reach_backgrounds":{"target_best_rank":1,"target_worst_rank":10,"population":10}},"stress_test_status":"assumption-only illustration of nonidentifiability, not an estimate of the actual tenant"}
+        ranking={"preincident_top_decile":"not_identifiable","reason":"No reviewed source supplies the full preincident credential population and action universe; rank1/1 in a minimal graph has no decile evidentiary value.","assumed_completion_stress_test":rank_completions(graph,folder),"stress_test_status":"executed assumption-only countermodels, not estimates of the actual tenant; both add the same one unreported resource and nine credentials"}
         evidence={**case,"sources":[source_map[identifier] for identifier in case["sources"]],"ranking":ranking,"executed":True}
         for name,value in (("input.json",graph),("engine-output.json",outputs),("control-input.json",changed),("control-output.json",controls),("evidence.json",evidence)):(folder/name).write_bytes(canonical(value)+b"\n")
         lines=[f"# {case['title']}","",f"Evidence grade: **{case['grade']}**. All graphs are fictional and were executed by the reference engine.","","## Public Record","",case["narrative"],"","## Explicit Assumptions",""]
@@ -81,7 +107,7 @@ def main():
         for model,response in outputs.items():
             record=response["credentials"][0];control=controls[model]["credentials"][0]
             lines.append(f"| {model} | {record['absolute_reach']}/{record['universe_size']} | {record['canonical_radius']} | {record['sensitivity_weighted_radius']} | {record['action_weighted_radius']} | {record['step_bounded_radius']} | {control['absolute_reach']} |")
-        lines.extend(["",f"Control class: `{case['control']}`. Every control graph is a hypothetical intervention, not proof of historical prevention.","","## Ranking Assessment","",ranking["reason"],"","Assumed completions illustrate the issue: adding nine zero-reach credentials makes the target uniquely rank1/10; adding nine equal-reach credentials makes its tie-compatible rank range1-10/10. Neither completion is observed, and neither may be cited as evidence the target was historically in the top decile.","","## Sources",""])
+        lines.extend(["",f"Control class: `{case['control']}`. Every control graph is a hypothetical intervention, not proof of historical prevention.","","## Ranking Assessment","",ranking["reason"],"","Two executed assumed completions add the SAME one unreported resource and nine credentials, holding the completed universe fixed at two pairs. Under session-theft-aware the target remains1/2. Nine zero-reach credentials put it uniquely rank1/10; nine credentials granted both pairs put it uniquely rank10/10. Input/output files for both completions are saved. Neither completion is observed; they demonstrate nonidentifiability rather than historical ranking.","","## Sources",""])
         lines.extend(f"- [{source_map[identifier]['title']}]({source_map[identifier]['url']}) ({source_map[identifier]['date']}; accessed2026-09-09)." for identifier in case["sources"])
         lines.extend(["","See ../../RECONSTRUCTION_METHOD.md for the challenge and exclusion protocol.",""])
         (folder/"narrative.md").write_text("\n".join(lines),encoding="utf-8")

@@ -2,13 +2,15 @@
 
 from fractions import Fraction
 from hashlib import sha256
+from io import StringIO
 import json
+import math
 from pathlib import Path
 import shlex
 import subprocess
 
 from .engine import Engine
-from .model import GraphError, canonical, graph_hash, number, validate
+from .model import GraphError, canonical, graph_hash, number, read_json, validate
 
 PROFILE = "1.0-draft"
 REQUIRED_MODELS = ("default", "strict", "session-theft-aware")
@@ -58,7 +60,7 @@ def reference_response(request):
         parameters = request["parameters"]
         if set(parameters) != {"constraint_model", "step_bound", "threshold"} or parameters["constraint_model"] not in REQUIRED_MODELS:
             raise GraphError("Unsupported conformance parameters.")
-        if type(parameters["step_bound"]) is not int or parameters["step_bound"] < 0 or not 0 <= Fraction(parameters["threshold"]) <= 1:
+        if type(parameters["step_bound"]) is not int or parameters["step_bound"] < 0 or not isinstance(parameters["threshold"], str) or not 0 <= Fraction(parameters["threshold"]) <= 1:
             raise GraphError("Invalid conformance parameters.")
         engine = Engine(graph, parameters["constraint_model"])
         full, bounded = {}, {}
@@ -85,6 +87,8 @@ def reference_response(request):
 
 
 def run_suite(tool, suite, output, timeout=10):
+    if not isinstance(timeout, (int, float)) or isinstance(timeout, bool) or not math.isfinite(timeout) or timeout <= 0:
+        raise GraphError("Tool timeout must be a finite positive number.")
     suite, output = Path(suite), Path(output)
     manifest = json.loads((suite / "manifest.json").read_text(encoding="utf-8"))
     if manifest.get("profile") != PROFILE or manifest.get("required_models") != list(REQUIRED_MODELS) or not manifest.get("fixtures"):
@@ -129,10 +133,10 @@ def run_suite(tool, suite, output, timeout=10):
                     break
             if failure is None:
                 try:
-                    observed = json.loads(results[0])
+                    observed = read_json(StringIO(results[0].decode("utf-8")))
                     if observed != fixture["expected"][model]: failure = "semantic-mismatch"
                     elif results[0] != results[1]: failure = "nondeterministic-bytes"
-                except (ValueError, UnicodeError):
+                except (ValueError, UnicodeError, RecursionError):
                     failure = "invalid-json"
             records.append({"fixture_id": fixture["id"], "constraint_model": model, "requirements": fixture["requirements"], "passed": failure is None, "failure": failure})
     requirements = {}

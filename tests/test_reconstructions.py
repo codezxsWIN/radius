@@ -27,3 +27,17 @@ def test_session_theft_case_and_vulnerability_scope_are_explicit():
     assert circle["model_reach"]["session-theft-aware"]==1
     assert circle["control_reach"]["session-theft-aware"]==0
     assert records["mlflow-cve-2026-64849"]["evidence_grade"].startswith("B:")
+
+
+def test_rank_countermodels_are_executed_and_not_historical_estimates():
+    for case in json.loads((ROOT/"reconstructions/results.json").read_text())["cases"]:
+        folder=ROOT/"reconstructions"/case["id"]
+        evidence=json.loads((folder/"evidence.json").read_text())
+        ranking=evidence["ranking"]["assumed_completion_stress_test"]
+        assert ranking["nine-zero-reach"]["target_best_rank"]==1
+        assert ranking["nine-broader-reach"]["target_best_rank"]==10
+        for name in ranking:
+            graph=json.loads((folder/f"rank-{name}-input.json").read_text())
+            saved=json.loads((folder/f"rank-{name}-output.json").read_text())
+            assert reference_response({"contract_version":PROFILE,"input":graph,"parameters":{"constraint_model":"session-theft-aware","step_bound":1,"threshold":"1/4"}})==saved
+            assert ranking[name]["canonical_radius"]=="1/2"

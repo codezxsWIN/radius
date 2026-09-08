@@ -1,0 +1,29 @@
+{
+  "metadata": {
+    "synthetic": true,
+    "organization": "Fictional Juniper Observatory",
+    "observed_at": "2026-09-09T00:00:00Z",
+    "profile": "kubernetes-rbac-readonly-1",
+    "context": {"authorizer": "RBAC-only", "inventory": "complete-declared-namespaces", "token_context": "valid-api-audience-unexpired", "privileged_bypass": false},
+    "namespaces": ["alpha", "beta"],
+    "credential_inventory": [
+      {"id": "alpha-observer-token", "namespace": "alpha", "service_account": "observer", "type": "token"},
+      {"id": "beta-worker-token", "namespace": "beta", "service_account": "worker", "type": "token"}
+    ],
+    "stored_credentials": [{"namespace": "alpha", "credential_id": "beta-worker-token"}]
+  },
+  "service_accounts": [
+    {"apiVersion": "v1", "kind": "ServiceAccount", "metadata": {"name": "observer", "namespace": "alpha"}},
+    {"apiVersion": "v1", "kind": "ServiceAccount", "metadata": {"name": "worker", "namespace": "beta"}}
+  ],
+  "roles": [
+    {"apiVersion": "rbac.authorization.k8s.io/v1", "kind": "ClusterRole", "metadata": {"name": "secret-reader"}, "rules": [{"apiGroups": [""], "resources": ["secrets"], "verbs": ["list"]}]},
+    {"apiVersion": "rbac.authorization.k8s.io/v1", "kind": "ClusterRole", "metadata": {"name": "config-reader"}, "rules": [{"apiGroups": [""], "resources": ["configmaps"], "verbs": ["get", "list", "watch"]}]},
+    {"apiVersion": "rbac.authorization.k8s.io/v1", "kind": "Role", "metadata": {"name": "pod-reader", "namespace": "beta"}, "rules": [{"apiGroups": [""], "resources": ["pods"], "verbs": ["get"]}]}
+  ],
+  "bindings": [
+    {"apiVersion": "rbac.authorization.k8s.io/v1", "kind": "RoleBinding", "metadata": {"name": "observe-secrets", "namespace": "alpha"}, "subjects": [{"kind": "ServiceAccount", "name": "observer", "namespace": "alpha"}], "roleRef": {"apiGroup": "rbac.authorization.k8s.io", "kind": "ClusterRole", "name": "secret-reader"}},
+    {"apiVersion": "rbac.authorization.k8s.io/v1", "kind": "ClusterRoleBinding", "metadata": {"name": "shared-configs"}, "subjects": [{"kind": "Group", "name": "system:serviceaccounts", "apiGroup": "rbac.authorization.k8s.io"}], "roleRef": {"apiGroup": "rbac.authorization.k8s.io", "kind": "ClusterRole", "name": "config-reader"}},
+    {"apiVersion": "rbac.authorization.k8s.io/v1", "kind": "RoleBinding", "metadata": {"name": "worker-pods", "namespace": "beta"}, "subjects": [{"kind": "ServiceAccount", "name": "worker", "namespace": "beta"}], "roleRef": {"apiGroup": "rbac.authorization.k8s.io", "kind": "Role", "name": "pod-reader"}}
+  ]
+}

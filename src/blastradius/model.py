@@ -2,6 +2,7 @@
 
 from copy import deepcopy
 from datetime import datetime
+from decimal import Decimal
 from fractions import Fraction
 from hashlib import sha256
 import json
@@ -138,12 +139,21 @@ def _unique(members):
     return result
 
 
-def read_graph(path):
+def read_json(stream):
     def reject_number(value):
         raise GraphError("Nonfinite JSON values are rejected.")
+    def exact_float(token):
+        value = float(token)
+        if not math.isfinite(value) or Decimal(str(value)) != Decimal(token):
+            raise GraphError("Decimal token loses value in the v0.1 wire profile; use a supported exact decimal or a separately defined decimal profile.")
+        return value
+    return json.load(stream, object_pairs_hook=_unique, parse_constant=reject_number, parse_float=exact_float)
+
+
+def read_graph(path):
     try:
         with Path(path).open(encoding="utf-8-sig") as stream:
-            graph = json.load(stream, object_pairs_hook=_unique, parse_constant=reject_number)
+            graph = read_json(stream)
         return validate(graph)
     except (json.JSONDecodeError, RecursionError, UnicodeError):
         raise GraphError("Input is not valid UTF-8 graph JSON.") from None

@@ -12,7 +12,7 @@ $Archive = [System.IO.Compression.ZipFile]::Open($ZipPath, [System.IO.Compressio
 try {
     foreach ($File in Get-ChildItem -LiteralPath $Project -Recurse -File) {
         $Relative = [System.IO.Path]::GetRelativePath($Project, $File.FullName).Replace('\', '/')
-        if ($Relative -match '(^|/)(\.venv|\.git|__pycache__|\.pytest_cache|dist|build|[^/]+\.egg-info)(/|$)' -or $Relative -match '\.(key|pem|pfx)$|(^|/)\.env|(^|/)\.coverage$') { continue }
+        if ($Relative -match '(^|/)(\.venv|\.git|__pycache__|\.pytest_cache|dist|build|exports-live|[^/]+\.egg-info)(/|$)' -or $Relative -match '\.(key|pem|pfx)$|(^|/)\.env|(^|/)\.coverage$') { continue }
         [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($Archive, $File.FullName, "blast-radius-v0.1/$Relative", [System.IO.Compression.CompressionLevel]::Optimal) | Out-Null
     }
 } finally { $Archive.Dispose() }

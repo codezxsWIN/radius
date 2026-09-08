@@ -4,7 +4,7 @@
 
 The 2026-09-09 standards session starts at 03:30:10 India time and supersedes the earlier product/prototype roadmap below. The project is only an open metric standard, public conformance/reference artifact and planned open aggregate dataset. DIRECTION.md records the scope audit; no SSO, multi-tenant console, billing, compliance pack, SIEM or ticketing integration exists to remove. The single demo is retained without overwriting the user-modified HTML.
 
-Current executed progress:32 normative requirements/eight scoped arguments;40 conformance fixtures across three models with120/120 external passes; five sourced reconstruction dossiers;500 synthetic privacy summaries and three paired NHI regimes; standard-centered paper with1227-word Related Work; governance/licensing/neutrality drafts. Integrated gate:132 tests passed in14.56 seconds,1483/1618 covered statements. PREREGISTRATION.md and research/RUN_PLAN.md were hashed before generation. The requested v0.2/v0.1 specifications, Paper1 skeleton and exact Blast Radius literature matrix are still missing; an unrelated containment matrix was not substituted. Current checkpoints go to OneDrive/blast-radius, not the read-only Cowork-managed tree.
+Current executed progress: 32 normative requirements/eight scoped arguments; 40 conformance fixtures across three models with **120/120 external passes in both Python and JavaScript**; five sourced reconstruction dossiers plus ten executed rank countermodels; 500 synthetic privacy summaries and three paired NHI regimes; standard-centered paper with 1227-word Related Work; governance/licensing/neutrality drafts. Integrated gate: **179 tests in 39.07 seconds; 1641/1757 covered statements (93.397837%)**. A clean offline wheel passed all 120 cases outside the source tree. The bounded Kubernetes adapter passed 17 tests and saved its exact outputs; the future State report template is available. PREREGISTRATION.md and research/RUN_PLAN.md were hashed before generation. The requested v0.2/v0.1 specifications, Paper 1 skeleton and exact Blast Radius literature matrix are still missing; an unrelated containment matrix was not substituted. Current checkpoints go to OneDrive/blast-radius, not the read-only Cowork-managed tree.
 
 The historical prototype record below remains evidence of prior runs, not a current real-data or conformance certification claim. No real-world aggregate, institution admission, public DOI or external review is claimed.
 
@@ -27,11 +27,17 @@ The historical prototype record below remains evidence of prior runs, not a curr
 
 ### Current Reproduction Commands
 
-From this directory: `.venv/Scripts/blastradius.exe conformance run --tool '.venv/Scripts/python.exe -B -m blastradius conformance adapter'`; `.venv/Scripts/python.exe -B tools/build_reconstructions.py`; `.venv/Scripts/python.exe -B tools/run_research.py`; `.venv/Scripts/python.exe -B tools/verify.py`. Public artifacts do not require the local HMAC key. The old demo rebuild command below is historical; preserve the current user-edited HTML.
+From this directory: `.venv/Scripts/blastradius.exe conformance run --tool '.venv/Scripts/python.exe -B -m blastradius conformance adapter'`; `.venv/Scripts/python.exe -B tools/build_reconstructions.py`; `.venv/Scripts/python.exe -B tools/run_research.py`; `.venv/Scripts/python.exe -B tools/verify.py`. JavaScript: `node reference-js/verify.mjs` and the same conformance runner with `--tool 'node reference-js/reference.mjs' --out conformance/reports/javascript`. Kubernetes: `.venv/Scripts/python.exe -B tools/build_kubernetes_fixture.py`. Public artifacts do not require the local HMAC key. The old demo rebuild command below is historical; preserve the current user-edited HTML.
 
 ### Current Quantitative Findings
 
 Conformance120/120; reconstruction historical ranks0/5 identifiable. Privacy exact uniqueness500/500, rounded161/500; epsilon ln2 utility1.014762 count MAE with96.8% synthetic support retained. NHI joint results54/500 null,250/500 broadened-NHI,54/500 broadened-human; all illustrative. Majority reach does not establish disproportionate authority:53/54 successful null cases also gave humans majority reach. Public real dataset size is0.
+
+### Current Release and Limits
+
+The required core report is committed in local commit `51cb0d1`; no remote was configured or published. Subsequent optional code/report changes are committed in a final extension commit. Checkpoint receipts and local archive audits are evidence of successful local OneDrive writes only; synchronization remains unverified. The preserved demo digest is `3a73122a30a84d31732e33454ede34b65767f4ed2e1af4f18ba2fb979f869408`.
+
+Remaining external gates are substantive: independent formal/normalizer review, verified empirical parameter distributions, controlled authorized ground truth, independent privacy/data-custody review, a neutral host, elected steering members, contribution/IP authority and a real private reporting channel. EuroS&P/CCS 2027 paper deadlines were not published in the retrieved official pages. The optional additions do not remove these gaps or turn the project into a product.
 
 ## Historical Prototype Handover
 

@@ -18,6 +18,10 @@ Suite revision 2 adds the required `witness` record per credential: resource_id,
 
 Archived revision1 digest: `1138993b9b993bf01bf3cc89b39cd642025597c0311fd18dc95fe477544c7f5b`. Revision2 digest: `9dc834236ba7cd22c9878705447117c3cc0625ffcb23d7327b57a9456403bfc4`. The runner rejects empty manifests, unsupported profiles, escaping/duplicate paths, missing/mismatched hashes and duplicate fixture IDs before invoking a tool. Operator-supplied commands run with that operator's privileges; this is not an untrusted-program sandbox, and the captured-output size check is post-execution rather than a streaming memory limit.
 
+The wire numeric rule in BR-R24 rejects decimal tokens whose value would change on binary64 parsing; it does not silently round arbitrary-precision decimal input. The additional parser/21-credential p95 regressions are in tests/test_numeric_wire.py. The40-fixture finite suite does not exhaust every parser edge case. Both adapters reject duplicate properties, including escaped aliases; the JavaScript implementation first uses the native parser for syntax and source tokens, then checks decoded property names within object scopes. Broader parser equivalence still requires independent review.
+
+Parameters are a closed object: `constraint_model` is a required-model string, `step_bound` is a nonnegative integer token (not boolean or floating1.0), and `threshold` is a rational STRING whose value is in[0,1], for example `"1/4"`. Numeric/boolean threshold coercion is forbidden. Tool stdout is parsed with duplicate-property and nonfinite/lossy-number rejection. Runner timeout must be finite and strictly positive.
+
 ## Claims
 
 Permitted wording: "Tool X version Y passes all core cases in Blast Radius v1.0-draft conformance suite revision Z, SHA-256 H, using the published report at LOCATION." Do not say certified, officially approved, complete for Azure/AWS, private, or secure on the basis of this report. There is no fee or exclusive certification mark.
