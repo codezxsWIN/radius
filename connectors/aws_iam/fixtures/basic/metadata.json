@@ -1,0 +1,71 @@
+{
+  "account_id": "000000000000",
+  "credential_inventory": [
+    {
+      "id": "fictional-aws-user-metadata",
+      "name": "Fictional user metadata",
+      "principal_arn": "arn:aws:iam::000000000000:user/FictionalAster",
+      "type": "key"
+    },
+    {
+      "id": "fictional-aws-role-metadata",
+      "name": "Fictional authorized role metadata",
+      "principal_arn": "arn:aws:iam::000000000000:role/FictionalLoom",
+      "type": "token"
+    }
+  ],
+  "observed_at": "2026-09-09T00:00:00Z",
+  "organization": "Fictional Copper Meadow AWS",
+  "policy_context": {
+    "account_scope": "single-fictional-account",
+    "kms_authorization": "not_required",
+    "permissions_boundaries": "absent",
+    "resource_control_policies": "allow_all",
+    "resource_policies": "absent_except_role_trust",
+    "service_control_policies": "allow_all",
+    "session_policies": "absent"
+  },
+  "principal_types": {
+    "arn:aws:iam::000000000000:role/FictionalLoom": "ai_agent"
+  },
+  "resource_inventory": [
+    {
+      "arn": "arn:aws:s3:::fictional-copper-meadow",
+      "name": "Fictional bucket",
+      "operations": [
+        {
+          "action": "s3:ListBucket",
+          "canonical_action": "read_metadata",
+          "resource_arn": "arn:aws:s3:::fictional-copper-meadow"
+        },
+        {
+          "action": "s3:GetObject",
+          "canonical_action": "read",
+          "resource_arn": "arn:aws:s3:::fictional-copper-meadow/*"
+        },
+        {
+          "action": "s3:PutObject",
+          "canonical_action": "write",
+          "resource_arn": "arn:aws:s3:::fictional-copper-meadow/*"
+        }
+      ],
+      "sensitivity": 0.5,
+      "subtype": "storage_account"
+    },
+    {
+      "arn": "arn:aws:secretsmanager:us-east-1:000000000000:secret:fictional-ledger",
+      "name": "Fictional secret metadata",
+      "operations": [
+        {
+          "action": "secretsmanager:GetSecretValue",
+          "canonical_action": "read_secret",
+          "resource_arn": "arn:aws:secretsmanager:us-east-1:000000000000:secret:fictional-ledger"
+        }
+      ],
+      "sensitivity": 1.0,
+      "subtype": "secret_store"
+    }
+  ],
+  "secret_links": [],
+  "synthetic": true
+}

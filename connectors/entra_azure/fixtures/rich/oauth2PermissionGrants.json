@@ -1,0 +1,12 @@
+{
+  "value": [
+    {
+      "clientId": "6e61ed7e-7261-5f88-be21-3e61b5b523d0",
+      "consentType": "AllPrincipals",
+      "id": "2b7edf3b-5cd5-5c56-8520-2528a4f74f56",
+      "principalId": null,
+      "resourceId": "a4013f51-212b-51c9-bfc4-807f0deea4bf",
+      "scope": "Fictional.Ledger.Read"
+    }
+  ]
+}

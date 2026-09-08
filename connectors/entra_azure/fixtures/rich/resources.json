@@ -1,0 +1,10 @@
+{
+  "value": [
+    {
+      "id": "/subscriptions/11111111-1111-4111-8111-111111111111/resourceGroups/fictional/providers/Microsoft.Storage/storageAccounts/fableledger",
+      "location": "eastus",
+      "name": "fableledger",
+      "type": "Microsoft.Storage/storageAccounts"
+    }
+  ]
+}

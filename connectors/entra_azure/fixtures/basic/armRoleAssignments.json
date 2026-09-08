@@ -1,0 +1,13 @@
+{
+  "value": [
+    {
+      "id": "/subscriptions/11111111-1111-4111-8111-111111111111/providers/Microsoft.Authorization/roleAssignments/dbf95651-7d75-5161-84f9-195627958b73",
+      "properties": {
+        "condition": null,
+        "principalId": "564f7e5d-6f49-56d8-aad5-271b80c2f9ee",
+        "roleDefinitionId": "/subscriptions/11111111-1111-4111-8111-111111111111/providers/Microsoft.Authorization/roleDefinitions/6275e8dc-03ab-5b76-aa8e-a2e1135fce0c",
+        "scope": "/subscriptions/11111111-1111-4111-8111-111111111111"
+      }
+    }
+  ]
+}

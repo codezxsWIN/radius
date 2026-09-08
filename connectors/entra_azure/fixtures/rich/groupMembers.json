@@ -1,0 +1,30 @@
+{
+  "090b5fe3-310f-5e43-8e66-56dfe7b9cc82": {
+    "value": [
+      {
+        "@odata.type": "#microsoft.graph.group",
+        "id": "39326c5a-1145-580d-beb8-40380dd2df39"
+      }
+    ]
+  },
+  "39326c5a-1145-580d-beb8-40380dd2df39": {
+    "value": [
+      {
+        "@odata.type": "#microsoft.graph.user",
+        "id": "53a131f7-0185-575d-8ce1-567f5743a928"
+      },
+      {
+        "@odata.type": "#microsoft.graph.servicePrincipal",
+        "id": "6e61ed7e-7261-5f88-be21-3e61b5b523d0"
+      }
+    ]
+  },
+  "564f7e5d-6f49-56d8-aad5-271b80c2f9ee": {
+    "value": [
+      {
+        "@odata.type": "#microsoft.graph.group",
+        "id": "090b5fe3-310f-5e43-8e66-56dfe7b9cc82"
+      }
+    ]
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "value": [
+    {
+      "appRoles": [],
+      "displayName": "Fictional Quartz Identity",
+      "id": "95942853-be49-5e98-93d2-f48bbe941ba5",
+      "servicePrincipalType": "ManagedIdentity"
+    },
+    {
+      "appId": "22222222-2222-4222-8222-222222222222",
+      "appRoles": [],
+      "displayName": "Fictional Amber Agent",
+      "id": "6e61ed7e-7261-5f88-be21-3e61b5b523d0",
+      "servicePrincipalType": "Application"
+    },
+    {
+      "appId": "33333333-3333-4333-8333-333333333333",
+      "appRoles": [
+        {
+          "allowedMemberTypes": [
+            "Application"
+          ],
+          "displayName": "Fictional ledger reader",
+          "id": "0d516da8-7eb7-5c57-8b94-65494db16588",
+          "isEnabled": true,
+          "value": "Fictional.Ledger.Read"
+        }
+      ],
+      "displayName": "Fictional Ledger API",
+      "id": "a4013f51-212b-51c9-bfc4-807f0deea4bf",
+      "servicePrincipalType": "Application"
+    }
+  ]
+}

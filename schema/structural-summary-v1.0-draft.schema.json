@@ -1,0 +1,534 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:blastradius:structural-summary:1.0-draft",
+  "title": "Synthetic Structural Summary v1.0-draft; CC-BY-4.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "summary_version",
+    "synthetic",
+    "submission_enabled",
+    "privacy_reviewed",
+    "anonymous",
+    "schema_version",
+    "metric_profile",
+    "normalizer_profile",
+    "constraint_model",
+    "action_profile",
+    "node_counts",
+    "principal_counts",
+    "credential_counts",
+    "edge_counts",
+    "structural_features",
+    "canonical_radius_histogram"
+  ],
+  "properties": {
+    "summary_version": {
+      "const": "1.0-draft"
+    },
+    "synthetic": {
+      "const": true
+    },
+    "submission_enabled": {
+      "const": false
+    },
+    "privacy_reviewed": {
+      "const": false
+    },
+    "anonymous": {
+      "const": false
+    },
+    "schema_version": {
+      "const": "0.1"
+    },
+    "metric_profile": {
+      "const": "1.0-draft"
+    },
+    "normalizer_profile": {
+      "const": "unasserted"
+    },
+    "constraint_model": {
+      "enum": [
+        "default",
+        "strict",
+        "session-theft-aware"
+      ]
+    },
+    "action_profile": {
+      "enum": [
+        "core-1-3-5",
+        "custom-not-comparable"
+      ]
+    },
+    "node_counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "principal",
+        "credential",
+        "binding",
+        "resource",
+        "constraint"
+      ],
+      "properties": {
+        "principal": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "credential": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "binding": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "resource": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "constraint": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        }
+      }
+    },
+    "principal_counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "human_user",
+        "service_principal",
+        "managed_identity",
+        "workload_identity",
+        "ai_agent",
+        "group"
+      ],
+      "properties": {
+        "human_user": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "service_principal": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "managed_identity": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "workload_identity": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "ai_agent": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "group": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        }
+      }
+    },
+    "credential_counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "password",
+        "key",
+        "certificate",
+        "token",
+        "passkey",
+        "federated_trust"
+      ],
+      "properties": {
+        "password": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "key": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "certificate": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "token": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "passkey": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "federated_trust": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        }
+      }
+    },
+    "edge_counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authenticates_as",
+        "member_of",
+        "assigned",
+        "grants",
+        "can_assume",
+        "can_read_secret",
+        "constrained_by"
+      ],
+      "properties": {
+        "authenticates_as": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "member_of": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "assigned": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "grants": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "can_assume": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "can_read_secret": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "constrained_by": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        }
+      }
+    },
+    "structural_features": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "shared_binding_count",
+        "eligible_binding_count",
+        "constrained_item_count"
+      ],
+      "properties": {
+        "shared_binding_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "eligible_binding_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "constrained_item_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        }
+      }
+    },
+    "canonical_radius_histogram": {
+      "type": "array",
+      "minItems": 10,
+      "maxItems": 10,
+      "prefixItems": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "lower",
+            "upper",
+            "upper_inclusive",
+            "count"
+          ],
+          "properties": {
+            "lower": {
+              "const": 0.0
+            },
+            "upper": {
+              "const": 0.1
+            },
+            "upper_inclusive": {
+              "const": false
+            },
+            "count": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000000
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "lower",
+            "upper",
+            "upper_inclusive",
+            "count"
+          ],
+          "properties": {
+            "lower": {
+              "const": 0.1
+            },
+            "upper": {
+              "const": 0.2
+            },
+            "upper_inclusive": {
+              "const": false
+            },
+            "count": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000000
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "lower",
+            "upper",
+            "upper_inclusive",
+            "count"
+          ],
+          "properties": {
+            "lower": {
+              "const": 0.2
+            },
+            "upper": {
+              "const": 0.3
+            },
+            "upper_inclusive": {
+              "const": false
+            },
+            "count": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000000
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "lower",
+            "upper",
+            "upper_inclusive",
+            "count"
+          ],
+          "properties": {
+            "lower": {
+              "const": 0.3
+            },
+            "upper": {
+              "const": 0.4
+            },
+            "upper_inclusive": {
+              "const": false
+            },
+            "count": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000000
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "lower",
+            "upper",
+            "upper_inclusive",
+            "count"
+          ],
+          "properties": {
+            "lower": {
+              "const": 0.4
+            },
+            "upper": {
+              "const": 0.5
+            },
+            "upper_inclusive": {
+              "const": false
+            },
+            "count": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000000
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "lower",
+            "upper",
+            "upper_inclusive",
+            "count"
+          ],
+          "properties": {
+            "lower": {
+              "const": 0.5
+            },
+            "upper": {
+              "const": 0.6
+            },
+            "upper_inclusive": {
+              "const": false
+            },
+            "count": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000000
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "lower",
+            "upper",
+            "upper_inclusive",
+            "count"
+          ],
+          "properties": {
+            "lower": {
+              "const": 0.6
+            },
+            "upper": {
+              "const": 0.7
+            },
+            "upper_inclusive": {
+              "const": false
+            },
+            "count": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000000
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "lower",
+            "upper",
+            "upper_inclusive",
+            "count"
+          ],
+          "properties": {
+            "lower": {
+              "const": 0.7
+            },
+            "upper": {
+              "const": 0.8
+            },
+            "upper_inclusive": {
+              "const": false
+            },
+            "count": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000000
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "lower",
+            "upper",
+            "upper_inclusive",
+            "count"
+          ],
+          "properties": {
+            "lower": {
+              "const": 0.8
+            },
+            "upper": {
+              "const": 0.9
+            },
+            "upper_inclusive": {
+              "const": false
+            },
+            "count": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000000
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "lower",
+            "upper",
+            "upper_inclusive",
+            "count"
+          ],
+          "properties": {
+            "lower": {
+              "const": 0.9
+            },
+            "upper": {
+              "const": 1.0
+            },
+            "upper_inclusive": {
+              "const": true
+            },
+            "count": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000000
+            }
+          }
+        }
+      ],
+      "items": false
+    }
+  }
+}

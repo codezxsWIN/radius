@@ -1,0 +1,14 @@
+{
+  "value": [
+    {
+      "directoryScopeId": "/",
+      "endDateTime": "2027-08-01T00:00:00Z",
+      "id": "ed118d12-2075-52d7-b5dc-3631628cc049",
+      "memberType": "Direct",
+      "principalId": "6e61ed7e-7261-5f88-be21-3e61b5b523d0",
+      "roleDefinitionId": "7bbf217d-1605-5ffb-a38f-22dd493b5724",
+      "roleEligibilityScheduleId": "068dae7b-7a30-5b54-89a6-eed05d24cc19",
+      "startDateTime": "2026-08-01T00:00:00Z"
+    }
+  ]
+}

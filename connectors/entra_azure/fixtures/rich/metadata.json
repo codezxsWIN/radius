@@ -1,0 +1,92 @@
+{
+  "app_role_capabilities": {
+    "a4013f51-212b-51c9-bfc4-807f0deea4bf:0d516da8-7eb7-5c57-8b94-65494db16588": [
+      {
+        "actions": [
+          "read"
+        ],
+        "resource_id": "a4013f51-212b-51c9-bfc4-807f0deea4bf"
+      }
+    ]
+  },
+  "application_resources": {
+    "a4013f51-212b-51c9-bfc4-807f0deea4bf": {
+      "actions": [
+        "read",
+        "write"
+      ],
+      "name": "Fictional Ledger API",
+      "sensitivity": 0.8
+    }
+  },
+  "conditional_access_review": {
+    "acfafa0e-0404-51d7-b3a1-6c1758c9b1bd": {
+      "constraints": [
+        "device_required"
+      ],
+      "credentials": [
+        "fictional-password-metadata"
+      ]
+    }
+  },
+  "credential_inventory": [
+    {
+      "id": "fictional-password-metadata",
+      "name": "Fictional Vera Glass credential metadata",
+      "principal_id": "53a131f7-0185-575d-8ce1-567f5743a928",
+      "type": "password"
+    },
+    {
+      "id": "95942853-be49-5e98-93d2-f48bbe941ba5-metadata",
+      "name": "Fictional managed metadata",
+      "principal_id": "95942853-be49-5e98-93d2-f48bbe941ba5",
+      "type": "federated_trust"
+    },
+    {
+      "id": "6e61ed7e-7261-5f88-be21-3e61b5b523d0-metadata",
+      "name": "Fictional agent metadata",
+      "principal_id": "6e61ed7e-7261-5f88-be21-3e61b5b523d0",
+      "type": "federated_trust"
+    }
+  ],
+  "directory_role_capabilities": {
+    "7bbf217d-1605-5ffb-a38f-22dd493b5724": [
+      {
+        "actions": [
+          "write"
+        ],
+        "resource_id": "a4013f51-212b-51c9-bfc4-807f0deea4bf"
+      }
+    ],
+    "e317b36b-c8d6-5772-89ed-0f31b9ab6685": [
+      {
+        "actions": [
+          "read"
+        ],
+        "resource_id": "a4013f51-212b-51c9-bfc4-807f0deea4bf"
+      }
+    ]
+  },
+  "observed_at": "2026-09-09T00:00:00Z",
+  "organization": "Fictional Copper Meadow",
+  "pim_requirements": {
+    "ed118d12-2075-52d7-b5dc-3631628cc049": [
+      "approval_required"
+    ]
+  },
+  "principal_types": {
+    "6e61ed7e-7261-5f88-be21-3e61b5b523d0": "ai_agent"
+  },
+  "secret_links": [
+    {
+      "credential_id": "6e61ed7e-7261-5f88-be21-3e61b5b523d0-metadata",
+      "principal_id": "95942853-be49-5e98-93d2-f48bbe941ba5",
+      "vault_id": "/subscriptions/11111111-1111-4111-8111-111111111111/resourceGroups/fictional/providers/Microsoft.KeyVault/vaults/fablevault"
+    }
+  ],
+  "sensitivity": {
+    "/subscriptions/11111111-1111-4111-8111-111111111111/resourceGroups/fictional/providers/Microsoft.KeyVault/vaults/fablevault": 1.0,
+    "/subscriptions/11111111-1111-4111-8111-111111111111/resourceGroups/fictional/providers/Microsoft.Storage/storageAccounts/fableledger": 0.5
+  },
+  "synthetic": true
+}

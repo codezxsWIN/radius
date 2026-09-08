@@ -1,0 +1,116 @@
+{
+  "GroupDetailList": [
+    {
+      "Arn": "arn:aws:iam::000000000000:group/FictionalReaders",
+      "AttachedManagedPolicies": [
+        {
+          "PolicyArn": "arn:aws:iam::000000000000:policy/FictionalReadAndAssume",
+          "PolicyName": "FictionalReadAndAssume"
+        }
+      ],
+      "GroupId": "FICTIONALGROUP",
+      "GroupName": "FictionalReaders",
+      "GroupPolicyList": []
+    }
+  ],
+  "IsTruncated": false,
+  "Policies": [
+    {
+      "Arn": "arn:aws:iam::000000000000:policy/FictionalReadAndAssume",
+      "DefaultVersionId": "v1",
+      "PolicyName": "FictionalReadAndAssume",
+      "PolicyVersionList": [
+        {
+          "Document": {
+            "Statement": [
+              {
+                "Action": [
+                  "s3:GetObject",
+                  "s3:ListBucket"
+                ],
+                "Effect": "Allow",
+                "Resource": [
+                  "arn:aws:s3:::fictional-copper-meadow",
+                  "arn:aws:s3:::fictional-copper-meadow/*"
+                ]
+              },
+              {
+                "Action": "sts:AssumeRole",
+                "Effect": "Allow",
+                "Resource": "arn:aws:iam::000000000000:role/FictionalLoom"
+              }
+            ],
+            "Version": "2012-10-17"
+          },
+          "IsDefaultVersion": true,
+          "VersionId": "v1"
+        }
+      ]
+    }
+  ],
+  "RoleDetailList": [
+    {
+      "Arn": "arn:aws:iam::000000000000:role/FictionalLoom",
+      "AssumeRolePolicyDocument": {
+        "Statement": [
+          {
+            "Action": "sts:AssumeRole",
+            "Effect": "Allow",
+            "Principal": {
+              "AWS": "arn:aws:iam::000000000000:root"
+            }
+          }
+        ],
+        "Version": "2012-10-17"
+      },
+      "AttachedManagedPolicies": [],
+      "RoleId": "FICTIONALROLE",
+      "RoleName": "FictionalLoom",
+      "RolePolicyList": [
+        {
+          "PolicyDocument": {
+            "Statement": [
+              {
+                "Action": "s3:PutObject",
+                "Effect": "Allow",
+                "Resource": "arn:aws:s3:::fictional-copper-meadow/*"
+              },
+              {
+                "Action": "secretsmanager:GetSecretValue",
+                "Effect": "Allow",
+                "Resource": "arn:aws:secretsmanager:us-east-1:000000000000:secret:fictional-ledger"
+              }
+            ],
+            "Version": "2012-10-17"
+          },
+          "PolicyName": "FictionalWriteAndReadSecret"
+        }
+      ]
+    }
+  ],
+  "UserDetailList": [
+    {
+      "Arn": "arn:aws:iam::000000000000:user/FictionalAster",
+      "AttachedManagedPolicies": [],
+      "GroupList": [
+        "FictionalReaders"
+      ],
+      "Path": "/",
+      "UserId": "FICTIONALUSER",
+      "UserName": "FictionalAster",
+      "UserPolicyList": [
+        {
+          "PolicyDocument": {
+            "Statement": {
+              "Action": "s3:PutObject",
+              "Effect": "Deny",
+              "Resource": "arn:aws:s3:::fictional-copper-meadow/*"
+            },
+            "Version": "2012-10-17"
+          },
+          "PolicyName": "FictionalDenyWrite"
+        }
+      ]
+    }
+  ]
+}

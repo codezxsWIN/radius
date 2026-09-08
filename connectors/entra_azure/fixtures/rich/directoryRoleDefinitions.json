@@ -1,0 +1,16 @@
+{
+  "value": [
+    {
+      "displayName": "Fictional Reader",
+      "id": "e317b36b-c8d6-5772-89ed-0f31b9ab6685",
+      "isBuiltIn": false,
+      "rolePermissions": []
+    },
+    {
+      "displayName": "Fictional Writer",
+      "id": "7bbf217d-1605-5ffb-a38f-22dd493b5724",
+      "isBuiltIn": false,
+      "rolePermissions": []
+    }
+  ]
+}

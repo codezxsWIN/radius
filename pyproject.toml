@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools==80.9.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "blastradius-prototype"
+version = "0.1.0"
+description = "Synthetic identity blast-radius research prototype"
+requires-python = ">=3.12"
+dependencies = ["jsonschema==4.26.0"]
+license = "Apache-2.0"
+readme = "README.md"
+
+[project.scripts]
+blastradius = "blastradius.cli:main"
+
+[project.optional-dependencies]
+test = ["pytest==9.0.3", "pytest-cov==7.1.0", "coverage==7.15.2"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+blastradius = ["assets/*"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

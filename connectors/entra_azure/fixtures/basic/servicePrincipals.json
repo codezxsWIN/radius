@@ -1,0 +1,10 @@
+{
+  "value": [
+    {
+      "appRoles": [],
+      "displayName": "Fictional Quartz Identity",
+      "id": "95942853-be49-5e98-93d2-f48bbe941ba5",
+      "servicePrincipalType": "ManagedIdentity"
+    }
+  ]
+}

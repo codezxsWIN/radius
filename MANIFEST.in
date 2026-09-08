@@ -1,0 +1,13 @@
+include README.md HANDOVER.md TEST_REPORT.md ARCHITECTURE.md DECISIONS.md LICENSE CONTRIBUTING.md SECURITY.md
+include DIRECTION.md CONFORMANCE.md STRUCTURAL_SUMMARY.md PRIVACY_ANALYSIS.md PREREGISTRATION.md RECONSTRUCTION_METHOD.md GOVERNANCE.md NEUTRALITY.md CODE_OF_CONDUCT.md LICENSING.md
+recursive-include schema *.json
+recursive-include spec *.json *.md
+recursive-include conformance *.json *.md
+recursive-include reconstructions *.json *.md
+recursive-include research *.json *.jsonl *.md
+recursive-include paper *.md *.csv
+recursive-include connectors *.json *.md
+recursive-include tests *.py *.json *.md
+recursive-include tools *.py *.ps1
+recursive-include demo *.html *.md
+recursive-include .github *.yml

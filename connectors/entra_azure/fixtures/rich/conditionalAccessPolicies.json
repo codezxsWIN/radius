@@ -1,0 +1,31 @@
+{
+  "value": [
+    {
+      "conditions": {
+        "applications": {
+          "includeApplications": [
+            "All"
+          ]
+        },
+        "clientAppTypes": [
+          "all"
+        ],
+        "users": {
+          "excludeUsers": [],
+          "includeUsers": [
+            "53a131f7-0185-575d-8ce1-567f5743a928"
+          ]
+        }
+      },
+      "displayName": "Fictional device gate",
+      "grantControls": {
+        "builtInControls": [
+          "compliantDevice"
+        ],
+        "operator": "AND"
+      },
+      "id": "acfafa0e-0404-51d7-b3a1-6c1758c9b1bd",
+      "state": "enabled"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "connector": "aws-iam-offline-v0.1",
+  "status": "experimental bounded synthetic subset, not full IAM or Organizations coverage",
+  "read_only": true,
+  "live_mode": "not implemented or executed",
+  "source_operation": "GetAccountAuthorizationDetails",
+  "api_request_shape": "https://iam.amazonaws.com/?Action=GetAccountAuthorizationDetails&Version=2010-05-08",
+  "source_operation_verification": "verified in official AWS API documentation; no request made",
+  "collection_permission": "iam:GetAccountAuthorizationDetails",
+  "permission_verification": "unverified least-privilege IAM authorization policy in this session; no policy installed",
+  "pagination": "require IsTruncated=false after caller materializes all Marker pages",
+  "mappings": [
+    {"source": "UserDetailList", "target": "principal(human_user), direct GroupList membership, explicitly supplied credential metadata"},
+    {"source": "GroupDetailList", "target": "principal(group), inline GroupPolicyList and AttachedManagedPolicies; IAM groups do not nest"},
+    {"source": "RoleDetailList", "target": "principal(workload_identity or explicit synthetic ai_agent classification), RolePolicyList, AttachedManagedPolicies, bounded account-root trust"},
+    {"source": "Policies.PolicyVersionList", "target": "exactly one default managed policy version; URL-decoded RFC3986 JSON accepted"},
+    {"source": "PolicyDocument.Statement", "target": "allow or subtractive deny bindings against explicit finite resource-operation catalog; Action/NotAction and Resource/NotResource"},
+    {"source": "AssumeRolePolicyDocument", "target": "can_assume only when account-root trust and caller identity permission both allow and neither explicitly denies; other trust forms rejected"}
+  ],
+  "unsupported": ["conditions", "policy variables", "permissions boundaries", "restrictive SCP/RCP", "session policies", "resource policies beyond account-root role trust", "cross-account/federated/service trust", "KMS-dependent authorization", "general provider action catalogs"],
+  "never_executed": ["AssumeRole", "GetSecretValue", "any AWS API operation"],
+  "references": [
+    "https://docs.aws.amazon.com/IAM/latest/APIReference/API_GetAccountAuthorizationDetails.html",
+    "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic.html",
+    "https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html"
+  ]
+}

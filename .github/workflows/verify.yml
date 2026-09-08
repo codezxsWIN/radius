@@ -1,0 +1,33 @@
+name: Verify synthetic prototype
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  test-and-demo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pinned project and test dependencies
+        run: python -m pip install -e '.[test]'
+      - name: Run conformance and coverage
+        run: python -B tools/verify.py
+      - name: Build and verify the synthetic demo
+        run: python -B tools/build_demo.py
+      - name: Save synthetic artifacts only
+        uses: actions/upload-artifact@v4
+        with:
+          name: blast-radius-synthetic-demo
+          path: |
+            demo/index.html
+            demo/DEMO_SCRIPT.md
+            results/result.json
+            results/report.md
+            results/report.sarif
+            results/coverage.json
+            results/junit.xml
+          retention-days: 14
