@@ -133,3 +133,26 @@ def test_inspect_repository_evidence_cli_rejects_internal_output_and_bad_slug(tm
     assert not internal.exists()
     invalid = run_cli("inspect-repo-evidence", repository, "--repository-slug", "invalid")
     assert invalid.returncode == 2
+
+
+def test_analyze_repository_cli_roundtrip_and_output_safety(tmp_path):
+    repository = ROOT / "tests" / "fixtures" / "repositories" / "aws-oidc-path"
+    output = tmp_path / "repository-analysis.json"
+    arguments = ("analyze-repo", repository, "--repository-slug", "acme/payments")
+
+    completed = run_cli(*arguments, "--out", output)
+    assert completed.returncode == 0, completed.stderr
+    analysis = json.loads(output.read_text(encoding="ascii"))
+    assert analysis["profile"] == "repository-attack-path-v0.1"
+    assert analysis["summary"] == {"declared_reachable_secrets": 1, "finding_count": 1}
+
+    stdout = run_cli(*arguments)
+    assert stdout.returncode == 0, stdout.stderr
+    assert json.loads(stdout.stdout) == analysis
+    assert run_cli(*arguments, "--out", output).returncode == 2
+    assert run_cli(*arguments, "--out", output, "--force").returncode == 0
+
+    internal = repository / "repository-analysis.json"
+    refused = run_cli(*arguments, "--out", internal)
+    assert refused.returncode == 2
+    assert not internal.exists()

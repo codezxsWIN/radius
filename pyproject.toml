@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "blastradius-prototype"
 version = "0.1.0"
-description = "Synthetic identity blast-radius research prototype"
+description = "Source-backed CI/CD-to-cloud identity path analysis with a deterministic graph engine"
 requires-python = ">=3.12"
 dependencies = ["jsonschema==4.26.0", "PyYAML==6.0.3"]
 license = "Apache-2.0"

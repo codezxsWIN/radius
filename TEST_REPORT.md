@@ -1,5 +1,13 @@
 # Test Report
 
+## Repository Product Refocus Checkpoint
+
+On 2026-09-15, the first complete local-repository analysis slice passed **212 tests with 1 platform-dependent skip in 15.77 seconds**. The new tests cover safe acquisition, marked-node workflow/IaC evidence, non-synthetic graph v0.2 validation, exact evidence-to-path mapping, duplicate secret declarations, deterministic findings, non-mutating remediation simulation, no-proof wording, CLI stdout/file behavior, overwrite refusal, and rejection of output inside the analyzed repository.
+
+The source-tree CLI smoke command successfully produced one four-hop GitHub Actions workflow -> AWS role -> finite Secrets Manager path from the checked-in fixture, with source locations and a trust-removal counterfactual reducing absolute reach from 1 to 0. Deployed AWS state remains explicitly unverified.
+
+Package build was not rerun in this host session: `uv` and the Python `build` module are unavailable, and the fallback pip invocation could not load the pinned setuptools backend from the active interpreter. This is an environment/tooling limitation, not a successful packaging claim; package-data inclusion remains covered by the existing `assets/*` configuration and must be rechecked in the release environment.
+
 ## Standards Session: Executed Gate
 
 On 2026-09-09, the final `tools/verify.py` run completed **179 tests in 39.07 seconds, all passing; 1641/1757 Python statements covered (93.397837%)**. This supersedes the intermediate 132-test standards gate and earlier prototype counts. Coverage is not branch coverage or a formal correctness proof; standalone generator/runner execution is additionally recorded below.

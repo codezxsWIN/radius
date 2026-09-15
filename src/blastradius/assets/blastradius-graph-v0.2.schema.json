@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:blastradius:repository-graph:0.2",
+  "title": "Blast Radius v0.2 repository-declared authorization graph",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "synthetic", "source_kind", "organization", "observed_at", "action_weights", "nodes", "edges", "coverage"],
+  "properties": {
+    "schema_version": {"const": "0.2"},
+    "synthetic": {"const": false},
+    "source_kind": {"const": "repository-declared-configuration"},
+    "organization": {"type": "string", "minLength": 3, "maxLength": 201},
+    "observed_at": {"type": "null"},
+    "action_weights": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {"enum": ["read", "write", "administer", "read_metadata", "read_secret"]},
+      "additionalProperties": {"type": "integer", "minimum": 1}
+    },
+    "nodes": {"type": "array", "items": {"$ref": "#/$defs/node"}},
+    "edges": {"type": "array", "items": {"$ref": "#/$defs/edge"}},
+    "coverage": {"type": "array", "items": {"type": "string", "maxLength": 500}}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9:._/-]{0,255}$"},
+    "ids": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["connector", "source_api", "snapshot_hash", "evidence_ref"],
+      "properties": {
+        "connector": {"const": "repository"},
+        "source_api": {"enum": ["github-actions", "cloudformation", "repository-correlation"]},
+        "snapshot_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "evidence_ref": {"$ref": "#/$defs/id"}
+      }
+    },
+    "node": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "subtype", "name", "provenance"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "kind": {"enum": ["principal", "credential", "binding", "resource", "constraint"]},
+        "subtype": {"type": "string"},
+        "name": {"type": "string", "maxLength": 160},
+        "provenance": {"$ref": "#/$defs/provenance"},
+        "principal_id": {"$ref": "#/$defs/id"},
+        "actions": {"$ref": "#/$defs/ids"},
+        "session_satisfied_constraints": {"type": "array", "uniqueItems": true, "items": {"enum": ["device_required"]}},
+        "sensitivity": {"type": "number", "minimum": 0, "maximum": 1},
+        "effect": {"enum": ["allow", "deny"]},
+        "constraints": {"$ref": "#/$defs/ids"},
+        "eligible": {"type": "boolean"},
+        "provisioned_at": {"type": ["string", "null"], "format": "date-time"}
+      },
+      "allOf": [
+        {"if": {"properties": {"kind": {"const": "principal"}}}, "then": {"properties": {"subtype": {"enum": ["human_user", "service_principal", "managed_identity", "workload_identity", "ai_agent", "group"]}}}},
+        {"if": {"properties": {"kind": {"const": "credential"}}}, "then": {"required": ["principal_id"], "properties": {"subtype": {"enum": ["password", "key", "certificate", "token", "passkey", "federated_trust"]}}}},
+        {"if": {"properties": {"kind": {"const": "binding"}}}, "then": {"required": ["effect", "constraints", "eligible"], "properties": {"subtype": {"enum": ["role_assignment", "policy_attachment", "group_membership", "sharing_grant"]}}}},
+        {"if": {"properties": {"kind": {"const": "resource"}}}, "then": {"required": ["actions", "sensitivity"], "properties": {"actions": {"minItems": 1}}}},
+        {"if": {"properties": {"kind": {"const": "constraint"}}}, "then": {"properties": {"subtype": {"enum": ["device_required", "approval_required", "network_restriction", "time_window", "pim_eligible"]}}}}
+      ]
+    },
+    "edge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "source", "target", "kind", "provenance"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "source": {"$ref": "#/$defs/id"},
+        "target": {"$ref": "#/$defs/id"},
+        "kind": {"enum": ["authenticates_as", "member_of", "assigned", "grants", "can_assume", "can_read_secret", "constrained_by"]},
+        "provenance": {"$ref": "#/$defs/provenance"},
+        "actions": {"$ref": "#/$defs/ids"},
+        "constraints": {"$ref": "#/$defs/ids"},
+        "actor_id": {"$ref": "#/$defs/id"},
+        "requires": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["resource_id", "action"],
+          "properties": {"resource_id": {"$ref": "#/$defs/id"}, "action": {"const": "read_secret"}}
+        }
+      },
+      "allOf": [
+        {"if": {"properties": {"kind": {"const": "grants"}}}, "then": {"required": ["actions"], "properties": {"actions": {"minItems": 1}}}},
+        {"if": {"properties": {"kind": {"const": "can_read_secret"}}}, "then": {"required": ["requires"]}}
+      ]
+    }
+  }
+}
+

@@ -413,26 +413,28 @@ Do not silently decide these without examining constraints and recording the rat
 
 ### 21. Current Execution State
 
-Status as of creation of this continuity file:
+Status after the first complete repository-analysis vertical slice:
 
 - The upstream repository has been pulled into the workspace.
-- The current Python suite passes: `189 passed, 1 skipped in 21.35s`. The skipped test requires Windows symlink creation privileges; the link-like non-read path is also covered without OS symlink privileges.
+- The latest full Python suite passes `212 passed, 1 skipped`; the skipped test requires Windows symlink creation privileges and the link-like non-read path is separately covered without that privilege.
 - The repository has been studied at a high level.
 - The user and assistant identified the confusing/synthetic input model as the primary product weakness.
-- GitHub-repository input has been selected as the leading direction to investigate.
+- GitHub-repository input is now the implemented primary product direction, beginning with a local checkout plus explicit `owner/repository` slug.
 - `WP_CAPABILITY_MAP.md` defines the approved module boundaries, dependency direction, first AWS OIDC vertical slice and explicit deferrals.
 - `WP_SPEC_repo-acquisition.md` is approved and implemented.
 - `blastradius inspect-repo <local-directory>` now emits a deterministic `safe-local-v0.1` manifest with normalized paths, raw-byte hashes, explicit exclusions/skips and fixed fail-closed limits.
 - Repository acquisition does not execute target code, invoke a subprocess or use the network; links/reparse points are not followed or read.
 - CLI output inside the analyzed repository is rejected so the manifest cannot change its own next snapshot.
-- The existing graph schema, analysis engine and conformance behavior were not changed.
-- No GitHub Actions parser, IaC evidence parser, evidence-to-graph mapper, repository attack-path finding or new UI flow has been implemented yet.
-- The next phase is the scoped specification for `repository-evidence`, followed by a bounded GitHub Actions/AWS OIDC parser fixture.
+- The frozen synthetic graph v0.1 schema, analysis semantics and conformance behavior remain backward-compatible; additive graph v0.2 truthfully represents non-synthetic repository declarations.
 - The repository-acquisition implementation checkpoint is commit `daa4ede` on `WP_repository-input` and is pushed to `origin/WP_repository-input`.
 - `WP_SPEC_repository-evidence.md` is approved and implemented locally: GitHub Actions OIDC requests and literal CloudFormation IAM trust/finite Secrets Manager grants produce deterministic source-backed facts.
 - Evidence files are reverified against acquisition hashes before parsing; duplicate mappings, aliases, merge keys, custom tags and parser resource limits fail closed.
 - `blastradius inspect-repo-evidence` provides the intermediate evidence flow and always labels deployed AWS state unverified.
-- The current suite passes `203 passed, 1 skipped`; the branch has not yet mapped this evidence into the authorization graph or emitted the final attack-path/remediation finding.
+- `WP_SPEC_evidence-graph.md` is approved and implemented: only exact workflow/OIDC/trust/finite-secret evidence maps into graph edges.
+- `blastradius analyze-repo <local-directory> --repository-slug owner/repository` now performs the complete safe acquisition, evidence, graph, path and remediation-simulation flow.
+- Findings embed source locations, state the assumed-compromise starting condition, name concrete Secrets Manager impact and label deployed AWS state unverified.
+- Broad or incomplete evidence emits an explicit no-proof conclusion rather than a safety verdict.
+- The new behavior is covered by graph, finding and CLI tests, including deterministic output, source immutability, protected output and duplicate secret declarations.
 
 ### 22. Decisions Made During the Refocus
 
@@ -444,35 +446,26 @@ Status as of creation of this continuity file:
 - Be transparent about upstream attribution, licensing, and inherited versus new work.
 - Make repository acquisition a dependency-free, local-first, non-executing boundary with explicit skipped coverage and deterministic hashes.
 - Require saved manifests to live outside the analyzed repository to preserve repeatability.
+- Keep synthetic graph v0.1 frozen and introduce repository-declared graph v0.2 rather than mislabeling real source evidence as fictional.
+- Make the useful result a source-backed path plus remediation counterfactual; do not expose an unexplained aggregate risk score as the repository product.
 
 These are working decisions for the refocus. If implementation evidence contradicts them, document the reason and superseding decision.
 
 ### 23. Known Problems
 
 - The older `HANDOVER.md` and `DIRECTION.md` describe a standards-only direction that conflicts with the user's current product-refocus exploration. Preserve those documents as history; do not silently erase them.
-- The current schema is intentionally synthetic-only.
+- Repository graph v0.2 currently supports one narrow GitHub Actions/AWS CloudFormation profile; it is not a general source graph.
 - Existing connectors are bounded offline profiles, not complete live-provider evaluators.
 - Repository-only evidence cannot establish complete deployed cloud permissions.
-- There is no user-facing import validation and coverage workflow yet.
-- Local acquisition exists, but public GitHub URL cloning, Git revision metadata and private repository authentication are intentionally deferred.
+- JSON is currently the only final repository-analysis presentation; a concise terminal/Markdown report and visual path are still missing.
+- Local acquisition exists, but public GitHub URL acquisition, Git revision metadata and private repository authentication are intentionally deferred.
 - The current acquisition profile inventories present filesystem content rather than honoring `.gitignore`.
 - Product naming conflicts conceptually with the unrelated Blast-RADIUS vulnerability site.
 - A clear ownership/fork/upstream contribution strategy has not been chosen.
 
 ### 24. Exact Next Action
 
-Create a scoped `WP_SPEC_evidence-graph.md` for the next capability-map modules. It must introduce a truthful repository-derived graph profile without mislabeling real repository evidence as fictional/synthetic, preserve the frozen v0.1 conformance schema, map only exact declared OIDC/trust/grant facts into engine edges, and define the final path/remediation finding contract. The remaining module specifications follow in dependency order and must define:
-
-- Supported threat scenario.
-- Supported GitHub Actions constructs.
-- Supported IaC/provider constructs.
-- Evidence schema and file/line provenance.
-- Normalized graph mapping.
-- Expected finding and remediation output.
-- Security limits for untrusted repository input.
-- Acceptance tests and explicit non-goals.
-
-Do not begin a broad implementation until that spec makes the input, output, supported semantics, and proof boundaries unambiguous.
+Specify the next productivity slice: safe public GitHub URL acquisition that remains local-first and non-executing. Define strict GitHub URL/ref parsing, bounded archive download and extraction, redirect/host policy, archive integrity/revision metadata, temporary-directory cleanup, rate-limit/error behavior, SSRF and zip-slip/zip-bomb defenses, and an end-to-end `analyze-github` command. Keep private-repository tokens and server-side uploads out of this first URL profile. After that, add a concise Markdown/terminal report over the existing deterministic finding contract.
 
 ### 25. End-of-Session Continuity Protocol
 

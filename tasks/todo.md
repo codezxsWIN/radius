@@ -175,3 +175,39 @@ Verification:
 - [x] `git diff --check`
 
 Dependencies: `WP_007`.
+
+---
+
+# WP_ Task List: Evidence to Action
+
+## `WP_009`: Additive graph v0.2
+
+- [x] Repository-declared non-synthetic graphs validate under v0.2.
+- [x] v0.1 schema, fixtures and conformance behavior remain unchanged.
+- [x] Unknown versions and source/synthetic mismatches fail closed.
+
+Verify: `pytest -q tests/test_repository_graph.py tests/test_model.py tests/test_conformance.py`
+
+## `WP_010`: Exact evidence-to-graph mapping
+
+- [x] Positive evidence maps to workflow credential, role, binding, finite secret and exact edges.
+- [x] Every mapped edge resolves to source evidence.
+- [x] Potential/broad or incomplete evidence creates no analyzable graph path.
+
+Verify: `pytest -q tests/test_repository_graph.py`
+
+## `WP_011`: Finding and remediation simulation
+
+- [x] Finding explains assumed compromise, declared impact, path and source evidence.
+- [x] Removing only the modeled trust edge changes reach from one to zero.
+- [x] Zero findings explicitly means no path proven, not safe.
+
+Verify: `pytest -q tests/test_repository_findings.py`
+
+## `WP_012`: Product command and checkpoint
+
+- [x] `analyze-repo` works through stdout and protected file output.
+- [x] README, decisions and continuity state match verified behavior.
+- [x] Full suite and diff check pass; branch is pushed.
+
+Verify: `pytest -q tests/test_repository_graph.py tests/test_repository_findings.py tests/test_cli.py`, then `pytest -q` and `git diff --check`.

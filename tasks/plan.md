@@ -96,6 +96,38 @@ pytest -q
 git diff --check
 ```
 
+---
+
+# WP_ Implementation Plan: Evidence to Action
+
+## Overview
+
+Implement `WP_SPEC_evidence-graph.md` as the first complete product slice: additive truthful graph v0.2, exact evidence mapping, deterministic engine path, simulated trust removal and one-command output.
+
+## Dependency Graph
+
+```text
+WP_009 additive graph v0.2 validation
+    -> WP_010 exact evidence-to-graph mapping
+    -> WP_011 finding + remediation simulation
+    -> WP_012 analyze-repo CLI + complete verification
+```
+
+## Tasks
+
+- [x] `WP_009`: Add and test v0.2 schema selection while freezing v0.1.
+- [x] `WP_010`: Map only exact evidence into a validated graph and preserve evidence references.
+- [x] `WP_011`: Run the engine, create path findings and simulate trust-edge removal.
+- [x] `WP_012`: Add `analyze-repo`, update docs/state and run the complete regression gate.
+
+## Verification
+
+```powershell
+pytest -q tests/test_repository_graph.py tests/test_repository_findings.py tests/test_cli.py
+pytest -q
+git diff --check
+```
+
 ## Open Questions Resolved for This Plan
 
 - Inventory present filesystem entries except fixed safe-profile exclusions; do not honor `.gitignore` yet.

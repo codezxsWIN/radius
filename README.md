@@ -1,8 +1,10 @@
 # Blast Radius
 
-**A deterministic standard for measuring how far one compromised credential can reach.**
+**Find source-backed identity paths from CI/CD workflows to sensitive cloud resources.**
 
-Blast Radius models authorization as a graph and reports the resource-action pairs reachable from each credential under an explicit attacker model. The repository contains the draft metric specification, conformance suite, Python and JavaScript reference implementations, synthetic research artifacts, offline connector profiles, and a self-contained visual instrument.
+Blast Radius accepts a local GitHub repository checkout, safely inspects supported workflow and infrastructure declarations, and explains how an assumed-compromised automation identity could reach a sensitive resource. Its first end-to-end profile connects GitHub Actions OIDC configuration to AWS IAM roles and finite Secrets Manager grants, preserving the exact source locations behind every path step.
+
+The repository also contains the deterministic graph engine, draft metric specification, conformance suite, synthetic research artifacts, offline connector profiles, and a self-contained visual instrument that the product direction builds on.
 
 > [!IMPORTANT]
 > Blast Radius is a research standard and reference implementation, not a production security product. It does not contact a tenant by default, does not collect secrets, and must not be treated as a compliance certification or proof of exploitability.
@@ -11,9 +13,23 @@ Blast Radius models authorization as a graph and reports the resource-action pai
 
 ## Why Blast Radius?
 
-Traditional permission inventories answer _what access is assigned?_ Blast Radius asks a narrower, reproducible question:
+Traditional scanners often stop at one file or one misconfiguration. Blast Radius asks a cross-layer question:
 
-> Given one credential and a declared attacker model, which resource-action pairs are reachable through direct grants, group membership, role activation, identity assumption, and credential acquisition?
+> If this repository's deployment workflow were compromised, which sensitive cloud resources do its declared identity and policy relationships make reachable—and which exact trust change would break that path?
+
+The current repository profile follows this evidence chain:
+
+```text
+GitHub Actions workflow + id-token: write
+    -> literal AWS OIDC role request
+    -> exact CloudFormation trust subject and audience
+    -> declared IAM role policy
+    -> finite Secrets Manager ARN
+```
+
+Each result distinguishes repository syntax, declared infrastructure, and unverified deployed state. Missing or unsupported evidence is reported as “no complete path proven,” never as “safe.”
+
+For synthetic and normalized graph inputs, the underlying engine also reports a family of exact metrics rather than a single opaque score:
 
 The result is a family of exact metrics rather than a single opaque score:
 
@@ -29,11 +45,12 @@ The denominator and weights are frozen for permission-only comparisons. Duplicat
 
 ## Repository Status
 
-The current public profile is **1.0-draft**. The Python package and graph wire format remain **0.1**.
+The public conformance profile is **1.0-draft**. Synthetic graphs remain frozen at wire format **0.1**; source-backed repository graphs use the additive **0.2** profile.
 
 - 40 frozen conformance fixtures across 3 required attacker models
 - 120/120 conformance cases passing in both Python and JavaScript
-- 203 integrated Python tests passing on the current repository-input branch; the latest measured line coverage is 92%
+- 213 integrated Python tests collected on the current repository-input branch: 212 passing and 1 platform-dependent skip
+- One-command local repository analysis with deterministic source evidence and a non-mutating remediation simulation
 - Dependency-free JavaScript reference implementation
 - Offline Entra/Azure, AWS IAM, and Kubernetes normalization profiles with explicit limits
 - Deterministic synthetic research runs and reconstruction dossiers
@@ -65,9 +82,23 @@ Open `demo/index.html` directly in a browser. The report has no runtime server, 
 
 Generated outputs are never overwritten unless `--force` is supplied, and an input file cannot be replaced by its output.
 
-## Inspect a Local Repository
+## Analyze a Local Repository
 
-The first repository-input boundary can safely inventory a local checkout without executing or parsing its contents:
+The primary product command accepts a local checkout and the GitHub `owner/repository` slug used by OIDC subject claims:
+
+```powershell
+.venv/Scripts/blastradius.exe analyze-repo C:\path\to\repository `
+  --repository-slug owner/repository `
+  --out C:\path\outside\repository-analysis.json
+```
+
+For every complete supported path, the result names the workflow and job whose compromise is assumed, the exact AWS role and secret action, the source file/line evidence for every hop, and a counterfactual showing whether removal of the modeled OIDC trust edge breaks reachability. It does not modify the repository or AWS. Output must be outside the analyzed repository so it cannot contaminate the next snapshot.
+
+This is intentionally a proof-oriented first profile, not a generic repository security scanner. It currently understands exact push branches, `id-token: write`, literal `aws-actions/configure-aws-credentials` role ARNs, literal CloudFormation JSON `AWS::IAM::Role` trust, and finite `secretsmanager:GetSecretValue` resource ARNs. Dynamic expressions, YAML aliases/tags/merge keys, wildcard secret resources, unsupported conditions, and stale snapshots are rejected or surfaced as diagnostics rather than guessed.
+
+### Inspect the intermediate evidence
+
+The acquisition command safely inventories a local checkout without executing or parsing its contents:
 
 ```powershell
 .venv/Scripts/blastradius.exe inspect-repo C:\path\to\repository `
@@ -76,7 +107,7 @@ The first repository-input boundary can safely inventory a local checkout withou
 
 The deterministic manifest records normalized relative paths, byte sizes and SHA-256 hashes. It excludes common metadata/dependency trees, never follows links or Windows reparse points, enforces fixed file and byte limits, and reports skipped content so coverage is visible. Save `--out` outside the analyzed repository to prevent the manifest from becoming part of its own next snapshot.
 
-This command is a safe acquisition foundation, not yet a source-code or cloud-permission analysis. GitHub Actions evidence parsing, infrastructure-as-code mapping and repository-to-resource attack paths are being added as bounded, separately tested profiles. No repository code, hook, workflow, package manager or build command is executed.
+No repository code, hook, workflow, package manager, or build command is executed.
 
 The first bounded evidence profile can connect a literal GitHub Actions OIDC role request to a literal AWS IAM role, trust policy and finite Secrets Manager grant declared in CloudFormation JSON:
 
@@ -88,7 +119,7 @@ The first bounded evidence profile can connect a literal GitHub Actions OIDC rol
 
 The evidence output retains one-based file/line locations, deterministic fact IDs, unsupported diagnostics and confidence labels. `repository-verified` means the workflow syntax is directly present; `declared-configuration` means supported IaC declares a relationship; `potential` means matching or external state remains incomplete. The command always reports deployed AWS state as unverified and never treats absence of a supported fact as proof of safety.
 
-The current profile is intentionally narrow: exact push branches, `id-token: write`, literal `aws-actions/configure-aws-credentials` role ARNs, literal CloudFormation `AWS::IAM::Role` trust, and finite `secretsmanager:GetSecretValue` resource ARNs. Dynamic expressions, YAML aliases/tags/merge keys, wildcard secret resources, unsupported conditions and stale snapshots are rejected or reported rather than guessed.
+These lower-level commands are useful for auditing what was read and why a complete path was or was not proven. Most users should start with `analyze-repo`.
 
 ## Run Conformance
 

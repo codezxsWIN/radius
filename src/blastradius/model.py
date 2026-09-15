@@ -11,7 +11,12 @@ from pathlib import Path
 
 from jsonschema import Draft202012Validator, FormatChecker
 
-SCHEMA_PATH = Path(__file__).with_name("assets") / "blastradius-graph-v0.1.schema.json"
+SCHEMA_PATHS = {
+    "0.1": Path(__file__).with_name("assets") / "blastradius-graph-v0.1.schema.json",
+    "0.2": Path(__file__).with_name("assets") / "blastradius-graph-v0.2.schema.json",
+}
+# Backward-compatible public path for consumers of the frozen v0.1 contract.
+SCHEMA_PATH = SCHEMA_PATHS["0.1"]
 MODELS = {
     "default": frozenset({"device_required", "approval_required"}),
     "strict": frozenset({"device_required", "approval_required", "network_restriction", "time_window"}),
@@ -50,7 +55,10 @@ def graph_hash(graph):
 
 
 def validate(graph):
-    schema = json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
+    version = graph.get("schema_version") if isinstance(graph, dict) else None
+    if version not in SCHEMA_PATHS:
+        raise GraphError("Unsupported graph schema version.")
+    schema = json.loads(SCHEMA_PATHS[version].read_text(encoding="utf-8"))
     validator = Draft202012Validator(schema, format_checker=FORMATS)
     error = next(validator.iter_errors(graph), None)
     if error:

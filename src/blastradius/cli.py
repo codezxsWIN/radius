@@ -51,7 +51,7 @@ def reject_internal_output(root, output_path):
 
 
 def parser():
-    root = argparse.ArgumentParser(prog="blastradius", description="Synthetic-only identity blast-radius prototype. No tenant is contacted.")
+    root = argparse.ArgumentParser(prog="blastradius", description="Source-backed repository path analysis and synthetic identity blast-radius research tools.")
     root.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     commands = root.add_subparsers(dest="command", required=True)
 
@@ -113,6 +113,10 @@ def parser():
     evidence.add_argument("repository", type=Path)
     evidence.add_argument("--repository-slug", required=True)
     output(evidence)
+    repository_analysis = commands.add_parser("analyze-repo", help="Find supported GitHub Actions-to-AWS secret paths in repository declarations and simulate a trust remediation.")
+    repository_analysis.add_argument("repository", type=Path)
+    repository_analysis.add_argument("--repository-slug", required=True)
+    output(repository_analysis)
     submit = commands.add_parser("submit", help="Print a local structural preview only; not anonymized or approved for publication.")
     submit.add_argument("result", type=Path)
     submit.add_argument("--dry-run", action="store_true", required=True)
@@ -170,6 +174,12 @@ def main(argv=None):
             manifest = acquire_repository(repository)
             evidence = collect_repository_evidence(repository, manifest, arguments.repository_slug)
             emit(arguments.out, canonical(evidence) + b"\n", arguments.force)
+        elif command == "analyze-repo":
+            from .repository import analyze_repository
+            repository = arguments.repository.resolve(strict=True)
+            reject_internal_output(repository, arguments.out)
+            result = analyze_repository(repository, arguments.repository_slug)
+            emit(arguments.out, canonical(result) + b"\n", arguments.force)
         elif command == "synth":
             graph = validate(classic() if arguments.classic else synth(arguments.principals, arguments.resources, arguments.seed))
             payload = canonical(graph) + b"\n"
