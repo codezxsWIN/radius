@@ -128,6 +128,38 @@ pytest -q
 git diff --check
 ```
 
+---
+
+# WP_ Implementation Plan: Public GitHub Input
+
+## Overview
+
+Implement `WP_SPEC_public-github-input.md` as a safe productivity layer over the local repository analyzer. Resolve an immutable public commit, enforce a fixed GitHub-only network boundary, extract a bounded ZIP without generic archive extraction, analyze locally and clean up automatically.
+
+## Dependency Graph
+
+```text
+WP_013 strict URL + GitHub transport boundary
+    -> WP_014 bounded archive validation/extraction
+    -> WP_015 temporary end-to-end GitHub analysis
+    -> WP_016 analyze-github CLI + checkpoint
+```
+
+## Tasks
+
+- [x] `WP_013`: Parse only supported GitHub URLs and resolve refs to validated commit SHAs through an injectable transport.
+- [x] `WP_014`: Validate and stream-extract GitHub ZIPs under cross-platform path and resource limits.
+- [x] `WP_015`: Analyze the temporary checkout, attach immutable source metadata and prove cleanup/determinism.
+- [x] `WP_016`: Add `analyze-github`, docs, decision record and complete regression verification.
+
+## Verification
+
+```powershell
+pytest -q tests/test_public_github.py tests/test_cli.py
+pytest -q
+git diff --check
+```
+
 ## Open Questions Resolved for This Plan
 
 - Inventory present filesystem entries except fixed safe-profile exclusions; do not honor `.gitignore` yet.

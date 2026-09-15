@@ -156,3 +156,24 @@ def test_analyze_repository_cli_roundtrip_and_output_safety(tmp_path):
     refused = run_cli(*arguments, "--out", internal)
     assert refused.returncode == 2
     assert not internal.exists()
+
+
+def test_analyze_public_github_cli_uses_url_and_ref(monkeypatch, capsys, tmp_path):
+    import blastradius.repository as repository_module
+
+    calls = []
+    expected = {"profile": "repository-attack-path-v0.1", "findings": [], "analysis_hash": "0" * 64}
+
+    def analyze(url, ref):
+        calls.append((url, ref))
+        return expected
+
+    monkeypatch.setattr(repository_module, "analyze_public_github_repository", analyze)
+    assert main(["analyze-github", "https://github.com/acme/payments", "--ref", "main"]) == 0
+    assert json.loads(capsys.readouterr().out) == expected
+    assert calls == [("https://github.com/acme/payments", "main")]
+
+    output = tmp_path / "github-analysis.json"
+    assert main(["analyze-github", "https://github.com/acme/payments", "--out", str(output)]) == 0
+    assert json.loads(output.read_text(encoding="ascii")) == expected
+    assert calls[-1] == ("https://github.com/acme/payments", None)

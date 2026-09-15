@@ -49,7 +49,7 @@ The public conformance profile is **1.0-draft**. Synthetic graphs remain frozen 
 
 - 40 frozen conformance fixtures across 3 required attacker models
 - 120/120 conformance cases passing in both Python and JavaScript
-- 213 integrated Python tests collected on the current repository-input branch: 212 passing and 1 platform-dependent skip
+- 231 integrated Python tests collected on the current repository-input branch: 230 passing and 1 platform-dependent skip
 - One-command local repository analysis with deterministic source evidence and a non-mutating remediation simulation
 - Dependency-free JavaScript reference implementation
 - Offline Entra/Azure, AWS IAM, and Kubernetes normalization profiles with explicit limits
@@ -66,6 +66,12 @@ Requirements: Python 3.12+, [uv](https://docs.astral.sh/uv/), and Node.js for th
 uv venv --python 3.12 .venv
 uv pip install --python .venv/Scripts/python.exe -e ".[test]"
 
+# Analyze a public repository at an immutable resolved commit.
+.venv/Scripts/blastradius.exe analyze-github `
+  https://github.com/owner/repository `
+  --out results/repository-analysis.json
+
+# The synthetic standards/research workflow remains available.
 .venv/Scripts/blastradius.exe synth `
   --principals 80 --resources 40 --seed 7 `
   --out results/tenant.json --force
@@ -82,9 +88,24 @@ Open `demo/index.html` directly in a browser. The report has no runtime server, 
 
 Generated outputs are never overwritten unless `--force` is supplied, and an input file cannot be replaced by its output.
 
-## Analyze a Local Repository
+## Analyze a GitHub Repository
 
-The primary product command accepts a local checkout and the GitHub `owner/repository` slug used by OIDC subject claims:
+For a public repository, pass its GitHub URL directly:
+
+```powershell
+.venv/Scripts/blastradius.exe analyze-github `
+  https://github.com/owner/repository `
+  --ref main `
+  --out results/repository-analysis.json
+```
+
+Blast Radius resolves the ref to an immutable commit, downloads only that public source archive from GitHub, validates and extracts it under fixed limits, analyzes it locally, and deletes the temporary checkout. It does not run Git, hooks, filters, workflows, package managers, or repository code. It does not request a GitHub token or upload the repository to a Blast Radius service.
+
+The public URL profile accepts only HTTPS `github.com/owner/repository` inputs and only follows GitHub's archive redirect to `codeload.github.com`. Archive traversal, links, special entries, path collisions, excessive expansion, and unsupported compression fail closed. Oversized individual files are skipped and reported just as they are for local acquisition.
+
+### Analyze a local or private checkout
+
+For private code, clone it using your normal trusted workflow and point Blast Radius at the local directory. This mode performs no network request and needs no repository credential. The explicit GitHub slug is required because it is part of the OIDC subject claim being evaluated:
 
 ```powershell
 .venv/Scripts/blastradius.exe analyze-repo C:\path\to\repository `
@@ -119,7 +140,7 @@ The first bounded evidence profile can connect a literal GitHub Actions OIDC rol
 
 The evidence output retains one-based file/line locations, deterministic fact IDs, unsupported diagnostics and confidence labels. `repository-verified` means the workflow syntax is directly present; `declared-configuration` means supported IaC declares a relationship; `potential` means matching or external state remains incomplete. The command always reports deployed AWS state as unverified and never treats absence of a supported fact as proof of safety.
 
-These lower-level commands are useful for auditing what was read and why a complete path was or was not proven. Most users should start with `analyze-repo`.
+These lower-level commands are useful for auditing what was read and why a complete path was or was not proven. Most users should start with `analyze-github` for public code or `analyze-repo` for an existing/private checkout.
 
 ## Run Conformance
 

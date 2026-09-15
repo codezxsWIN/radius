@@ -416,7 +416,7 @@ Do not silently decide these without examining constraints and recording the rat
 Status after the first complete repository-analysis vertical slice:
 
 - The upstream repository has been pulled into the workspace.
-- The latest full Python suite passes `212 passed, 1 skipped`; the skipped test requires Windows symlink creation privileges and the link-like non-read path is separately covered without that privilege.
+- The latest full Python suite passes `230 passed, 1 skipped`; the skipped test requires Windows symlink creation privileges and the link-like non-read path is separately covered without that privilege.
 - The repository has been studied at a high level.
 - The user and assistant identified the confusing/synthetic input model as the primary product weakness.
 - GitHub-repository input is now the implemented primary product direction, beginning with a local checkout plus explicit `owner/repository` slug.
@@ -435,6 +435,9 @@ Status after the first complete repository-analysis vertical slice:
 - Findings embed source locations, state the assumed-compromise starting condition, name concrete Secrets Manager impact and label deployed AWS state unverified.
 - Broad or incomplete evidence emits an explicit no-proof conclusion rather than a safety verdict.
 - The new behavior is covered by graph, finding and CLI tests, including deterministic output, source immutability, protected output and duplicate secret declarations.
+- `WP_SPEC_public-github-input.md` is implemented: `blastradius analyze-github https://github.com/owner/repository [--ref REF]` resolves an immutable public commit and analyzes its bounded source ZIP locally without Git, tokens or source upload.
+- URL, network and archive boundaries reject confused authorities, unapproved redirects, traversal, links, special entries, path collisions, excessive expansion and unsupported compression. Temporary source is deleted after analysis and oversized files are reported as skipped.
+- A live public smoke run against `codezxsWIN/radius` commit `8c4965d17614f224ff38fc7a609e4094aa85f4df` completed successfully and returned the explicit no-proof conclusion for the supported profile.
 
 ### 22. Decisions Made During the Refocus
 
@@ -448,6 +451,7 @@ Status after the first complete repository-analysis vertical slice:
 - Require saved manifests to live outside the analyzed repository to preserve repeatability.
 - Keep synthetic graph v0.1 frozen and introduce repository-declared graph v0.2 rather than mislabeling real source evidence as fictional.
 - Make the useful result a source-backed path plus remediation counterfactual; do not expose an unexplained aggregate risk score as the repository product.
+- Keep public GitHub acquisition token-free and pinned to an immutable commit; route private repositories through the no-network local-checkout command.
 
 These are working decisions for the refocus. If implementation evidence contradicts them, document the reason and superseding decision.
 
@@ -458,14 +462,14 @@ These are working decisions for the refocus. If implementation evidence contradi
 - Existing connectors are bounded offline profiles, not complete live-provider evaluators.
 - Repository-only evidence cannot establish complete deployed cloud permissions.
 - JSON is currently the only final repository-analysis presentation; a concise terminal/Markdown report and visual path are still missing.
-- Local acquisition exists, but public GitHub URL acquisition, Git revision metadata and private repository authentication are intentionally deferred.
+- Public GitHub URL acquisition exists; private repository authentication, GitHub Enterprise and server-side analysis are intentionally deferred. Private repositories can be analyzed from a local checkout without network access.
 - The current acquisition profile inventories present filesystem content rather than honoring `.gitignore`.
 - Product naming conflicts conceptually with the unrelated Blast-RADIUS vulnerability site.
 - A clear ownership/fork/upstream contribution strategy has not been chosen.
 
 ### 24. Exact Next Action
 
-Specify the next productivity slice: safe public GitHub URL acquisition that remains local-first and non-executing. Define strict GitHub URL/ref parsing, bounded archive download and extraction, redirect/host policy, archive integrity/revision metadata, temporary-directory cleanup, rate-limit/error behavior, SSRF and zip-slip/zip-bomb defenses, and an end-to-end `analyze-github` command. Keep private-repository tokens and server-side uploads out of this first URL profile. After that, add a concise Markdown/terminal report over the existing deterministic finding contract.
+Specify and implement a concise Markdown/terminal report over `repository-attack-path-v0.1`. The default human flow should make the assumed starting condition, workflow -> role -> secret path, exact `path:line` evidence, unsupported coverage, deployed-state limitation and remediation counterfactual understandable without reading canonical JSON. Preserve JSON as the deterministic machine contract, and do not build a broad dashboard until this focused report is useful in a CLI demo.
 
 ### 25. End-of-Session Continuity Protocol
 

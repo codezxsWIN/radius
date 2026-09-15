@@ -211,3 +211,34 @@ Verify: `pytest -q tests/test_repository_findings.py`
 - [x] Full suite and diff check pass; branch is pushed.
 
 Verify: `pytest -q tests/test_repository_graph.py tests/test_repository_findings.py tests/test_cli.py`, then `pytest -q` and `git diff --check`.
+
+---
+
+# WP_ Task List: Public GitHub Input
+
+## `WP_013`: Strict URL and network boundary
+
+- [x] Accept and normalize only HTTPS `github.com/owner/repository` URLs.
+- [x] Resolve a requested ref to an immutable commit using the public GitHub API.
+- [x] Allow only the documented API-to-`codeload.github.com` archive redirect.
+- [x] Bound response bytes, timeouts and controlled errors without reading tokens.
+
+## `WP_014`: Safe ZIP extraction
+
+- [x] Reject traversal, links, special entries, encryption, duplicate/colliding paths and unsafe Windows names.
+- [x] Enforce compressed, per-file, total-byte, file-count, path-length and depth limits.
+- [x] Stream members beneath a fixed temporary root without `extractall`.
+
+## `WP_015`: End-to-end public repository analysis
+
+- [x] Analyze only the pinned extracted commit and attach URL/ref/commit/archive-hash metadata.
+- [x] Recompute deterministic result integrity after metadata attachment.
+- [x] Prove temporary source cleanup and no repository execution.
+
+## `WP_016`: Product command and checkpoint
+
+- [x] Add `analyze-github` with optional `--ref` and protected JSON output.
+- [x] Update README, decision log, test report and continuity state.
+- [x] Run the full suite and diff check, commit with `WP_` prefix and push.
+
+Verify: `pytest -q tests/test_public_github.py tests/test_cli.py`, then `pytest -q` and `git diff --check`.

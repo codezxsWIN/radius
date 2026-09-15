@@ -117,6 +117,10 @@ def parser():
     repository_analysis.add_argument("repository", type=Path)
     repository_analysis.add_argument("--repository-slug", required=True)
     output(repository_analysis)
+    github_analysis = commands.add_parser("analyze-github", help="Download and locally analyze one immutable commit from a public GitHub repository without Git or an access token.")
+    github_analysis.add_argument("url")
+    github_analysis.add_argument("--ref")
+    output(github_analysis)
     submit = commands.add_parser("submit", help="Print a local structural preview only; not anonymized or approved for publication.")
     submit.add_argument("result", type=Path)
     submit.add_argument("--dry-run", action="store_true", required=True)
@@ -179,6 +183,10 @@ def main(argv=None):
             repository = arguments.repository.resolve(strict=True)
             reject_internal_output(repository, arguments.out)
             result = analyze_repository(repository, arguments.repository_slug)
+            emit(arguments.out, canonical(result) + b"\n", arguments.force)
+        elif command == "analyze-github":
+            from .repository import analyze_public_github_repository
+            result = analyze_public_github_repository(arguments.url, arguments.ref)
             emit(arguments.out, canonical(result) + b"\n", arguments.force)
         elif command == "synth":
             graph = validate(classic() if arguments.classic else synth(arguments.principals, arguments.resources, arguments.seed))
