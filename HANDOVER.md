@@ -1,5 +1,7 @@
 # Handover
 
+> **Continuation notice (2026-09-15):** The user has started a product-refocus exploration centered on making a GitHub repository a possible primary input. Read `WP_PROJECT_CONTINUATION_PROMPT.md` first for the active context, current cautions and exact next action. The standards/prototype material below remains historical evidence and must not be erased, but its standards-only direction does not describe the current exploration.
+
 ## Standards Session: Current Direction
 
 The 2026-09-09 standards session starts at 03:30:10 India time and supersedes the earlier product/prototype roadmap below. The project is only an open metric standard, public conformance/reference artifact and planned open aggregate dataset. DIRECTION.md records the scope audit; no SSO, multi-tenant console, billing, compliance pack, SIEM or ticketing integration exists to remove. The single demo is retained without overwriting the user-modified HTML.
