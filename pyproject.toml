@@ -21,7 +21,7 @@ test = ["pytest==9.0.3", "pytest-cov==7.1.0", "coverage==7.15.2"]
 where = ["src"]
 
 [tool.setuptools.package-data]
-blastradius = ["assets/*"]
+blastradius = ["assets/*", "assets/repository-example/infra/*.json", "assets/repository-example/.github/workflows/*.yml", "assets/repository-shared-example/infra/*.json", "assets/repository-shared-example/.github/workflows/*.yml"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]

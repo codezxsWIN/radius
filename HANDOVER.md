@@ -1,8 +1,58 @@
 # Handover
 
-> **Continuation notice (2026-09-15):** The user has started a product-refocus exploration centered on making a GitHub repository a possible primary input. Read `WP_PROJECT_CONTINUATION_PROMPT.md` first for the active context, current cautions and exact next action. The standards/prototype material below remains historical evidence and must not be erased, but its standards-only direction does not describe the current exploration.
+## Expanded Evidence Iteration: 2026-09-16
 
-## Standards Session: Current Direction
+Latest user request: "imrpove it as much as possible", following the external-repository test. This iteration fixes measurable coverage gaps while preserving unknowns: bounded finite matrices, literal env/matrix substitutions with source regions, unresolved/local-action identity observations, conventional literal CloudFormation YAML/JSON and an actionable Identities view. It does not add live IAM, Terraform evaluation, arbitrary action execution, credentials or an LLM.
+
+Current gate: **301 passed, 1 platform skip in 69.98s; 3229/3611 lines covered (89.421213%)**. Fifteen real-Chromium accessibility audits are clean at desktop/laptop/mobile widths, including a 46-variant pagination/filter/keyboard case, existing shared/alternate-trust planning, failed-comparison uncertainty and offline reopening. Parser tests prove matrix isolation, typed include/exclude, bounded expansion, env shadowing and intrinsic opacity. Exact supported limits are in WP_SPEC_repository-evidence.md and SECURITY.md.
+
+Retested `aws-actions/configure-aws-credentials` at the same immutable `ec8e608231b771e3614fc6ea4edadab8703331a5`: 20 jobs -> 33 finite job variants, 36 identity-request variants / 17 source declarations, no matrix exclusions. All 36 remain unresolved; there are no matching supported IAM declarations and zero complete paths. Diagnostics now expose 17 role-reference sites, 12 unverified local-action sites and four unsupported credential/session-option sites. More warnings here mean previously hidden evidence, not more claimed vulnerabilities.
+
+Current external result `results/aws-actions-expanded-evidence-20260916.{json,md,html}` has analysis hash `de5f8b91f9cb1456cd9867a6dd30f1e39081992b84e6a2e02d8737ed8dbef419`. No remote code, secret values or AWS operations were used. Earlier same-day hashes/counts below are retained as history; no commit/push or hosted CI was performed.
+
+The refreshed wheel is `dist/repository-expanded-evidence-20260916/blastradius_prototype-0.1.0-py3-none-any.whl`, SHA-256 `fc75c19f6aa7cc0eb62a1f412dad1212615678572dcba1883b580af0840c4a42`. Its isolated installed-package check from temporary cwd passed finite matrix/env resolution with source coordinates, intrinsic opacity, the packaged shared scenario (5 -> 1), external-result HTML and SARIF 2.1.0 schema validation. Playwright opened the real external snapshot offline with zero HTTP requests, then submitted the same pinned commit through the restarted app and verified 36 request variants, 17 declaration rows, 33 expanded job variants and zero path findings. The app remains at http://127.0.0.1:8765/ with the external repository's Identities view open.
+
+## Investigation Iteration: 2026-09-16
+
+The user rejected the previous interface as unfinished ("still slop") and requested continued building. This iteration replaces the long generic report layout with a searchable finding queue, exact matched-declaration inspector, staged multi-control change set and file-level coverage view. It does not expand the source provider profile or rewrite the unrelated legacy visual instrument.
+
+The new `repository/scenarios.py` recomputes the retained declared graph for up to 128 distinct selected trust removals. API comparisons and Markdown/JSON change requests include all-job and distinct-resource deltas, surviving finding/control identities and baseline/comparison hashes. Public source archives are still removed; only graph/facts remain in memory. Clearing the review removes them. Offline HTML deliberately keeps its saved single-statement comparison, not a second browser implementation of the engine.
+
+The packaged shared-access example has five findings across three jobs and three secrets: one production trust removal leaves 5 -> 5, both production trusts give 5 -> 1, and all controls give 5 -> 0. The second path test also found and fixed a real inspector error: for a job with multiple role requests, the displayed role is now taken from the actual role-assumption correlation rather than the starting credential. Markdown baselines carry matched subjects/audience/account and file coverage too.
+
+Current checks: **280 passed, one platform skip in 55.57s**, coverage **2983/3361 lines (88.753347%)**. Twelve real-Chromium accessibility audits passed with zero violations at 1440, 1280, 390 and 320px and offline. Browser tests exercise queue/status/file filtering, rapid toggles, simulated comparison outage, four baseline exports, two change-request exports, and source/no-proof/error states. Final model module Pylance diagnostics are empty. The refreshed live app also passed the 5 -> 5 -> 1 -> 5 stage/clear sequence and is left at the shared example's unmodified baseline on http://127.0.0.1:8765/.
+
+The current wheel is `dist/repository-investigation-20260916/blastradius_prototype-0.1.0-py3-none-any.whl`, SHA-256 `1a46d48128c483945e9b01643fd1681df463316b2ec0e047543159eb0cd9dd50`. Its clean isolated install, run from the OS temporary directory, passed packaged shared-example analysis, alternate/combined trust removal, proposed change-request rendering and embedded-font HTML. Current shared-example analysis hash: `1df8e5e9a188ab11e8177a7aabf164785cf039c2fa4623fa65f24b7d9c5daf7e`. Regenerated baseline SARIF passes its 2.1.0 schema. Prior same-day release hashes below remain historical.
+
+See the current README and WP_PROJECT_CONTINUATION_PROMPT.md. No commit, push, hosted CI, live IAM verification or applied remediation is part of this iteration. Do not call the wider product finished solely because this bounded investigation increment passed its checks; further user requirements remain a separate scope decision.
+
+## Repository Review Delivered: 2026-09-16
+
+The user authorized continuing beyond recovery to a usable repository-first delivery. Launch [start-review.cmd](start-review.cmd) or `python -I -m blastradius review` in the project environment. The loopback-only app accepts local checkouts/slugs and public GitHub URLs, shows selectable source-backed paths, current/simulated trust removal, coverage/diagnostics and HTML/Markdown/JSON/SARIF downloads. `render-repo` exports an integrity-checked saved result without rescanning. Existing UI/research files were preserved, not repurposed.
+
+Before presentation, seven adversarial regressions exposed cross-job role pooling and ignored restrictions. Those producers were repaired and coverage expanded: job-level principals; conservative handling of trust/permission denies, boundaries, managed policies, extra trust keys, environments, matrices and alternate credential/session options; account/path matching; ambiguous-role rejection. Remediation now removes every modeled edge supported by the selected trust statement while preserving other statements. The shared engine and frozen synthetic v0.1 schema remain unchanged.
+
+Current verification: **273 passed, 1 Windows privilege skip in 59.86 seconds; 2854/3224 lines covered (88.523573%)**. Six real-Chromium accessibility audits passed with no violations across desktop, mobile and offline states. Browser evidence selection, 1 -> 0 simulation, error/no-proof states and all four download handlers passed; the exported HTML reopened without HTTP requests or page errors. SARIF validates against 2.1.0. The locally built wheel installed with only declared runtime dependencies in a clean venv and ran from a temporary cwd under `-I`, including packaged fonts, fixtures, view and server.
+
+Local artifacts: `results/repository-review-browser/analysis.{json,md,sarif,html}`, `checks.json`, `desktop.png`, `mobile.png`, and `public-github.json`; wheel under `dist/repository-review-20260916/`. The built-in example's current analysis hash is `65a2f17d5565e2b6fdfe911262989f3f5ee70fa1d546544b2ad2866cf363f3d9`, not the pre-hardening recovery hash. The public GitHub smoke resolved `codezxsWIN/radius` commit `8a4f644877dc85b80e94a677e2350975ac416512`, parsed two profile files and returned no-proof with no diagnostics. It does not claim this repository is safe.
+
+CI is implemented locally in `.github/workflows/repository-review.yml` and `tools/repository_ci.py`: trusted base analyzer, untrusted target data, isolated interpreter, pinned actions, read-only PR analysis, four artifacts plus context manifest, separate opt-in manual SARIF publication. The adversarial target-import test passed. **No commit, push, hosted CI run or cloud change has been made.** To activate it requires the user's publication authorization and a trusted baseline containing the new workflow/runner. A different target repository needs a separately pinned trusted analyzer, not a blind copy of the self-hosting workflow.
+
+This delivered workflow retains its stated provider/policy limits. Next use is review of an authorized actual checkout; the only remaining deployment verification gate is a deliberately authorized GitHub workflow run after publication. Do not turn that into automatic provider expansion or the old 100-goal dashboard roadmap. Current behavior, setup and safety details are in README.md, SECURITY.md and WP_SPEC_repository-review.md.
+
+## Earlier Local Recovery: 2026-09-16
+
+The active direction is the repository-first path described in WP_PROJECT_CONTINUATION_PROMPT.md and the approved WP_ specifications. With the user's explicit approval, the four repository commands, additive graph-v0.2 validation, PyYAML 6.0.3 declaration and six repository CLI tests have been restored to the local checkout. PyYAML was installed from the offline cache into this project's .venv, not the older parent-project environment. Unrelated source/UI edits and workspace settings were preserved.
+
+Verification: 27 focused validation/conformance tests passed; 21 command/graph/finding/report tests passed; the full suite passed **234 tests with 1 skip** (41.18 seconds with skip reporting; a repeated run also passed in 33.54 seconds). The skipped test requires Windows file-symlink creation privileges. Its non-reading link/reparse behavior has separate tests; no elevation or privilege change was attempted.
+
+The installed CLI generated results/repository-recovery-20260916.md and .json from tests/fixtures/repositories/aws-oidc-path with slug acme/payments. Two selected files were parsed with no unsupported-file diagnostics. One declared workflow -> role -> Secrets Manager path carries source locations; a modeled trust removal reduces absolute reach from 1 to 0. Analysis hash: `8097766d2d4bde78c7377bf9bba660c530f6df2739ef38618e1b120c4d88b530`. No repository code or cloud operation was executed, no secret value was read, and deployed AWS state remains unverified.
+
+Recovery is complete; CI/SARIF adoption is a separate next slice, not implemented by this session. First define its trusted-analyzer/untrusted-target boundary, retain no-proof outcomes, and validate the package and job-isolation behavior before broader claims. No new provider, extra dashboard, LLM, commit or push is part of this recovery.
+
+## Historical Standards Direction
+
+The following September 9 material is retained as history. Its standards-only and single-demo restrictions do not supersede the current repository-first work.
 
 The 2026-09-09 standards session starts at 03:30:10 India time and supersedes the earlier product/prototype roadmap below. The project is only an open metric standard, public conformance/reference artifact and planned open aggregate dataset. DIRECTION.md records the scope audit; no SSO, multi-tenant console, billing, compliance pack, SIEM or ticketing integration exists to remove. The single demo is retained without overwriting the user-modified HTML.
 

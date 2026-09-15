@@ -254,7 +254,7 @@ def extract_public_github_archive(payload: bytes, destination: Path) -> Path:
     }
 
 
-def analyze_public_github_repository(url: str, ref: str | None = None, transport=None) -> dict:
+def analyze_public_github_repository(url: str, ref: str | None = None, transport=None, *, review_context=None) -> dict:
     """Resolve, download and locally analyze one public GitHub repository commit."""
     owner, repository, normalized_url = parse_public_github_url(url)
     requested_ref = _validate_ref(ref)
@@ -270,7 +270,8 @@ def analyze_public_github_repository(url: str, ref: str | None = None, transport
 
     with TemporaryDirectory(prefix="blastradius-public-github-") as temporary:
         source, extraction = extract_public_github_archive(archive_payload, Path(temporary) / "repository")
-        result = analyze_repository(source, f"{owner}/{repository}")
+        options = {"review_context": review_context} if review_context is not None else {}
+        result = analyze_repository(source, f"{owner}/{repository}", **options)
     result.pop("analysis_hash", None)
     result["repository"]["input"] = {
         "kind": "public-github-url",

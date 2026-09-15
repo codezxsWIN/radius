@@ -64,22 +64,21 @@
     if (!explanation) return frame('Explanatory path','No reachable witness under this model',text(30,130,'No path is invented for a blocked or zero-reach credential.'),result,{...options,view:'path',height:310});
     const nodes=new Map(result.snapshot.nodes.map(node=>[node.id,node]));
     const edges=explanation.steps, ids=[edges[0].source,...edges.map(edge=>edge.target)];
-    const columns=options.compact?2:4, rows=Math.ceil(ids.length/columns), height=(options.compact?290:230)+rows*122, width=options.compact?420:tokens.figure.width;
+    const columns=options.compact?2:4, rows=Math.ceil(ids.length/columns), height=(options.compact?290:230)+rows*122;
     const position=index=>({x:(options.compact?60:65)+(index%columns)*(options.compact?205:220),y:132+Math.floor(index/columns)*122});
     let body='';
     edges.forEach((edge,index)=>{
       const start=position(index),end=position(index+1), escalation=['can_assume','can_read_secret'].includes(edge.kind) || (edge.kind==='assigned' && nodes.get(edge.target)?.eligible);
       const approximate=Boolean(options.approximations?.[edge.id]);
-      const middle=start.y+84;
-      const geometry=start.y===end.y?`M${start.x} ${start.y}H${end.x}`:`M${start.x} ${start.y}H${width-16}V${middle}H${end.x}V${end.y}`;
-      body+=`<path data-witness-edge="${escape(edge.id)}" d="${geometry}" fill="none" stroke="${escalation?tokens.color.accent:tokens.color.muted}" stroke-width="${escalation?4:2}" ${approximate?'stroke-dasharray="7 5"':''}/>`;
+      const middle=(start.y+end.y)/2;
+      const geometry=start.y===end.y?`M${start.x} ${start.y}H${end.x}`:`M${start.x} ${start.y}V${middle}H${end.x}V${end.y}`;
+      body+=`<path d="${geometry}" fill="none" stroke="${escalation?tokens.color.accent:tokens.color.muted}" stroke-width="${escalation?4:2}" ${approximate?'stroke-dasharray="7 5"':''}/>`;
       body+=text(start.y===end.y?(start.x+end.x)/2-36:options.compact?150:300,start.y===end.y?start.y-18:middle-8,label(edge.kind),'class="small"');
       if ((edge.constraints??[]).length) body+=`<path d="M${start.x+80} ${start.y-12}v24" stroke="${tokens.color.accent}" stroke-width="4"/>`;
     });
     ids.forEach((id,index)=>{
       const node=nodes.get(id),point=position(index), name=options.names?.[id]??node?.name??id;
-      const lastColumn=index%columns===columns-1,labelX=lastColumn?width-34:point.x-36,anchor=lastColumn?' text-anchor="end"':'';
-      body+=`<g class="mark" role="button" tabindex="0" aria-label="${escape(name+' provenance')}" data-node="${escape(id)}"><circle cx="${point.x}" cy="${point.y}" r="9" fill="${tokens.color.surface}" stroke="${tokens.color.ink}" stroke-width="2"/>${text(labelX,point.y+29,name.length>25?name.slice(0,23)+'..':name,'style="font-size:12px"'+anchor)}${text(labelX,point.y+47,label(node?.kind??''),'class="small"'+anchor)}<title>${escape(name)}</title></g>`;
+      body+=`<g class="mark" role="button" tabindex="0" aria-label="${escape(name+' provenance')}" data-node="${escape(id)}"><circle cx="${point.x}" cy="${point.y}" r="9" fill="${tokens.color.surface}" stroke="${tokens.color.ink}" stroke-width="2"/>${text(point.x-36,point.y+29,name.length>25?name.slice(0,23)+'..':name,'style="font-size:12px"')}${text(point.x-36,point.y+47,label(node?.kind??''),'class="small"')}<title>${escape(name)}</title></g>`;
     });
     return frame('Explanatory path',`${explanation.escalation_steps} escalation steps / ${explanation.graph_hops} graph hops / ${explanation.action}`,body,result,{...options,view:'path',height});
   }

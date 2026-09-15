@@ -8,6 +8,7 @@ from .yaml_nodes import location, mapping, scalar, scalar_list, sequence
 
 
 SECRET_ARN = re.compile(r"^arn:aws:secretsmanager:[a-z0-9-]+:[0-9]{12}:secret:[A-Za-z0-9/_+=.@-]+$")
+GITHUB_PROVIDER = re.compile(r"^arn:aws:iam::([0-9]{12}):oidc-provider/token\.actions\.githubusercontent\.com$")
 
 
 def _identifier(kind, *parts):
@@ -35,6 +36,10 @@ def _github_trusts(path, role_id, policy):
     if statements is None:
         diagnostics.append(_diagnostic("UNSUPPORTED_TRUST_POLICY", "Role trust policy has no supported literal statements.", path, policy))
         return facts, diagnostics
+    for statement_node in statements:
+        statement = mapping(statement_node)
+        if statement is None or scalar(statement.get("Effect")) != "Allow":
+            return [], [_diagnostic("UNRESOLVED_TRUST_RESTRICTION", "Trust policy contains a deny or unsupported statement; no complete trust path is claimed.", path, statement_node)]
     for index, statement_node in enumerate(statements):
         statement = mapping(statement_node)
         if statement is None:
@@ -45,7 +50,11 @@ def _github_trusts(path, role_id, policy):
         actions = scalar_list(statement.get("Action")) if "Action" in statement else None
         if effect != "Allow" or not federated or not actions:
             continue
-        if not any(value.endswith(":oidc-provider/token.actions.githubusercontent.com") for value in federated):
+        providers = [GITHUB_PROVIDER.fullmatch(value) for value in federated]
+        if not any(providers):
+            continue
+        if not all(providers) or set(principal) != {"Federated"} or set(statement) - {"Sid", "Effect", "Principal", "Action", "Condition"}:
+            diagnostics.append(_diagnostic("UNSUPPORTED_TRUST_PRINCIPAL", "Trust principal or statement elements are outside the literal GitHub OIDC profile.", path, statement_node))
             continue
         if "sts:AssumeRoleWithWebIdentity" not in actions:
             continue
@@ -61,6 +70,11 @@ def _github_trusts(path, role_id, policy):
         like = mapping(condition.get("StringLike")) if "StringLike" in condition else {}
         if equals is None or like is None:
             diagnostics.append(_diagnostic("UNSUPPORTED_TRUST_CONDITION", "GitHub OIDC trust condition must be a literal mapping.", path, statement["Condition"]))
+            continue
+        supported_keys = {"token.actions.githubusercontent.com:aud", "token.actions.githubusercontent.com:sub"}
+        if (set(equals) - supported_keys or set(like) - {"token.actions.githubusercontent.com:sub"}
+                or set(equals) & set(like)):
+            diagnostics.append(_diagnostic("UNSUPPORTED_TRUST_CONDITION", "Additional or overlapping trust conditions cannot be proven by this profile.", path, statement["Condition"]))
             continue
         audience = scalar_list(equals.get("token.actions.githubusercontent.com:aud")) if "token.actions.githubusercontent.com:aud" in equals else None
         if audience != ["sts.amazonaws.com"]:
@@ -78,6 +92,7 @@ def _github_trusts(path, role_id, policy):
             "role_id": role_id,
             "subjects": sorted(set(subjects)),
             "audience": audience,
+            "provider_accounts": sorted({provider.group(1) for provider in providers}),
             "operator": "StringEquals" if subject_node is equals.get("token.actions.githubusercontent.com:sub") else "StringLike",
             "broad": broad,
             "confidence": confidence,
@@ -94,6 +109,15 @@ def _secret_grants(path, role_id, policies):
     policy_nodes = sequence(policies)
     if policy_nodes is None:
         return facts, [_diagnostic("UNSUPPORTED_ROLE_POLICIES", "Role policies must be a literal list.", path, policies)]
+    for policy_node in policy_nodes:
+        policy = mapping(policy_node)
+        statements = _statements(policy.get("PolicyDocument")) if policy else None
+        if statements is None:
+            return [], [_diagnostic("UNSUPPORTED_PERMISSION_POLICY", "An unresolved inline policy may restrict access; no finite allow path is claimed.", path, policy_node)]
+        for statement_node in statements:
+            statement = mapping(statement_node)
+            if statement is None or scalar(statement.get("Effect")) != "Allow":
+                return [], [_diagnostic("EXPLICIT_DENY_UNSUPPORTED", "A deny or unresolved inline statement may restrict access; no complete allow path is claimed for this role.", path, statement_node)]
     for policy_index, policy_node in enumerate(policy_nodes):
         policy = mapping(policy_node)
         document = policy.get("PolicyDocument") if policy else None
@@ -111,7 +135,7 @@ def _secret_grants(path, role_id, policies):
                 continue
             if effect != "Allow":
                 continue
-            if set(statement) & {"Condition", "NotAction", "NotResource", "Principal", "NotPrincipal"}:
+            if set(statement) - {"Sid", "Effect", "Action", "Resource"}:
                 diagnostics.append(_diagnostic("UNSUPPORTED_PERMISSION_STATEMENT", "Permission statement uses elements outside the finite allow profile.", path, statement_node))
                 continue
             actions = scalar_list(statement.get("Action")) if "Action" in statement else None
@@ -150,17 +174,26 @@ def extract_cloudformation(path, root):
         properties = mapping(resource.get("Properties")) if "Properties" in resource else None
         role_name_node = properties.get("RoleName") if properties else None
         role_name = scalar(role_name_node) if role_name_node is not None else None
-        if not role_name or "${" in role_name or "*" in role_name or "/" in role_name:
+        if not role_name or not re.fullmatch(r"[A-Za-z0-9+=,.@_-]{1,64}", role_name):
             diagnostics.append(_diagnostic("DYNAMIC_ROLE_NAME", "IAM role has no supported literal RoleName.", path, role_name_node or resource_node))
+            continue
+        role_path = scalar(properties["Path"]) if "Path" in properties else "/"
+        if not role_path or not re.fullmatch(r"/(?:[A-Za-z0-9+=,.@_/-]+/)?", role_path):
+            diagnostics.append(_diagnostic("DYNAMIC_ROLE_PATH", "IAM role path must be a supported literal path.", path, properties.get("Path", resource_node)))
             continue
         role_id = _identifier("aws-role", path, logical_id, role_name)
         roles.append({
             "id": role_id,
             "logical_id": logical_id,
             "role_name": role_name,
+            "role_path": role_path,
             "confidence": "declared-configuration",
             "location": location(path, resource_node),
         })
+        restrictions = set(properties) & {"PermissionsBoundary", "ManagedPolicyArns"}
+        if restrictions or "Condition" in resource:
+            diagnostics.append(_diagnostic("UNRESOLVED_ROLE_RESTRICTION", "A boundary, managed policy or resource condition has not been evaluated; no complete path is claimed for this role.", path, resource_node))
+            continue
         trust_policy = properties.get("AssumeRolePolicyDocument") if properties else None
         if trust_policy is not None:
             found, issues = _github_trusts(path, role_id, trust_policy)

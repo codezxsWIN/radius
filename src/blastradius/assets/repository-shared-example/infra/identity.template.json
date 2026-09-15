@@ -1,0 +1,79 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Resources": {
+    "PublisherRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "RoleName": "github-publisher",
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [{
+            "Effect": "Allow",
+            "Principal": {"Federated": "arn:aws:iam::123456789012:oidc-provider/token.actions.githubusercontent.com"},
+            "Action": "sts:AssumeRoleWithWebIdentity",
+            "Condition": {"StringEquals": {
+              "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
+              "token.actions.githubusercontent.com:sub": "repo:acme/release-platform:ref:refs/heads/main"
+            }}
+          }]
+        },
+        "Policies": [{
+          "PolicyName": "ReadRegistryCredential",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [{
+              "Effect": "Allow",
+              "Action": "secretsmanager:GetSecretValue",
+              "Resource": "arn:aws:secretsmanager:us-east-1:123456789012:secret:packages/registry-token"
+            }]
+          }
+        }]
+      }
+    },
+    "ProductionRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "RoleName": "github-production",
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "MainBranch",
+              "Effect": "Allow",
+              "Principal": {"Federated": "arn:aws:iam::123456789012:oidc-provider/token.actions.githubusercontent.com"},
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {"StringEquals": {
+                "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
+                "token.actions.githubusercontent.com:sub": "repo:acme/release-platform:ref:refs/heads/main"
+              }}
+            },
+            {
+              "Sid": "ReleaseBranch",
+              "Effect": "Allow",
+              "Principal": {"Federated": "arn:aws:iam::123456789012:oidc-provider/token.actions.githubusercontent.com"},
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {"StringEquals": {
+                "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
+                "token.actions.githubusercontent.com:sub": "repo:acme/release-platform:ref:refs/heads/release"
+              }}
+            }
+          ]
+        },
+        "Policies": [{
+          "PolicyName": "ReadDeploymentSecrets",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [{
+              "Effect": "Allow",
+              "Action": "secretsmanager:GetSecretValue",
+              "Resource": [
+                "arn:aws:secretsmanager:us-east-1:123456789012:secret:production/database",
+                "arn:aws:secretsmanager:us-east-1:123456789012:secret:production/signing-key"
+              ]
+            }]
+          }
+        }]
+      }
+    }
+  }
+}

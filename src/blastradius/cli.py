@@ -116,13 +116,22 @@ def parser():
     repository_analysis = commands.add_parser("analyze-repo", help="Find supported GitHub Actions-to-AWS secret paths in repository declarations and simulate a trust remediation.")
     repository_analysis.add_argument("repository", type=Path)
     repository_analysis.add_argument("--repository-slug", required=True)
-    repository_analysis.add_argument("--format", choices=("json", "md"), default="json")
+    repository_analysis.add_argument("--format", choices=("json", "md", "sarif", "html"), default="json")
+    repository_analysis.add_argument("--fail-on-findings", action="store_true", help="Exit 1 for supported declared paths; exit 0 means completed, not safe.")
     output(repository_analysis)
     github_analysis = commands.add_parser("analyze-github", help="Download and locally analyze one immutable commit from a public GitHub repository without Git or an access token.")
     github_analysis.add_argument("url")
     github_analysis.add_argument("--ref")
-    github_analysis.add_argument("--format", choices=("json", "md"), default="json")
+    github_analysis.add_argument("--format", choices=("json", "md", "sarif", "html"), default="json")
+    github_analysis.add_argument("--fail-on-findings", action="store_true", help="Exit 1 for supported declared paths; exit 0 means completed, not safe.")
     output(github_analysis)
+    repository_report = commands.add_parser("render-repo", help="Check a saved repository result's content hash and export it without rescanning source.")
+    repository_report.add_argument("result", type=Path)
+    repository_report.add_argument("--format", choices=("json", "md", "sarif", "html"), default="md")
+    output(repository_report)
+    review = commands.add_parser("review", help="Open the loopback-only repository review interface; source is never executed.")
+    review.add_argument("--port", type=int, default=8765)
+    review.add_argument("--no-open", action="store_true", help="Do not launch a browser automatically.")
     submit = commands.add_parser("submit", help="Print a local structural preview only; not anonymized or approved for publication.")
     submit.add_argument("result", type=Path)
     submit.add_argument("--dry-run", action="store_true", required=True)
@@ -181,17 +190,28 @@ def main(argv=None):
             evidence = collect_repository_evidence(repository, manifest, arguments.repository_slug)
             emit(arguments.out, canonical(evidence) + b"\n", arguments.force)
         elif command == "analyze-repo":
-            from .repository import analyze_repository, render_repository_markdown
+            from .repository import analyze_repository, render_repository_result
             repository = arguments.repository.resolve(strict=True)
             reject_internal_output(repository, arguments.out)
             result = analyze_repository(repository, arguments.repository_slug)
-            payload = canonical(result) + b"\n" if arguments.format == "json" else render_repository_markdown(result)
+            payload = render_repository_result(result, arguments.format)
             emit(arguments.out, payload, arguments.force)
+            if arguments.fail_on_findings and result["findings"]:
+                return 1
         elif command == "analyze-github":
-            from .repository import analyze_public_github_repository, render_repository_markdown
+            from .repository import analyze_public_github_repository, render_repository_result
             result = analyze_public_github_repository(arguments.url, arguments.ref)
-            payload = canonical(result) + b"\n" if arguments.format == "json" else render_repository_markdown(result)
+            payload = render_repository_result(result, arguments.format)
             emit(arguments.out, payload, arguments.force)
+            if arguments.fail_on_findings and result["findings"]:
+                return 1
+        elif command == "render-repo":
+            from .repository import read_repository_result, render_repository_result
+            result = read_repository_result(arguments.result)
+            emit(arguments.out, render_repository_result(result, arguments.format), arguments.force, (arguments.result,))
+        elif command == "review":
+            from .repository.server import serve_review
+            serve_review(arguments.port, not arguments.no_open)
         elif command == "synth":
             graph = validate(classic() if arguments.classic else synth(arguments.principals, arguments.resources, arguments.seed))
             payload = canonical(graph) + b"\n"

@@ -15,7 +15,6 @@ SCHEMA_PATHS = {
     "0.1": Path(__file__).with_name("assets") / "blastradius-graph-v0.1.schema.json",
     "0.2": Path(__file__).with_name("assets") / "blastradius-graph-v0.2.schema.json",
 }
-# Backward-compatible public path for consumers of the frozen v0.1 contract.
 SCHEMA_PATH = SCHEMA_PATHS["0.1"]
 MODELS = {
     "default": frozenset({"device_required", "approval_required"}),

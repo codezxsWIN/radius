@@ -102,6 +102,30 @@ def test_public_github_analysis_pins_commit_runs_locally_and_cleans_up(monkeypat
     assert all(not path.exists() for path in analyzed)
 
 
+def test_public_review_retains_only_model_for_post_cleanup_simulation(monkeypatch):
+    from blastradius.repository.scenarios import simulate_repository_review
+    acquired = []
+    original = github.analyze_repository
+
+    def observe(path, slug, *, review_context=None):
+        acquired.append(Path(path))
+        return original(path, slug, review_context=review_context)
+
+    monkeypatch.setattr(github, "analyze_repository", observe)
+    transport = FakeTransport()
+    context = {}
+    result = github.analyze_public_github_repository("https://github.com/acme/payments", transport=transport, review_context=context)
+    assert all(not path.exists() for path in acquired)
+    assert set(context) == {"graph", "evidence_index"}
+    assert all(str(path) not in canonical(context).decode("ascii") for path in acquired)
+    requests_before = len(transport.calls)
+    comparison = simulate_repository_review(result, context, [control["id"] for control in result["controls"]])
+    assert comparison["base_analysis_hash"] == result["analysis_hash"]
+    assert comparison["after"]["reachable_findings"] == 0
+    assert comparison["after"]["reachable_secrets"] == 0
+    assert len(transport.calls) == requests_before
+
+
 def test_public_github_analysis_rejects_unapproved_redirect():
     transport = FakeTransport(redirect="https://attacker.example/archive.zip")
     with pytest.raises(GraphError, match="redirect"):

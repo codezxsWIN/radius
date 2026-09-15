@@ -1,0 +1,34 @@
+name: Release pipeline
+on:
+  push:
+    branches:
+      - main
+      - release
+permissions:
+  contents: read
+  id-token: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Package registry identity
+        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
+        with:
+          role-to-assume: arn:aws:iam::123456789012:role/github-publisher
+          aws-region: us-east-1
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Production identity
+        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
+        with:
+          role-to-assume: arn:aws:iam::123456789012:role/github-production
+          aws-region: us-east-1
+  smoke-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deployment verification identity
+        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
+        with:
+          role-to-assume: arn:aws:iam::123456789012:role/github-production
+          aws-region: us-east-1

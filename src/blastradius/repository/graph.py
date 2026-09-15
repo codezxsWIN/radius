@@ -123,7 +123,7 @@ def build_repository_graph(evidence: dict) -> tuple[dict | None, dict]:
         for fact in (workflow, request, role, trust, grant):
             keep_fact(fact)
 
-        workflow_id = _identifier("principal-workflow", workflow["id"])
+        workflow_id = _identifier("principal-workflow-job", workflow["id"], request["job_id"])
         credential_id = _identifier("credential-oidc", request["id"])
         role_id = _identifier("principal-aws-role", role["id"])
         binding_id = _identifier("binding-secret-read", grant["id"])
@@ -139,6 +139,7 @@ def build_repository_graph(evidence: dict) -> tuple[dict | None, dict]:
             "location": deepcopy(request["location"]),
             "supporting_locations": [
                 {"fact_id": request["id"], **deepcopy(request["location"])},
+                *deepcopy(request.get("supporting_locations", [])),
                 {"fact_id": trust["id"], **deepcopy(trust["location"])},
             ],
         }
@@ -147,7 +148,7 @@ def build_repository_graph(evidence: dict) -> tuple[dict | None, dict]:
             "id": workflow_id,
             "kind": "principal",
             "subtype": "workload_identity",
-            "name": _name(workflow.get("name", workflow["path"]), "GitHub Actions workflow: "),
+            "name": _name(f"{workflow.get('name', workflow['path'])} / {request['job_id']}", "GitHub Actions job: "),
             "provenance": _provenance("github-actions", snapshot_hash, workflow["id"]),
         })
         keep_node({

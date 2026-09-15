@@ -13,13 +13,17 @@ STANDARD_TAGS = frozenset({
     "tag:yaml.org,2002:seq",
     "tag:yaml.org,2002:str",
 })
+CLOUDFORMATION_TAGS = frozenset("!" + name for name in (
+    "Ref", "Condition", "Base64", "Cidr", "FindInMap", "GetAtt", "GetAZs", "ImportValue",
+    "Join", "Select", "Split", "Sub", "Transform", "If", "Equals", "And", "Not", "Or", "Length", "ToJsonString",
+))
 
 
 class DocumentSyntaxError(ValueError):
     """A selected text file is malformed but not structurally unsafe."""
 
 
-def compose_document(payload: bytes) -> Node:
+def compose_document(payload: bytes, *, allow_cloudformation_tags=False) -> Node:
     try:
         source = payload.decode("utf-8-sig")
     except UnicodeError:
@@ -45,12 +49,12 @@ def compose_document(payload: bytes) -> Node:
         count += 1
         if count > MAX_DOCUMENT_NODES:
             raise GraphError("Selected document exceeds the safe YAML node-count limit.")
-        if node.tag not in STANDARD_TAGS:
+        if node.tag not in STANDARD_TAGS and not (allow_cloudformation_tags and node.tag in CLOUDFORMATION_TAGS):
             raise GraphError("Selected document contains a custom YAML tag.")
         if isinstance(node, MappingNode):
             keys = set()
             for key, value in node.value:
-                if not isinstance(key, ScalarNode):
+                if not isinstance(key, ScalarNode) or key.tag != "tag:yaml.org,2002:str":
                     raise GraphError("Selected document contains a non-scalar mapping key.")
                 if key.value == "<<":
                     raise GraphError("Selected document contains a YAML merge key.")
@@ -70,25 +74,42 @@ def compose_document(payload: bytes) -> Node:
 
 
 def mapping(node):
-    if not isinstance(node, MappingNode):
+    if not isinstance(node, MappingNode) or node.tag != "tag:yaml.org,2002:map":
         return None
     return {key.value: value for key, value in node.value}
 
 
 def sequence(node):
-    return list(node.value) if isinstance(node, SequenceNode) else None
+    return list(node.value) if isinstance(node, SequenceNode) and node.tag == "tag:yaml.org,2002:seq" else None
 
 
 def scalar(node):
-    return node.value if isinstance(node, ScalarNode) else None
+    return node.value if isinstance(node, ScalarNode) and node.tag == "tag:yaml.org,2002:str" else None
 
 
 def scalar_list(node):
-    if isinstance(node, ScalarNode):
+    if scalar(node) is not None:
         return [node.value]
-    if isinstance(node, SequenceNode) and all(isinstance(item, ScalarNode) for item in node.value):
+    if sequence(node) is not None and all(scalar(item) is not None for item in node.value):
         return [item.value for item in node.value]
     return None
+
+
+def intrinsic_locations(path, root):
+    found = []
+    pending = [root]
+    while pending:
+        node = pending.pop()
+        if node.tag in CLOUDFORMATION_TAGS:
+            found.append(location(path, node))
+        if isinstance(node, MappingNode):
+            for key, value in node.value:
+                if key.value == "Ref" or key.value.startswith("Fn::"):
+                    found.append(location(path, key))
+                pending.extend((key, value))
+        elif isinstance(node, SequenceNode):
+            pending.extend(node.value)
+    return sorted(found, key=lambda source: (source["start_line"], source["start_column"]))
 
 
 def location(path, node):

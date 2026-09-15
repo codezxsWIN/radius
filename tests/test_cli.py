@@ -181,3 +181,28 @@ def test_analyze_public_github_cli_uses_url_and_ref(monkeypatch, capsys, tmp_pat
     assert main(["analyze-github", "https://github.com/acme/payments", "--out", str(output)]) == 0
     assert json.loads(output.read_text(encoding="ascii")) == expected
     assert calls[-1] == ("https://github.com/acme/payments", None)
+
+
+def test_repository_saved_exports_and_optional_finding_gate(tmp_path, capsys):
+    repository = ROOT / "tests/fixtures/repositories/aws-oidc-path"
+    saved = tmp_path / "analysis.json"
+    arguments = ["analyze-repo", str(repository), "--repository-slug", "acme/payments", "--out", str(saved), "--fail-on-findings"]
+    assert main(arguments) == 1
+    assert saved.exists()
+    assert main(["render-repo", str(saved), "--format", "sarif"]) == 0
+    report = json.loads(capsys.readouterr().out)
+    assert report["runs"][0]["results"][0]["kind"] == "review"
+    original = saved.read_bytes()
+    assert main(["render-repo", str(saved), "--out", str(saved), "--force"]) == 2
+    assert saved.read_bytes() == original
+    modified = json.loads(original)
+    modified["summary"]["finding_count"] = 0
+    saved.write_text(json.dumps(modified))
+    assert main(["render-repo", str(saved)]) == 2
+    assert "content hash" in capsys.readouterr().err
+
+
+def test_repository_finding_gate_zero_means_completed_not_safe(tmp_path, capsys):
+    assert main(["analyze-repo", str(tmp_path), "--repository-slug", "acme/empty", "--fail-on-findings"]) == 0
+    result = json.loads(capsys.readouterr().out)
+    assert "not evidence" in result["conclusion"]

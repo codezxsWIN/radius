@@ -1,5 +1,35 @@
 # WP_ Implementation Plan: Safe Local Repository Acquisition
 
+## Evidence Coverage Improvement: 2026-09-16
+
+- [x] `WP_029`: Bounded literal matrices/include/exclude, source-linked env/matrix substitutions and per-variant authorization isolation.
+- [x] `WP_030`: Preserve unresolved identity references and local-action observations; provide exact source and evidence-needed guidance without fetching secrets.
+- [x] `WP_031`: Recognize conventional CloudFormation YAML/JSON; keep intrinsic-dependent values opaque and arbitrary tags rejected.
+- [x] `WP_032`: Identities view with variant grouping, pagination, filters, three-tab keyboard navigation and report parity; real external same-commit comparison.
+
+Current gate: 301 tests passed, one Windows privilege skip, 89.42% line coverage; 15 browser accessibility audits clean. External input now yields 33 expanded job variants / 36 unresolved request variants, with no matrix exclusions. Missing role values/IAM declarations still prevent complete paths. Package/live refresh follows the verified code; all prior roadmap entries remain historical.
+
+## Investigation Follow-Up: 2026-09-16
+
+- [x] `WP_025`: Matched workflow/trust/permission facts and file-level coverage; repair multi-role request provenance.
+- [x] `WP_026`: Retain baseline model only; simulate selected trust statements across every modeled job and export proposed change requests.
+- [x] `WP_027`: Searchable investigation queue, declaration inspector, change-set panel and file coverage with responsive/keyboard controls.
+- [x] `WP_028`: Shared/alternate trust fixture and end-to-end verification (280 passed, 1 platform skip; 12 browser accessibility audits clean).
+
+This iteration follows the user's explicit critique of the first screen, not an unrequested provider expansion. Current package/app refresh and handover are recorded in HANDOVER.md; prior implementation plans below remain history.
+
+## Delivered Review Slice: 2026-09-16
+
+The subsequent user instruction to continue building extends the completed WP_001-WP_019 foundation with WP_SPEC_repository-review.md. Older plans below remain historical.
+
+- [x] `WP_020`: SARIF 2.1.0 review outputs, saved-result integrity/export and optional finding exit policy.
+- [x] `WP_021`: Reproduce and repair cross-job pooling and unresolved restriction/path-correlation defects; simulate removal at trust-statement scope.
+- [x] `WP_022`: Loopback-only local input/review service, focused evidence/remediation view, four downloads and standalone offline HTML.
+- [x] `WP_023`: Trusted-base CI analyzer isolation, immutable actions, four artifacts/provenance, optional manual SARIF publishing and hostile-import regression.
+- [x] `WP_024`: Full Python gate, desktop/mobile accessibility and interaction checks, SARIF schema validation, clean wheel install, public acquisition smoke and current handover.
+
+Current gate: 273 passed, 1 platform skip; 88.52% Python line coverage; six accessibility audits with zero violations. See TEST_REPORT.md. No commit, push or hosted CI execution is authorized or claimed. Existing UI/research work remains untouched.
+
 ## Overview
 
 Implement the approved `repo-acquisition` module from `WP_SPEC_repo-acquisition.md`. The slice adds a dependency-free, deterministic and fail-closed inventory of a local repository, then exposes it through `blastradius inspect-repo`. It does not parse repository content or change the existing authorization engine.

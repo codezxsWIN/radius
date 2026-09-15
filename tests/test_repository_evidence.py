@@ -246,3 +246,140 @@ def test_invalid_manifest_and_slug_are_rejected():
         collect_repository_evidence(FIXTURE, changed, "acme/payments")
     with pytest.raises(GraphError, match="slug"):
         collect_repository_evidence(FIXTURE, manifest, "not-a-slug")
+
+
+def test_literal_matrix_expands_role_requests_without_merging_jobs(tmp_path):
+    workflows = tmp_path / ".github/workflows"
+    workflows.mkdir(parents=True)
+    roles = ["arn:aws:iam::123456789012:role/production", "arn:aws:iam::123456789012:role/staging"]
+    document = {
+        "on": {"push": {"branches": ["main"]}},
+        "permissions": {"id-token": "write"},
+        "jobs": {"deploy": {
+            "strategy": {"matrix": {"os": ["ubuntu-latest", "windows-latest"], "role": roles}},
+            "runs-on": "${{ matrix.os }}",
+            "steps": [{"uses": "aws-actions/configure-aws-credentials@v4", "with": {"role-to-assume": "${{ matrix.role }}"}}],
+        }},
+    }
+    (workflows / "deploy.yml").write_text(json.dumps(document), encoding="utf-8")
+    evidence = collect(tmp_path)
+    requests = evidence["facts"]["oidc_role_requests"]
+    assert len(requests) == 4
+    assert len({request["job_id"] for request in requests}) == 4
+    assert {request["role_arn"] for request in requests} == set(roles)
+    assert all(request["base_job_id"] == "deploy" for request in requests)
+    assert {request["matrix"]["os"] for request in requests} == {"ubuntu-latest", "windows-latest"}
+    assert all(request["supporting_locations"][0]["kind"] == "literal-matrix" for request in requests)
+    assert all("MATRIX_WORKFLOW_UNSUPPORTED" != issue["code"] for issue in evidence["diagnostics"])
+
+
+def test_matrix_include_exclude_preserves_original_axes_and_overrides_added_values():
+    from blastradius.repository.github_actions import _matrix_rows
+    base_role = "arn:aws:iam::123456789012:role/base"
+    specialized = "arn:aws:iam::123456789012:role/specialized"
+    matrix = {"os": ["ubuntu", "windows"], "stage": ["staging", "production"],
+              "exclude": [{"os": "windows", "stage": "production"}],
+              "include": [{"role": base_role}, {"os": "ubuntu", "role": specialized}, {"os": "macos", "role": base_role}, {"os": "macos", "stage": "production", "role": specialized}]}
+    root = yaml_nodes.compose_document(json.dumps({"matrix": matrix}).encode())
+    rows = _matrix_rows(root)
+    assert len(rows) == 5
+    assert {row["role"] for row in rows if row["os"] == "ubuntu"} == {specialized}
+    assert not any(row["os"] == "windows" and row.get("stage") == "production" for row in rows)
+    assert len([row for row in rows if row["os"] == "macos"]) == 2
+
+
+@pytest.mark.parametrize("matrix", ["${{ fromJSON(needs.generate.outputs.matrix) }}", {"os": ["${{ inputs.os }}"]}, {"os": [{"name": "ubuntu"}]}, {"one": list(range(9)), "two": list(range(8))}, {"os": []}])
+def test_unsupported_or_excessive_matrix_never_yields_role_requests(tmp_path, matrix):
+    workflows = tmp_path / ".github/workflows"
+    workflows.mkdir(parents=True)
+    document = {"on": {"push": {"branches": ["main"]}}, "permissions": {"id-token": "write"}, "jobs": {"deploy": {"strategy": {"matrix": matrix}, "steps": [{"uses": "aws-actions/configure-aws-credentials@v4", "with": {"role-to-assume": "arn:aws:iam::123456789012:role/production"}}]}}}
+    (workflows / "deploy.yml").write_text(json.dumps(document))
+    evidence = collect(tmp_path)
+    assert evidence["facts"]["oidc_role_requests"] == []
+    assert any(issue["code"] == "MATRIX_WORKFLOW_UNSUPPORTED" for issue in evidence["diagnostics"])
+
+
+def test_matrix_include_only_and_typed_exclusions():
+    from blastradius.repository.github_actions import _matrix_rows
+    include = {"matrix": {"include": [{"os": "ubuntu", "version": 20}, {"os": "windows", "version": 22}]}}
+    assert _matrix_rows(yaml_nodes.compose_document(json.dumps(include).encode())) == include["matrix"]["include"]
+    typed = {"matrix": {"version": [1, True, "1"], "exclude": [{"version": True}]}}
+    assert _matrix_rows(yaml_nodes.compose_document(json.dumps(typed).encode())) == [{"version": 1}, {"version": "1"}]
+
+
+def test_literal_environment_scopes_resolve_but_secrets_and_local_actions_remain_unresolved(tmp_path):
+    workflows = tmp_path / ".github/workflows"
+    workflows.mkdir(parents=True)
+    document = {
+        "on": {"push": {"branches": ["main"]}}, "env": {"ROLE": "arn:aws:iam::123456789012:role/top"},
+        "permissions": "write-all", "jobs": {"deploy": {
+            "env": {"ROLE": "arn:aws:iam::123456789012:role/job"},
+            "steps": [
+                {"uses": "aws-actions/configure-aws-credentials@v4", "env": {"ROLE": "arn:aws:iam::123456789012:role/step"}, "with": {"role-to-assume": "${{ env.ROLE }}", "force-skip-oidc": False}},
+                {"uses": "aws-actions/configure-aws-credentials@v4", "with": {"role-to-assume": "${{ secrets.ROLE_ARN }}"}},
+                {"uses": "./", "with": {"role-to-assume": "${{ vars.DEPLOYMENT_ROLE }}"}},
+            ],
+        }},
+    }
+    (workflows / "deploy.yml").write_text(json.dumps(document))
+    evidence = collect(tmp_path)
+    assert [request["role_arn"] for request in evidence["facts"]["oidc_role_requests"]] == ["arn:aws:iam::123456789012:role/step"]
+    assert evidence["facts"]["oidc_role_requests"][0]["supporting_locations"][0]["kind"] == "literal-env"
+    supporting = evidence["facts"]["oidc_role_requests"][0]["supporting_locations"][0]
+    assert "role/step" in json.dumps(document)[supporting["start_column"] - 1:supporting["end_column"] - 1]
+    identities = evidence["facts"]["workflow_identities"]
+    assert len(identities) == 3
+    unknown = [identity for identity in identities if identity["status"] == "unresolved"]
+    assert len(unknown) == 2
+    assert {reference["context"] for identity in unknown for reference in identity["references"]} == {"secrets", "vars"}
+    assert all(identity["role_arn"] is None and identity["token_permission"] == "write" for identity in unknown)
+    assert any("LOCAL_ACTION_UNVERIFIED" in identity["reason_codes"] for identity in unknown)
+
+
+def test_unresolved_environment_override_cannot_inherit_literal_parent_role(tmp_path):
+    workflows = tmp_path / ".github/workflows"
+    workflows.mkdir(parents=True)
+    document = {"on": {"push": {"branches": ["main"]}}, "permissions": {"id-token": "write"}, "env": {"ROLE": "arn:aws:iam::123456789012:role/parent"}, "jobs": {"deploy": {"env": {"ROLE": "${{ secrets.ROLE_ARN }}"}, "steps": [{"uses": "aws-actions/configure-aws-credentials@v4", "with": {"role-to-assume": "${{ env.ROLE }}"}}]}}}
+    (workflows / "deploy.yml").write_text(json.dumps(document))
+    evidence = collect(tmp_path)
+    assert evidence["facts"]["oidc_role_requests"] == []
+    assert evidence["facts"]["workflow_identities"][0]["role_arn"] is None
+
+
+def test_identity_limit_and_sensitive_matrix_metadata_are_bounded(tmp_path, monkeypatch):
+    from blastradius.repository import github_actions
+    workflows = tmp_path / ".github/workflows"
+    workflows.mkdir(parents=True)
+    document = {"permissions": {"id-token": "write"}, "jobs": {"deploy": {"strategy": {"matrix": {"os": ["ubuntu", "windows"], "password": ["not-for-output"]}}, "steps": [{"uses": "aws-actions/configure-aws-credentials@v4", "with": {"role-to-assume": "${{ secrets.ROLE }}"}}]}}}
+    (workflows / "deploy.yml").write_text(json.dumps(document))
+    evidence = collect(tmp_path)
+    assert b"not-for-output" not in canonical(evidence)
+    assert all(identity["matrix"]["password"] == "[redacted]" for identity in evidence["facts"]["workflow_identities"])
+    monkeypatch.setattr(github_actions, "MAX_IDENTITY_REQUESTS", 1)
+    with pytest.raises(GraphError, match="identity-request limit"):
+        collect(tmp_path)
+
+
+def test_cloudformation_intrinsics_are_opaque_to_all_literal_helpers():
+    for source in ("!Ref RoleName", "!Sub literal-text", "!GetAtt [Role, Arn]", "!If {condition: value}"):
+        with pytest.raises(GraphError, match="custom YAML tag"):
+            yaml_nodes.compose_document(source.encode())
+        node = yaml_nodes.compose_document(source.encode(), allow_cloudformation_tags=True)
+        assert yaml_nodes.scalar(node) is None
+        assert yaml_nodes.mapping(node) is None
+        assert yaml_nodes.sequence(node) is None
+        assert yaml_nodes.scalar_list(node) is None
+    with pytest.raises(GraphError, match="custom YAML tag"):
+        yaml_nodes.compose_document(b"!Arbitrary execute", allow_cloudformation_tags=True)
+    with pytest.raises(GraphError, match="mapping key"):
+        yaml_nodes.compose_document(b"!Ref Key: value", allow_cloudformation_tags=True)
+
+
+def test_matrix_version_strings_and_environment_scalars_remain_exact():
+    from blastradius.repository.github_actions import _matrix_rows, _literal_environment
+    matrix = yaml_nodes.compose_document(b"matrix: {version: [20.x, '3.12', 22], experimental: [true, false]}")
+    rows = _matrix_rows(matrix)
+    assert len(rows) == 6
+    assert {row["version"] for row in rows} == {"20.x", "3.12", 22}
+    scope = yaml_nodes.mapping(yaml_nodes.compose_document(b"env: {ACCOUNT: 123456789012, FLOAT: 1.0, TEXT: '1.0', FLAG: false}"))
+    assert _literal_environment(scope) == {"ACCOUNT": "123456789012", "FLOAT": None, "TEXT": "1.0", "FLAG": "false"}

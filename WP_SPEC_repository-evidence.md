@@ -2,11 +2,25 @@
 
 Module id: `repository-evidence`
 
-Status: **Approved for implementation**
+Status: **Implemented, with bounded expansion amendment on 2026-09-16**
 
 Capability map: `WP_CAPABILITY_MAP.md`
 
 Created: 2026-09-15
+
+## Current Expansion Amendment: 2026-09-16
+
+The user's instruction to improve the tool after a real-repository coverage test authorizes these extensions to the original contract below. Where these differ, this section controls. The original initial scope is retained as history, not a claim that matrices or literal YAML are still categorically unsupported.
+
+- Finite scalar GitHub matrices use Cartesian products, partial-match `exclude` and GitHub's original-combination `include` semantics (including include-only matrices). Added fields can be replaced by later includes without overwriting original axis values; new include combinations do not become original merge targets. Boundaries: 64 variants per matrix, 256 expanded job variants and 512 identity requests per workflow. Nested/dynamic matrices, functions and ambiguous numeric values remain unsupported. Typed strings/booleans/exact integers are distinguished; duplicate equivalent variant assignments can share a semantic identity. Reference: <https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs>.
+- Direct `${{ matrix.NAME }}` and `${{ env.NAME }}` substitutions can resolve role/audience strings using finite assignments or literal workflow -> job -> step env scopes. An unresolved overriding value blocks the binding instead of falling back to its parent. Supporting source regions accompany every substitution. This is static declaration evidence, not runtime execution or general expression evaluation.
+- Valid role requests retain `base_job_id`, redacted presentation `matrix` values and a variant-specific `job_id`; graph principals are isolated by variant. Sensitive-named matrix fields are masked before output. No wholesale env mapping or unvalidated role value is exported. This is not a general redaction system.
+- A new `facts.workflow_identities` collection retains unresolved and declared identity observations separately from valid `oidc_role_requests`. Fields include workflow/job, matrix status, known-action vs local-action kind, a literal role or `null`, context/name references, token permission, source/supporting regions, request linkage, status and blocking reason codes. Local actions are never executed or treated as the known AWS action. Secret/variable/runtime values are never fetched or invented.
+- Evidence output adds `identity_summary`; repository analysis adds `identity_requests`, `identity_summary` and grouped `evidence_gaps`. Diagnostics are deduplicated by exact contents/source rather than multiplied for identical matrix-site issues. Evidence-needed guidance identifies missing declarations and unresolved semantics, not suggested permission broadening or vulnerability claims. No-path analyses remain no-proof.
+- CloudFormation selection now recognizes `.template.json|yaml|yml`, `.cfn.json|yaml|yml`, `.cloudformation.json|yaml|yml`, conventional `template.*`/`cloudformation.*` basenames and JSON/YAML under `cloudformation/` or `cfn/`. Literal YAML and JSON share node-source semantics.
+- Known CloudFormation intrinsic tags are accepted only in template composition, remain opaque to scalar/list/mapping helpers, and produce `CLOUDFORMATION_INTRINSICS_UNEVALUATED` diagnostics. No constructor/evaluator is invoked. Intrinsic-dependent identity, trust or permission values cannot become literal facts; other independent literal roles can still be analyzed. Other custom tags, duplicates, aliases, merges and bounded-parser limits retain fail-closed behavior.
+
+Verification: 301 Python tests passed, one Windows symlink privilege skip; 15 real-browser accessibility audits clean. The exact external AWS-action repository commit now gives 33 expanded job variants, 36 identity requests / 17 declaration sites and no matrix exclusions; missing role values and IAM declarations still prevent a complete path. Full measurements and limits are in TEST_REPORT.md.
 
 ## Objective
 

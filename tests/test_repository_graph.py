@@ -86,3 +86,25 @@ def test_unknown_graph_schema_version_is_rejected():
     graph["schema_version"] = "9.9"
     with pytest.raises(GraphError, match="schema version"):
         validate(graph)
+
+
+def test_workflow_jobs_do_not_pool_each_others_role_access():
+    supplied = evidence()
+    request = deepcopy(supplied["facts"]["oidc_role_requests"][0])
+    role = deepcopy(supplied["facts"]["aws_roles"][0])
+    trust = deepcopy(supplied["facts"]["aws_trusts"][0])
+    grant = deepcopy(supplied["facts"]["aws_secret_grants"][0])
+    role["id"], role["role_name"] = "role-documentation", "documentation"
+    trust["id"], trust["role_id"] = "trust-documentation", role["id"]
+    grant["id"], grant["role_id"] = "grant-documentation", role["id"]
+    grant["resource_arn"] = "arn:aws:secretsmanager:us-east-1:123456789012:secret:documentation/key"
+    request.update(id="request-documentation", job_id="documentation", role_arn="arn:aws:iam::123456789012:role/documentation", matching_role_ids=[role["id"]], matching_trust_ids=[trust["id"]])
+    for collection, record in (("oidc_role_requests", request), ("aws_roles", role), ("aws_trusts", trust), ("aws_secret_grants", grant)):
+        supplied["facts"][collection].append(record)
+    graph, _ = build_repository_graph(supplied)
+    engine = Engine(graph)
+    for credential in (node for node in graph["nodes"] if node["kind"] == "credential"):
+        pairs = engine.reach(credential["id"]).pairs
+        assert len(pairs) == 1, "A compromised job must not inherit a different job's role"
+        target = engine.nodes[next(iter(pairs))[0]]["name"]
+        assert ("documentation/key" in target) == ("documentation" in credential["name"])

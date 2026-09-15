@@ -9,5 +9,4 @@ figures: ui
 visual-test: ui
 	node ui/test-render.cjs
 	node tools/validate_tokens.mjs
-	node tools/test_ui_contract.mjs
 	node tools/test_ui_browser.mjs

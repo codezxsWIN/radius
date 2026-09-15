@@ -13,4 +13,3 @@ results/
 *.pfx
 .env*
 exports-live/
-ui/performance/result-*.json

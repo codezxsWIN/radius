@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta http-equiv="Content-Security-Policy" content="__REVIEW_CSP__">
+  <title>Blast Radius | Repository Review</title>
+  <link rel="icon" href="data:,">
+  <style>__REVIEW_STYLE__</style>
+</head>
+<body>
+  <a class="skip-link" href="#review-main">Skip to investigation</a>
+  <header class="appbar">
+    <div class="brand"><svg class="brand-mark" aria-hidden="true"><use href="#br-diagram-project"></use></svg><strong>Blast Radius</strong><span class="brand-divider"></span><span class="product-label">Repository intelligence</span></div>
+    <div class="appbar-right"><span class="session-label" id="session-label">Local session</span><button id="reset" class="icon-button quiet" type="button" title="Clear review and start again" aria-label="New review"><svg class="icon" aria-hidden="true"><use href="#br-rotate-left"></use></svg></button></div>
+  </header>
+  <main id="review-main" tabindex="-1">
+    <div class="titlebar">
+      <div class="repository-identity"><p class="eyebrow" id="context-label">Investigation workspace</p><h1 id="repository-name">Repository review</h1><p class="source-ref" id="source-ref">No source selected</p></div>
+      <div class="review-tools"><button id="source-toggle" class="secondary" type="button" aria-expanded="true" aria-controls="source-panel"><svg class="icon" aria-hidden="true"><use href="#br-folder-open"></use></svg><span>Repository</span></button><button id="rescan" class="icon-button secondary" type="button" title="Reanalyze the current source" aria-label="Reanalyze repository" hidden><svg class="icon" aria-hidden="true"><use href="#br-rotate-left"></use></svg></button><div class="export-bar" id="export-bar" hidden><label class="sr-only" for="export-format">Report format</label><select id="export-format"><option value="html">HTML</option><option value="md">Markdown</option><option value="json">JSON</option><option value="sarif">SARIF</option></select><button id="export" type="button" class="secondary" title="Download baseline report"><svg class="icon" aria-hidden="true"><use href="#br-download"></use></svg><span>Baseline</span></button></div></div>
+    </div>
+    <section id="source-panel" class="source-panel" aria-labelledby="source-title">
+      <div class="source-input">
+        <div class="section-heading"><h2 id="source-title">Repository source</h2><div class="segments source-modes" role="group" aria-label="Repository source type"><button type="button" data-mode="local" aria-pressed="true">Local checkout</button><button type="button" data-mode="github" aria-pressed="false">Public GitHub</button></div></div>
+        <form id="source-form">
+          <div id="local-fields" class="input-fields"><div><label for="repository-path">Repository directory</label><input id="repository-path" name="path" type="text" placeholder="C:\work\payments" autocomplete="off" spellcheck="false" required></div><div><label for="repository-slug">GitHub repository</label><input id="repository-slug" name="slug" type="text" placeholder="owner/repository" autocomplete="off" spellcheck="false" required></div></div>
+          <div id="github-fields" class="input-fields" hidden><div><label for="repository-url">Public repository URL</label><input id="repository-url" name="url" type="url" placeholder="https://github.com/owner/repository" autocomplete="off" spellcheck="false" disabled></div><div><label for="repository-ref">Branch, tag or commit <span class="optional">optional</span></label><input id="repository-ref" name="ref" type="text" placeholder="Default branch" autocomplete="off" spellcheck="false" disabled></div></div>
+          <button id="analyze" type="submit" class="primary"><svg class="icon" aria-hidden="true"><use href="#br-diagram-project"></use></svg><span>Analyze</span></button>
+        </form>
+      </div>
+      <div class="example-input"><span class="eyebrow">Bundled examples</span><button id="example-shared" type="button" class="example-choice"><svg class="icon" aria-hidden="true"><use href="#br-diagram-project"></use></svg><span>Shared deployment access<small>3 jobs / alternate trust / 3 secrets</small></span><svg class="icon" aria-hidden="true"><use href="#br-arrow-right"></use></svg></button><button id="example" type="button" class="example-choice" aria-label="Open bundled example"><svg class="icon" aria-hidden="true"><use href="#br-flask"></use></svg><span>Single deployment path<small>acme/payments</small></span><svg class="icon" aria-hidden="true"><use href="#br-arrow-right"></use></svg></button></div>
+    </section>
+    <div class="activity-row"><div class="activity" id="activity" role="status" aria-live="polite"></div><span class="scope-label">GitHub OIDC + CloudFormation<span>Deployed AWS state unverified</span></span></div>
+    <div class="error-banner" id="error" role="alert" hidden><svg class="icon" aria-hidden="true"><use href="#br-circle-info"></use></svg><p id="error-message"></p></div>
+    <section class="empty-state" id="empty-state" aria-label="Awaiting analysis"><div class="empty-route" aria-hidden="true"><svg><use href="#br-code"></use></svg><span></span><svg><use href="#br-key"></use></svg><span></span><svg><use href="#br-server"></use></svg></div><h2>Awaiting repository</h2><p>No source acquired. No access evaluated.</p><div class="empty-columns"><span>01 &nbsp; Workflow identity</span><span>02 &nbsp; Trust conditions</span><span>03 &nbsp; Resource access</span></div></section>
+    <div id="report" hidden>
+      <div class="review-toolbar">
+        <div class="review-tabs" role="tablist" aria-label="Review views"><button id="tab-paths" type="button" role="tab" aria-selected="true" aria-controls="paths-view" data-view="paths"><svg class="icon" aria-hidden="true"><use href="#br-diagram-project"></use></svg>Paths<span id="finding-count">0</span></button><button id="tab-identities" type="button" role="tab" aria-selected="false" aria-controls="identities-view" tabindex="-1" data-view="identities"><svg class="icon" aria-hidden="true"><use href="#br-fingerprint"></use></svg>Identities<span id="identity-count">0</span></button><button id="tab-coverage" type="button" role="tab" aria-selected="false" aria-controls="coverage-view" tabindex="-1" data-view="coverage"><svg class="icon" aria-hidden="true"><use href="#br-file-code"></use></svg>Coverage<span id="parsed-count">0</span></button></div>
+        <div class="baseline-totals" aria-label="Baseline summary"><span><strong id="secret-count">0</strong> secrets</span><span><strong id="job-count">0</strong> jobs</span><span><strong id="diagnostic-count">0</strong> diagnostics</span></div>
+      </div>
+      <section id="paths-view" role="tabpanel" aria-labelledby="tab-paths">
+        <section class="no-proof" id="no-proof" hidden><svg class="icon" aria-hidden="true"><use href="#br-circle-info"></use></svg><div><h2>No complete path proven</h2><p id="no-proof-message"></p><button type="button" id="review-coverage" class="secondary">Review coverage<svg class="icon" aria-hidden="true"><use href="#br-arrow-right"></use></svg></button></div></section>
+        <div class="investigation-grid" id="findings-section">
+          <aside class="finding-queue" aria-labelledby="paths-title">
+            <div class="queue-title"><h2 id="paths-title">Access paths</h2><span id="queue-count"></span></div>
+            <label class="sr-only" for="finding-search">Filter findings by job, role or resource</label><input id="finding-search" type="search" placeholder="Filter job, role, resource" autocomplete="off">
+            <label class="sr-only" for="finding-status">Finding reach filter</label><select id="finding-status"><option value="all">All paths</option><option value="reachable">Still reachable</option><option value="blocked">Blocked in model</option></select>
+            <ul id="finding-list" class="finding-list" aria-label="Findings"></ul><p id="queue-empty" class="queue-empty" hidden>No matching paths.</p>
+            <div class="queue-footer"><svg class="icon" aria-hidden="true"><use href="#br-shield-halved"></use></svg><span>Declared access / assumed job compromise</span></div>
+          </aside>
+          <article id="selected-finding" class="finding-detail" aria-label="Selected finding">
+            <div class="finding-topline"><span id="finding-state" class="state-label">Reachable in declarations</span><div class="finding-navigation"><span id="finding-position"></span><button id="previous-finding" type="button" class="icon-button quiet" title="Previous finding" aria-label="Previous finding"><svg class="icon reverse" aria-hidden="true"><use href="#br-arrow-right"></use></svg></button><button id="next-finding" type="button" class="icon-button quiet" title="Next finding" aria-label="Next finding"><svg class="icon" aria-hidden="true"><use href="#br-arrow-right"></use></svg></button></div></div>
+            <h2 id="selected-resource" class="resource-title"></h2><p id="selected-job" class="selected-job"></p><code id="impact-action" class="impact-action"></code>
+            <div class="path-heading"><h3>Authorization path</h3><span class="confidence">Declared configuration</span></div><ol id="path" class="path" aria-label="Source-backed identity path"></ol>
+            <section class="evidence-pane" aria-labelledby="evidence-title"><div class="section-heading"><h3 id="evidence-title">Trust conditions</h3><span id="evidence-kind" class="evidence-kind"></span></div><div id="source-locations" class="source-locations"></div><div class="declaration-toolbar"><span id="declaration-label">Normalized declaration</span><button id="copy-declaration" class="icon-button quiet" type="button" title="Copy normalized declaration" aria-label="Copy normalized declaration"><svg class="icon" aria-hidden="true"><use href="#br-copy"></use></svg></button></div><pre class="declaration" tabindex="0" role="region" aria-labelledby="declaration-label"><code id="evidence-declaration"></code></pre><dl id="evidence-facts" class="evidence-facts"></dl></section>
+            <div class="finding-action"><div><span class="eyebrow">Selected trust statement</span><span id="selected-control-location" class="mono"></span></div><button id="after" type="button" class="stage-button"><svg class="icon" aria-hidden="true"><use href="#br-check"></use></svg><span id="stage-label">Stage removal</span></button></div>
+            <p id="simulation-result" class="simulation-result" role="status"></p><details class="assumption-details"><summary>Assumption and model scope</summary><p id="assumption"></p><p id="remediation-description"></p></details>
+          </article>
+          <aside id="changes-panel" class="changes-panel" aria-labelledby="remediation-title"><div class="section-heading"><div><span class="eyebrow">Proposed / not applied</span><h2 id="remediation-title">Change set <span id="change-count">0</span></h2></div><button id="before" type="button" class="icon-button quiet" title="Clear staged removals" aria-label="Clear staged removals"><svg class="icon" aria-hidden="true"><use href="#br-rotate-left"></use></svg></button></div><p class="change-status" id="change-status" role="status">No trust removals selected.</p>
+            <div class="impact-comparison"><span id="comparison-label">Reachable paths</span><div class="impact-values"><div><small>Baseline</small><strong id="before-reach">0</strong></div><svg class="icon" aria-hidden="true"><use href="#br-arrow-right"></use></svg><div><small>After removal</small><strong id="after-reach">0</strong></div></div><div class="impact-foot"><span>Secrets <strong id="secret-delta"></strong></span><span>Jobs <strong id="job-delta"></strong></span></div></div>
+            <fieldset class="control-section" id="control-section"><legend>Trust statements</legend><div id="control-list"></div></fieldset><div id="job-impact" class="job-impact"></div><p id="offline-note" class="offline-note" hidden>Saved single-statement comparison</p>
+            <div class="plan-export" id="plan-export"><label class="sr-only" for="plan-format">Change request format</label><select id="plan-format"><option value="md">Markdown</option><option value="json">JSON</option></select><button id="export-plan" type="button" class="primary" disabled><svg class="icon" aria-hidden="true"><use href="#br-download"></use></svg><span>Change request</span></button></div><p class="change-caveat">All uses of selected statements are removed from the model. Alternate trusts remain.</p>
+          </aside>
+        </div>
+      </section>
+      <section id="identities-view" role="tabpanel" aria-labelledby="tab-identities" hidden>
+        <div class="coverage-heading"><div><span class="eyebrow">Workflow evidence</span><h2>Declared identity requests</h2><p id="identity-headline"></p></div><span class="unverified">Deployment unverified</span></div>
+        <p id="identity-conclusion" class="caveat"></p>
+        <dl class="identity-totals" id="identity-totals"></dl>
+        <div class="identity-filters"><div><label class="sr-only" for="identity-search">Filter identity requests</label><input id="identity-search" type="search" placeholder="Filter job, role or reference" autocomplete="off"></div><label class="sr-only" for="identity-status">Identity evidence status</label><select id="identity-status"><option value="all">All evidence</option><option value="unresolved">Unresolved</option><option value="declared-request">Declared role</option><option value="matched-trust">Matched trust</option></select><span id="identity-result-count" role="status"></span></div>
+        <div class="table-scroll identity-scroll" tabindex="0" role="region" aria-label="Workflow identity evidence table"><table class="identity-table"><thead><tr><th scope="col">Workflow / job</th><th scope="col">Role or reference</th><th scope="col">Variants</th><th scope="col">Evidence state</th><th scope="col">Source</th></tr></thead><tbody id="identity-rows"></tbody></table></div>
+        <div class="identity-pagination"><span id="identity-page"></span><button id="identity-previous" type="button" class="icon-button secondary" aria-label="Previous identity page" title="Previous identity page"><svg class="icon reverse" aria-hidden="true"><use href="#br-arrow-right"></use></svg></button><button id="identity-next" type="button" class="icon-button secondary" aria-label="Next identity page" title="Next identity page"><svg class="icon" aria-hidden="true"><use href="#br-arrow-right"></use></svg></button></div>
+        <section class="evidence-needed" aria-labelledby="evidence-needed-title"><div class="section-heading"><h3 id="evidence-needed-title">Evidence needed to continue</h3><span id="evidence-gap-count"></span></div><div id="evidence-gap-list"></div></section>
+      </section>
+      <section id="coverage-view" role="tabpanel" aria-labelledby="tab-coverage" hidden>
+        <div class="coverage-heading"><div><span class="eyebrow">Snapshot coverage</span><h2 id="coverage-title">Files behind the result</h2><p id="coverage-headline"></p></div><span class="unverified">AWS unverified</span></div><dl id="coverage" class="coverage-grid"></dl>
+        <section aria-labelledby="files-title"><div class="section-heading"><h3 id="files-title">Selected source files</h3><label class="sr-only" for="file-search">Filter source files</label><input id="file-search" type="search" placeholder="Filter source files" autocomplete="off"></div><div class="table-scroll" tabindex="0" role="region" aria-label="Source file table"><table class="source-table"><thead><tr><th scope="col">Source</th><th scope="col">Profile</th><th scope="col">Status</th><th scope="col">Facts</th><th scope="col">Diagnostics</th></tr></thead><tbody id="source-files"></tbody></table></div></section>
+        <p class="caveat">Repository declarations are not proof of effective deployed access. Unsupported or absent evidence is not a safety verdict.</p><details id="diagnostics-panel"><summary>Parser diagnostics <span id="diagnostics-total"></span></summary><ul id="diagnostics" class="diagnostics"></ul></details><details><summary>Skipped inputs <span id="skipped-total"></span></summary><ul id="skipped-inputs" class="diagnostics"></ul></details><details><summary>Snapshot identity</summary><dl id="snapshot-details" class="snapshot-details"></dl></details>
+      </section>
+    </div>
+    <footer class="review-footer"><span>Source declarations, not deployed-access verification.</span><span id="footer-hash">No snapshot</span></footer>
+  </main>
+  __REVIEW_ICONS__
+  <script type="application/json" id="review-data">__REVIEW_DATA__</script>
+  <script>__REVIEW_SCRIPT__</script>
+</body>
+</html>

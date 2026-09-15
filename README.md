@@ -1,283 +1,126 @@
-# Blast Radius
+# Blast Radius Repository Review
 
-**Find source-backed identity paths from CI/CD workflows to sensitive cloud resources.**
+**Find source-backed paths from a repository's deployment workflow to declared sensitive infrastructure.**
 
-Blast Radius accepts a local GitHub repository checkout, safely inspects supported workflow and infrastructure declarations, and explains how an assumed-compromised automation identity could reach a sensitive resource. Its first end-to-end profile connects GitHub Actions OIDC configuration to AWS IAM roles and finite Secrets Manager grants, preserving the exact source locations behind every path step.
+The active workflow is repository-first: a local checkout plus its GitHub slug, or an explicitly supported public GitHub URL. The initial profile connects GitHub Actions OIDC, literal AWS CloudFormation IAM trust and finite Secrets Manager read grants. It returns the assumed-compromise condition, concrete capability, source-file locations, coverage gaps and a non-applied remediation simulation. This is not a complete deployed-cloud scan or proof of exploitability.
 
-The repository also contains the deterministic graph engine, draft metric specification, conformance suite, synthetic research artifacts, offline connector profiles, and a self-contained visual instrument that the product direction builds on.
+## Start the Review App
 
-> [!IMPORTANT]
-> Blast Radius is a research standard and reference implementation, not a production security product. It does not contact a tenant by default, does not collect secrets, and must not be treated as a compliance certification or proof of exploitability.
+In this checkout, open [start-review.cmd](start-review.cmd), or run it from this project directory:
 
-![Blast Radius visual instrument showing credential reach](ui/reports/screenshots/disc-desktop.png)
-
-## Why Blast Radius?
-
-Traditional scanners often stop at one file or one misconfiguration. Blast Radius asks a cross-layer question:
-
-> If this repository's deployment workflow were compromised, which sensitive cloud resources do its declared identity and policy relationships make reachable—and which exact trust change would break that path?
-
-The current repository profile follows this evidence chain:
-
-```text
-GitHub Actions workflow + id-token: write
-    -> literal AWS OIDC role request
-    -> exact CloudFormation trust subject and audience
-    -> declared IAM role policy
-    -> finite Secrets Manager ARN
+```powershell
+.\start-review.cmd
 ```
 
-Each result distinguishes repository syntax, declared infrastructure, and unverified deployed state. Missing or unsupported evidence is reported as “no complete path proven,” never as “safe.”
+The app opens at **http://127.0.0.1:8765/**. If that port is occupied, use `.\start-review.cmd --port 8766`; it never stops another process. Choose a local checkout plus its `owner/repository` slug, or a public GitHub URL with an optional branch/tag/commit. Two explicitly labeled bundled examples are available: the single `acme/payments` path and the `acme/release-platform` shared deployment with three jobs, three secrets and alternate trusts.
 
-For synthetic and normalized graph inputs, the underlying engine also reports a family of exact metrics rather than a single opaque score:
+The investigation workspace has a searchable job/resource queue, condition-level evidence inspector and staged change set. Inspect exact OIDC subjects/audience, provider account, requested role and finite permission with source coordinates. Stage multiple trust-statement removals and the server recomputes all modeled jobs, finding reach and distinct secrets together, preserving alternate routes. Filtering and navigation preserve the current change set. A comparison failure shows unknown impact, never a fabricated successful reduction.
 
-The result is a family of exact metrics rather than a single opaque score:
+The **Identities** view remains useful when no complete path can be established. It groups request variants by their source declaration, shows the job, matrix values, literal role or unresolved reference name, token permission and evidence status, and provides filters, keyboard navigation and pagination. An **Evidence needed to continue** section identifies missing role declarations, unresolved references and unsupported authentication semantics. Local action role inputs are observations only; they never inherit the known AWS action's behavior. These are coverage gaps, not vulnerability findings. Do not supply access keys or token/secret values to fill them.
 
-| Metric | What it measures |
-| --- | --- |
-| Canonical radius | Reachable pairs divided by the fixed resource-action universe |
-| Sensitivity-weighted radius | Reach weighted by the declared sensitivity of each pair |
-| Action-weighted radius | Reach weighted by the relative impact of each action |
-| Bounded radius | Reach attainable within an explicit escalation budget |
-| Population statistics | Maximum, nearest-rank p95, threshold share, and Gini concentration |
+In the shared example, removing one production trust leaves **5 -> 5** reachable findings through the alternate trust; removing both changes reach to **5 -> 1**, with the publisher job retained. Removing all three controls yields zero modeled findings. The **Coverage** view lists selected files, hashes, parse status, extracted facts, diagnostics and acquisition skips, and counts inventoried files outside the parser profile.
 
-The denominator and weights are frozen for permission-only comparisons. Duplicate paths do not increase a score, cycles terminate, and every reported path has deterministic evidence.
+Download the baseline as HTML, Markdown, JSON or SARIF, or export the proposed change request as Markdown/JSON with a baseline hash, selected source statements and per-job impact. Change requests are review documents, not executable policy patches. HTML baselines reopen offline with searchable evidence/coverage and their saved **single-statement** comparison; arbitrary multi-control recomputation requires the local server. The retained graph is not embedded in the HTML. Local input needs no network; public input downloads an immutable source archive from GitHub, with no access token or third-party analysis service. The latest result/model stays in process memory until cleared or the service stops, unless you explicitly download a report. Reports may contain sensitive infrastructure names, source paths and trust conditions; review them before sharing.
 
-## Repository Status
+For a new installation, Python 3.12+ and the pinned dependencies are required:
 
-The public conformance profile is **1.0-draft**. Synthetic graphs remain frozen at wire format **0.1**; source-backed repository graphs use the additive **0.2** profile.
+```powershell
+uv venv --python 3.12 .venv
+uv pip install --python .venv/Scripts/python.exe .
+.\start-review.cmd
+```
 
-- 40 frozen conformance fixtures across 3 required attacker models
-- 120/120 conformance cases passing in both Python and JavaScript
-- 231 integrated Python tests collected on the current repository-input branch: 230 passing and 1 platform-dependent skip
-- One-command local repository analysis with deterministic source evidence and a non-mutating remediation simulation
-- Dependency-free JavaScript reference implementation
-- Offline Entra/Azure, AWS IAM, and Kubernetes normalization profiles with explicit limits
-- Deterministic synthetic research runs and reconstruction dossiers
-- Static, offline-first visual instrument with figure export and accessibility checks
+On macOS/Linux, install with `.venv/bin/python` and launch `.venv/bin/python -I -m blastradius review`. For a headless service use `--no-open`; it always binds to loopback, never a public interface. No Node dependency installation is needed for the app. The distributable wheel includes the source example, schemas, fonts/icons and their license notices.
 
-These are repository test results, not independent certification. See [TEST_REPORT.md](TEST_REPORT.md) for commands, hashes, measurements, and caveats.
+## CLI and CI
 
-## Quickstart
+```powershell
+.venv/Scripts/python.exe -I -m blastradius analyze-repo C:/work/payments --repository-slug acme/payments --out C:/reports/payments.json
+.venv/Scripts/python.exe -I -m blastradius render-repo C:/reports/payments.json --format html --out C:/reports/payments.html
+.venv/Scripts/python.exe -I -m blastradius analyze-github https://github.com/owner/repository --format sarif --out C:/reports/public.sarif
+```
 
-Requirements: Python 3.12+, [uv](https://docs.astral.sh/uv/), and Node.js for the optional JavaScript reference and UI tooling.
+Both analysis commands support `--format json|md|sarif|html`; JSON remains the default. `render-repo` verifies a saved result's content hash and exports without rescanning. The hash is integrity checking, not a signature or source attestation. Source and report paths must be separate; existing outputs require explicit `--force`. `--fail-on-findings` optionally returns 1 when supported declared paths exist. Exit 0 means completed, not safe; exit 2 means an input/analysis error.
+
+[.github/workflows/repository-review.yml](.github/workflows/repository-review.yml) reviews PR declarations with the analyzer installed from the immutable **trusted base revision**, not the PR revision. The target checkout is data only. It runs isolated Python from the runner temporary directory, uses commit-pinned actions, read-only permissions, no AWS credentials, and exports all four formats plus a revision/hash manifest. Its job summary contains source-backed findings and uncertainty. Hosted execution is not claimed: the workflow has been locally policy-tested but has not been pushed or run on GitHub.
+
+The workflow intentionally uses `pull_request_target` to obtain trusted workflow code; do not move target code into the install step, remove `-I`, add secrets, run target hooks, or make the analysis job writable. Fork reports use the base repository slug as the prospective merge identity, not proof that a fork PR can receive those permissions. SARIF upload is a separate opt-in **manual** job requiring GitHub code-scanning availability. It is never given write permissions during PR analysis. Artifacts are retained for seven days; only reports, not repository contents, are uploaded to GitHub. Review repository access before enabling this on private sources. In another repository, install a separately audited pinned analyzer artifact; do not assume its base branch contains trusted analyzer code.
+
+For another CI system, [tools/repository_ci.py](tools/repository_ci.py) writes all reports from one analysis. Run it under `python -I` using the installed trusted package and keep its output outside the analyzed checkout.
+
+## Verified Scope
+
+On 2026-09-16 the expanded-evidence iteration passed **301 Python tests, one Windows symlink-privilege skip; 89.42% line coverage**. Fifteen real-browser accessibility audits passed at 1440px, 1280px, 390px and 320px plus offline reopening, with zero violations. Checks cover exact evidence, alternate/shared trust removals, rapid toggles, failed-comparison uncertainty, identity/queue/file filters, pagination of 46 request variants, keyboard navigation, four baseline formats and two change-request formats. Source/expression execution is not part of analysis. Exact verification and historical package/schema checks are in [TEST_REPORT.md](TEST_REPORT.md).
+
+The supported path remains exact branch-based GitHub Actions OIDC -> literal CloudFormation IAM role trust -> finite Secrets Manager read grant. Different jobs and matrix variants do not pool permissions. Finite scalar matrices support Cartesian expansion and include/exclude entries, capped at 64 variants per matrix, 256 expanded jobs and 512 identity requests per workflow. Direct `matrix.NAME` and literal workflow/job/step `env.NAME` references can resolve role/audience strings; substitutions retain exact source coordinates. Dynamic functions, generated matrices, ambiguous numeric values and runtime environment changes are not evaluated. Environment values are not collected wholesale; only supported role/audience values and relevant source locations are emitted. Sensitive-named matrix fields are redacted, not a general anonymization guarantee.
+
+CloudFormation accepts literal JSON or YAML with `.template`, `.cfn` or `.cloudformation` suffixes, conventional `template.json|yaml|yml` / `cloudformation.json|yaml|yml` names, and JSON/YAML files under `cloudformation/` or `cfn/`. Known intrinsic tags are kept opaque and diagnosed. They cannot become literal role names, principals or grants; independently literal declarations elsewhere in the file can still be analyzed. Aliases, duplicate/merge keys and arbitrary custom tags remain rejected. See [WP_SPEC_repository-evidence.md](WP_SPEC_repository-evidence.md) for exact scope.
+
+Simulated removal removes every modeled use of the selected trust statement while preserving alternate statements. Explicit/unresolved denies, extra trust conditions, permissions boundaries, managed policies, ambiguous roles, environment subjects, dynamic/excessive matrices and unsupported credential/session options are not silently treated as a proven path. Account and role-path matching are checked. No remediation is applied and no secret value is read.
+
+The same external `aws-actions/configure-aws-credentials` commit (`ec8e608231b771e3614fc6ea4edadab8703331a5`) now yields **33 expanded job variants and 36 source-backed identity-request variants across 17 declarations**, with **zero matrix exclusions**, versus the prior seven excluded matrix jobs. All role values remain unresolved, no matching IAM declarations are present and no cloud path is proven. The additional evidence exposes 17 unresolved role locations, 12 local-action sites and four unsupported credential/session-option sites instead of hiding them behind matrix exclusions. This is improved coverage, not a claim of new vulnerabilities or complete assessment.
+
+**Zero findings means no complete path was proven within the profile, not that the repository is safe.** Live IAM state, Terraform/expression evaluation, private remote authentication, environment OIDC subjects, full policy composition and arbitrary providers remain unsupported. This is a bounded local review tool, not an assurance of production security. The local HTTP service is for a trusted workstation, not multiuser hosting or hostile-local-process isolation. See [SECURITY.md](SECURITY.md).
+
+The current direction is in [WP_PROJECT_CONTINUATION_PROMPT.md](WP_PROJECT_CONTINUATION_PROMPT.md); this delivery is specified in [WP_SPEC_repository-review.md](WP_SPEC_repository-review.md). Existing visual/research artifacts and user changes are preserved rather than folded into this focused app. This project is unrelated to the Blast-RADIUS RADIUS/UDP protocol vulnerability.
+
+## Historical Standards Overview
+
+The material below records the earlier standards/research direction and its commands. It remains available as supporting infrastructure; its standards-only scope statement does not override the repository-first direction above.
+
+Blast Radius is **not a product**. This directory contains a candidate cross-platform authorization-reach specification, free public conformance suite/reference implementation, and a planned aggregate-data protocol. The specification/profile is1.0-draft; the existing Python implementation and graph wire format remain0.1. No real tenant is contacted or represented, no paid tier or certification exists, and no neutral host or real dataset is claimed.
+
+Start with `spec/METRIC_SPECIFICATION_v1.0-draft.md`, CONFORMANCE.md, PRIVACY_ANALYSIS.md, research/NHI_RESULTS.md, RECONSTRUCTION_METHOD.md and GOVERNANCE.md. LICENSING.md assigns Apache-2.0 to code, CC-BY-4.0 to specification/schema and CC0-1.0 to generated/approved aggregate data. The single existing `demo/index.html` is preserved as an illustrative reference aid, not an executive product roadmap.
+
+## Standards Quickstart
+
+```powershell
+.venv/Scripts/blastradius.exe conformance run --tool '.venv/Scripts/python.exe -B -m blastradius conformance adapter'
+.venv/Scripts/python.exe -B tools/build_reconstructions.py
+.venv/Scripts/python.exe -B tools/run_research.py
+.venv/Scripts/python.exe -B tools/verify.py
+```
+
+Run from this directory after installing the local package as below. The suite includes 40 frozen fixtures across three required models (120 cases), exact rational values, pair sets, deterministic witnesses and two executions per case. **Python and JavaScript both pass 120/120; the integrated Python suite passes 179 tests.** Reports are in conformance/reports/reference and conformance/reports/javascript. Re-running research validates the frozen protocol hashes before recreating the 500 paired synthetic populations.
+
+Optional artifacts are complete within their stated bounds: `node reference-js/verify.mjs` checks the second-language reference; `tools/build_kubernetes_fixture.py` generates the offline read-only Kubernetes normalization fixture (17 tests); research/STATE_OF_BLAST_RADIUS_TEMPLATE.md is a future aggregate-report template, not a published industry finding. The clean wheel passed all 120 core cases under isolated Python outside the source tree. See TEST_REPORT.md for exact evidence and remaining gaps.
+
+Measured:500/500 exact structural summaries were unique; rounding counts left161/500 unique. The prespecified epsilon ln2 aggregate had1.014762 count MAE including suppression and96.8% retained synthetic support. NHI primary joint successes were54/500 under the null,250/500 with deliberately broader NHI grants and54/500 with deliberately broader human grants. These are synthetic falsification/sanity checks, not real-population findings. The five reconstruction dossiers contain four supported incident mechanisms and one explicitly hypothetical MLflow post-acquisition scenario; historical top-decile ranks are unidentified.
+
+## Five-Command Quickstart
 
 ```powershell
 uv venv --python 3.12 .venv
 uv pip install --python .venv/Scripts/python.exe -e ".[test]"
-
-# Analyze a public repository at an immutable resolved commit.
-.venv/Scripts/blastradius.exe analyze-github `
-  https://github.com/owner/repository `
-  --format md --out results/repository-analysis.md
-
-# The synthetic standards/research workflow remains available.
-.venv/Scripts/blastradius.exe synth `
-  --principals 80 --resources 40 --seed 7 `
-  --out results/tenant.json --force
-
-.venv/Scripts/blastradius.exe analyze results/tenant.json `
-  --constraint-model default `
-  --out results/result.json --force
-
-.venv/Scripts/blastradius.exe report results/result.json `
-  --format html --out demo/index.html --force
+.venv/Scripts/blastradius.exe synth --principals 80 --resources 40 --seed 7 --out results/tenant.json --force
+.venv/Scripts/blastradius.exe analyze results/tenant.json --constraint-model default --out results/result.json --force
+.venv/Scripts/blastradius.exe report results/result.json --format html --out demo/index.html --force
 ```
 
-Open `demo/index.html` directly in a browser. The report has no runtime server, CDN, or external font dependency. On macOS or Linux, replace `.venv/Scripts` with `.venv/bin` and use shell line continuations.
+These legacy demo workflows have been executed. Private signing keys and local signed result files must not be committed; public synthetic conformance/research reports are intentionally versioned. Fictional names and credential metadata only. Existing output files require `--force`; input files cannot be overwritten. On macOS/Linux replace `.venv/Scripts` with `.venv/bin`. Do not regenerate a user-edited demo unless its changes have been reviewed.
 
-Generated outputs are never overwritten unless `--force` is supplied, and an input file cannot be replaced by its output.
+Additional commands: `blastradius explain results/result.json --credential credential-principal-00001`, `blastradius whatif results/tenant.json --remove-binding shared-2`, and `blastradius verify-manifest results/result.json`. Reports support `--format json|sarif|html|md`. An external OS-random local HMAC key is created at the platform's local application-data directory; it is not shipped with artifacts. Another machine can regenerate its own signed result, but verifying an existing result requires trusted access to its original key.
 
-## Analyze a GitHub Repository
+See TEST_REPORT.md for actual fixture/coverage/benchmark results and demo/DEMO_SCRIPT.md for the exact five-minute walkthrough. No runtime server or CDN is required.
 
-For a public repository, pass its GitHub URL directly:
+## Earlier Prototype Measurements
+
+The earlier prototype session recorded108 passing pytest tests and94.81% Python line coverage; current standards-session checks are recorded separately in TEST_REPORT.md. The10000-principal,2000-resource,32119-edge synthetic pipeline completed in51.63 seconds; the50000-principal stretch completed in215.38 seconds. These historical scale runs were not repeated as research population observations. Benchmark scope and exclusions are in TEST_REPORT.md.
+
+The dashboard's 80 fictional credentials have a maximum canonical radius of 51.26%, p95 34.45%, and Gini 0.026. Every number is generated by the analyzer; 90 single-binding removals were actually evaluated. The best modeled change reduces p95 to 27.73%. These are constructed-tenant results, not claims about real organizations.
+
+## Reproduce and Inspect
 
 ```powershell
-.venv/Scripts/blastradius.exe analyze-github `
-  https://github.com/owner/repository `
-  --ref main `
-  --format md `
-  --out results/repository-analysis.md
-```
-
-Blast Radius resolves the ref to an immutable commit, downloads only that public source archive from GitHub, validates and extracts it under fixed limits, analyzes it locally, and deletes the temporary checkout. It does not run Git, hooks, filters, workflows, package managers, or repository code. It does not request a GitHub token or upload the repository to a Blast Radius service.
-
-The public URL profile accepts only HTTPS `github.com/owner/repository` inputs and only follows GitHub's archive redirect to `codeload.github.com`. Archive traversal, links, special entries, path collisions, excessive expansion, and unsupported compression fail closed. Oversized individual files are skipped and reported just as they are for local acquisition.
-
-Use `--format md` for a review-ready human report. It leads with the compromise assumption and concrete impact, then shows the ordered path, exact `path:line:column` evidence, remediation counterfactual, skipped/unsupported coverage and deployed-state limitation. JSON remains the default deterministic format for CI and integrations.
-
-### Analyze a local or private checkout
-
-For private code, clone it using your normal trusted workflow and point Blast Radius at the local directory. This mode performs no network request and needs no repository credential. The explicit GitHub slug is required because it is part of the OIDC subject claim being evaluated:
-
-```powershell
-.venv/Scripts/blastradius.exe analyze-repo C:\path\to\repository `
-  --repository-slug owner/repository `
-  --format md `
-  --out C:\path\outside\repository-analysis.md
-```
-
-For every complete supported path, the result names the workflow and job whose compromise is assumed, the exact AWS role and secret action, the source file/line evidence for every hop, and a counterfactual showing whether removal of the modeled OIDC trust edge breaks reachability. It does not modify the repository or AWS. Output must be outside the analyzed repository so it cannot contaminate the next snapshot.
-
-This is intentionally a proof-oriented first profile, not a generic repository security scanner. It currently understands exact push branches, `id-token: write`, literal `aws-actions/configure-aws-credentials` role ARNs, literal CloudFormation JSON `AWS::IAM::Role` trust, and finite `secretsmanager:GetSecretValue` resource ARNs. Dynamic expressions, YAML aliases/tags/merge keys, wildcard secret resources, unsupported conditions, and stale snapshots are rejected or surfaced as diagnostics rather than guessed.
-
-### Inspect the intermediate evidence
-
-The acquisition command safely inventories a local checkout without executing or parsing its contents:
-
-```powershell
-.venv/Scripts/blastradius.exe inspect-repo C:\path\to\repository `
-  --out results/repository-manifest.json
-```
-
-The deterministic manifest records normalized relative paths, byte sizes and SHA-256 hashes. It excludes common metadata/dependency trees, never follows links or Windows reparse points, enforces fixed file and byte limits, and reports skipped content so coverage is visible. Save `--out` outside the analyzed repository to prevent the manifest from becoming part of its own next snapshot.
-
-No repository code, hook, workflow, package manager, or build command is executed.
-
-The first bounded evidence profile can connect a literal GitHub Actions OIDC role request to a literal AWS IAM role, trust policy and finite Secrets Manager grant declared in CloudFormation JSON:
-
-```powershell
-.venv/Scripts/blastradius.exe inspect-repo-evidence C:\path\to\repository `
-  --repository-slug owner/repository `
-  --out results/repository-evidence.json
-```
-
-The evidence output retains one-based file/line locations, deterministic fact IDs, unsupported diagnostics and confidence labels. `repository-verified` means the workflow syntax is directly present; `declared-configuration` means supported IaC declares a relationship; `potential` means matching or external state remains incomplete. The command always reports deployed AWS state as unverified and never treats absence of a supported fact as proof of safety.
-
-These lower-level commands are useful for auditing what was read and why a complete path was or was not proven. Most users should start with `analyze-github` for public code or `analyze-repo` for an existing/private checkout.
-
-## Run Conformance
-
-Validate the Python implementation against the public suite:
-
-```powershell
-.venv/Scripts/blastradius.exe conformance run `
-  --tool ".venv/Scripts/python.exe -B -m blastradius conformance adapter"
-```
-
-Validate the independent-language implementation:
-
-```powershell
-node reference-js/verify.mjs
-
-.venv/Scripts/blastradius.exe conformance run `
-  --tool "node reference-js/reference.mjs" `
-  --out conformance/reports/javascript
-```
-
-Each case checks exact rational metrics, reachable pair sets, deterministic witnesses, and repeatability. Read [CONFORMANCE.md](CONFORMANCE.md) for the protocol and [conformance/REQUIREMENT_COVERAGE.md](conformance/REQUIREMENT_COVERAGE.md) for the boundary between automated, partial, and manual claims.
-
-## Explore the Instrument
-
-The current visual instrument is a static, local application:
-
-```powershell
-node tools/build_ui.mjs
-```
-
-Then open `ui/index.html`. It includes credential paths, population and distribution views, attacker-model contrast, counterfactual analysis, privacy experiments, reconstruction evidence, conformance results, and SVG/PNG/PDF figure export.
-
-The source is split across `ui/index.template.html`, `ui/app.js`, `ui/render.js`, and `ui/styles.css`. The generated `ui/index.html` embeds its data and dependencies for offline inspection.
-
-## CLI Workflows
-
-```powershell
-# Explain one credential's deterministic witness paths
-.venv/Scripts/blastradius.exe explain results/result.json `
-  --credential credential-principal-00001
-
-# Recompute the graph after a hypothetical binding removal
-.venv/Scripts/blastradius.exe whatif results/tenant.json `
-  --remove-binding shared-2
-
-# Verify a locally signed result manifest
-.venv/Scripts/blastradius.exe verify-manifest results/result.json
-
-# Normalize supported synthetic export bundles without cloud access
-.venv/Scripts/blastradius.exe collect-entra-azure `
-  --exports connectors/entra_azure/fixtures/rich `
-  --out results/connector-tenant.json
-```
-
-Reports support JSON, SARIF, HTML, and Markdown. Local result integrity uses an external OS-random HMAC key; this is not public attestation, and the key is never included in repository artifacts.
-
-## How It Fits Together
-
-```mermaid
-flowchart LR
-  A[Synthetic graph or supported offline export] --> B[Schema and semantic validation]
-  B --> C[Normalized authorization graph]
-  C --> D[Reachability engine]
-  M[Explicit attacker model] --> D
-  U[Fixed resource-action universe] --> D
-  D --> E[Exact metric family]
-  D --> F[Deterministic path evidence]
-  E --> G[JSON / SARIF / Markdown / HTML]
-  F --> G
-  E --> H[Counterfactual analysis]
-```
-
-The engine consumes effective authorization decisions; it does not attempt to reproduce every cloud provider's policy evaluator. Unsupported semantics are rejected or identified as coverage gaps rather than silently inferred.
-
-For the formal definitions and implementation boundaries, read:
-
-- [Metric Specification](spec/METRIC_SPECIFICATION_v1.0-draft.md)
-- [Architecture](ARCHITECTURE.md)
-- [Conformance Protocol](CONFORMANCE.md)
-- [Decision Log](DECISIONS.md)
-- [Reconstruction Method](RECONSTRUCTION_METHOD.md)
-
-## Reproduce the Evidence
-
-```powershell
-# Full Python test, coverage, and artifact gate
 .venv/Scripts/python.exe -B tools/verify.py
-
-# Frozen historical reconstructions
-.venv/Scripts/python.exe -B tools/build_reconstructions.py
-
-# Preregistered synthetic privacy and NHI runs
-.venv/Scripts/python.exe -B tools/run_research.py
-
-# Offline Kubernetes normalization fixture
-.venv/Scripts/python.exe -B tools/build_kubernetes_fixture.py
+.venv/Scripts/python.exe -B tools/build_demo.py
+.venv/Scripts/blastradius.exe collect-entra-azure --exports connectors/entra_azure/fixtures/rich --out results/connector-tenant.json
+.venv/Scripts/blastradius.exe collect-aws-iam --exports connectors/aws_iam/fixtures/basic --out results/aws-tenant.json
+.venv/Scripts/blastradius.exe submit results/result.json --dry-run
 ```
 
-Research outputs use fictional tenants and investigator-designed distributions. They test methods and failure modes; they do not estimate a real-world population. See [PRIVACY_ANALYSIS.md](PRIVACY_ANALYSIS.md), [research/NHI_RESULTS.md](research/NHI_RESULTS.md), and [research/DATASET_CARD.md](research/DATASET_CARD.md).
+Existing output files need `--force`. The Entra/Azure adapter and optional bounded AWS adapter are offline-verified only; read their connector manifests and limitations. The Graph/ARM live transport is library-only, disabled by default and mock-tested, not a live tenant scanner. The structural preview is explicitly not anonymous and cannot submit anything. CI workflow source is included but has not run on GitHub in this session.
 
-## Safety and Scope
+See ARCHITECTURE.md, DECISIONS.md, HANDOVER.md, SECURITY.md and tests/fixtures/README.md for module boundaries, technical criticisms, deferred work and independent hand calculations.
 
-Blast Radius currently supports synthetic inputs and bounded offline export profiles. Before using real organizational data, the project still requires protected persistence, public-verifier signing, reviewed key custody, connector ground-truth studies, complete policy semantics, independent privacy review, and an authorized disclosure process.
-
-The Entra/Azure live transport is library-only, disabled by default, and tested with fake responses. The AWS and Kubernetes adapters intentionally cover finite profiles rather than full provider semantics. Read each connector manifest before interpreting its output.
-
-Never commit signing keys, `.env` files, live exports, or private result files. See [SECURITY.md](SECURITY.md) for the data boundary and reporting process.
-
-## Project Map
-
-| Path | Purpose |
-| --- | --- |
-| `spec/` | Normative draft metric specification and visual vocabulary |
-| `schema/` | Versioned graph and result schemas |
-| `src/blastradius/` | Python reference implementation and CLI |
-| `reference-js/` | Dependency-free JavaScript reference implementation |
-| `conformance/` | Frozen fixtures, manifest, requirements, and reports |
-| `connectors/` | Explicitly bounded offline normalization profiles |
-| `research/` | Synthetic protocols, outputs, and dataset documentation |
-| `reconstructions/` | Public-incident mechanism dossiers and countermodels |
-| `ui/` | Visual instrument source, generated app, and test evidence |
-| `tools/` | Reproduction, audit, benchmark, and build scripts |
-
-## Contributing
-
-Start with [CONTRIBUTING.md](CONTRIBUTING.md), then read [GOVERNANCE.md](GOVERNANCE.md), [NEUTRALITY.md](NEUTRALITY.md), and the [Code of Conduct](CODE_OF_CONDUCT.md). Contributions should preserve deterministic outputs, explicit uncertainty, and the distinction between validated structure and verified provider semantics.
-
-## License
-
-Licensing is split by artifact type:
-
-- Code: [Apache License 2.0](LICENSE)
-- Specification and schema: [Creative Commons Attribution 4.0](LICENSING.md)
-- Generated or approved aggregate data: [CC0 1.0](LICENSING.md)
-
-See [LICENSING.md](LICENSING.md) for the authoritative file-level policy.
+The five-command demo quickstart is for a freshly extracted copy; skip environment creation if a working environment already exists. `--force` deliberately replaces only generated outputs, never input files. A clean wheel installation of the earlier prototype was tested under Python `-I` from outside the source tree; it is not a claim that an old wheel includes subsequent standards additions. Public conformance needs neither cloud access nor the private HMAC key.

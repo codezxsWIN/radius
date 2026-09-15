@@ -7,8 +7,9 @@ from pathlib import Path
 from ..engine import Engine
 from ..model import canonical, validate
 from .acquisition import acquire_repository
-from .evidence import collect_repository_evidence
+from .evidence import collect_repository_evidence, summarize_evidence_gaps
 from .graph import build_repository_graph
+from .scenarios import repository_controls
 
 
 PROFILE = "repository-attack-path-v0.1"
@@ -24,12 +25,15 @@ def _finish(result):
     return result
 
 
-def analyze_repository(root: Path, repository_slug: str) -> dict:
+def analyze_repository(root: Path, repository_slug: str, *, review_context=None) -> dict:
     """Acquire, extract, map and analyze the bounded repository profile."""
     source = Path(root)
     manifest = acquire_repository(source)
     evidence = collect_repository_evidence(source, manifest, repository_slug)
     graph, evidence_index = build_repository_graph(evidence)
+    if review_context is not None:
+        review_context.clear()
+        review_context.update({"graph": deepcopy(graph), "evidence_index": deepcopy(evidence_index)})
     result = {
         "profile": PROFILE,
         "repository": {
@@ -39,10 +43,21 @@ def analyze_repository(root: Path, repository_slug: str) -> dict:
         },
         "summary": {"finding_count": 0, "declared_reachable_secrets": 0},
         "findings": [],
+        "controls": repository_controls(graph, evidence_index),
+        "source_files": deepcopy(evidence["source_files"]),
+        "skipped_inputs": deepcopy(manifest["skipped"]),
+        "identity_requests": deepcopy(evidence["facts"]["workflow_identities"]),
+        "identity_summary": deepcopy(evidence["identity_summary"]),
+        "evidence_gaps": summarize_evidence_gaps(evidence),
         "diagnostics": deepcopy(evidence["diagnostics"]),
         "coverage": deepcopy(evidence["coverage"]),
         "conclusion": NO_PROOF,
     }
+    result["coverage"].update({
+        "inventory_files": manifest["summary"]["file_count"],
+        "out_of_profile_files": manifest["summary"]["file_count"] - evidence["coverage"]["selected_files"],
+        "skipped_entries": manifest["summary"]["skipped_count"],
+    })
     if graph is None:
         return _finish(result)
 
@@ -76,14 +91,18 @@ def analyze_repository(root: Path, repository_slug: str) -> dict:
             grant = evidence_index[grant_edge["provenance"]["evidence_ref"]]
             before_reach = len(reach.pairs)
             changed = deepcopy(graph)
-            changed["edges"] = [edge for edge in changed["edges"] if edge["id"] not in path_ids or edge["kind"] != "can_assume"]
+            removed_trusts = {evidence_index[engine.edges[edge_id]["provenance"]["evidence_ref"]]["trust_id"] for edge_id in path_ids if engine.edges[edge_id]["kind"] == "can_assume"}
+            changed["edges"] = [edge for edge in changed["edges"] if edge["kind"] != "can_assume" or evidence_index[edge["provenance"]["evidence_ref"]]["trust_id"] not in removed_trusts]
             validate(changed)
             changed_reach = Engine(changed).reach(credential_id)
             after_reach = len(changed_reach.pairs)
             workflow_fact = evidence_index[workflow["provenance"]["evidence_ref"]]
+            correlation = next(step["evidence"] for step in path if step["kind"] == "can_assume")
+            trust = evidence_index[correlation["trust_id"]]
+            matched_request = evidence_index[correlation["request_id"]]
             findings.append({
                 "id": _finding_id(manifest["snapshot_hash"], credential_id, resource_id),
-                "title": "GitHub Actions workflow can reach a declared production secret",
+                "title": "GitHub Actions job can reach a declared secret",
                 "priority": "high",
                 "confidence": "declared-configuration",
                 "start_condition": f"The workflow {workflow_fact.get('name', workflow['name'])} job {request.get('job_id', 'unknown')} is assumed compromised; repository analysis does not prove a compromise occurred.",
@@ -92,10 +111,26 @@ def analyze_repository(root: Path, repository_slug: str) -> dict:
                     "resource_arn": grant["resource_arn"],
                 },
                 "path": path,
+                "authorization": {
+                    "workflow": {
+                        "name": workflow_fact.get("name", workflow["name"]),
+                        "job_id": matched_request["job_id"],
+                        "base_job_id": matched_request.get("base_job_id", matched_request["job_id"]),
+                        "matrix": deepcopy(matched_request.get("matrix", {})),
+                        "branches": deepcopy(matched_request["branches"]),
+                        "role_arn": matched_request["role_arn"],
+                        "audience": matched_request["audience"],
+                        "action_reference": matched_request["action_reference"],
+                        "location": deepcopy(matched_request["location"]),
+                    },
+                    "trust": deepcopy(trust),
+                    "permission": deepcopy(grant),
+                },
                 "remediation": {
                     "type": "restrict-github-oidc-trust",
+                    "control_id": trust["id"],
                     "applied": False,
-                    "description": "Restrict or remove the declared GitHub OIDC trust that connects this workflow to the AWS role.",
+                    "description": "Remove the selected declared GitHub OIDC trust statement from the model. All modeled uses of that statement are removed; other trust statements remain.",
                     "before_absolute_reach": before_reach,
                     "after_absolute_reach": after_reach,
                     "path_broken": after_reach < before_reach and (resource_id, action) not in changed_reach.pairs,

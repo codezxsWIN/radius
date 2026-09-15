@@ -1,5 +1,44 @@
 # WP_ Task List: Safe Local Repository Acquisition
 
+## Evidence Coverage Acceptance: WP_029-WP_032
+
+- [x] Finite matrix assignments expand deterministically with include/exclude semantics and distinct job principals; dynamic/excessive input is not executed.
+- [x] Literal env/matrix resolution respects scope, keeps supporting source marks and does not infer secret or runtime values.
+- [x] Unresolved role/local-action observations survive as evidence, not graph grants or SARIF findings.
+- [x] Common CloudFormation YAML/JSON source names work; known intrinsic nodes stay opaque, and aliases/arbitrary tags remain rejected.
+- [x] Identities view groups and filters variants, paginates 23 declarations/46 test variants, supports keyboard navigation and displays evidence-needed guidance.
+- [x] All 301 Python tests pass with one platform skip; all 15 browser audits are clean; same external commit expands 33 job variants and exposes 36 unresolved identity requests.
+
+No credentials, provider expansion, actual deployed permissions or hosted publishing is included. Remaining references and absent IAM declarations stay explicitly unresolved.
+
+## Investigation Acceptance: WP_025-WP_028
+
+- [x] Inspector shows matched branch subjects/audience, role/provider account, action and source regions rather than generic endpoint names alone.
+- [x] One job's multiple requests display the actual correlated role; regression reproduced and fixed the wrong-label case.
+- [x] Arbitrary selected known trusts recompute copies of the retained model; shared uses and alternate routes are preserved correctly.
+- [x] Unknown/duplicate/stale controls reject, and source archive deletion does not prevent model-only public-repository comparisons.
+- [x] Finding/job/resource and reach-state filters, navigation, file coverage, staging/clearing and proposed change-request downloads work in the browser.
+- [x] Failed or superseded computations cannot display fabricated impact; rapid toggling is coalesced and verified.
+- [x] 280 Python tests pass with one Windows privilege skip; 12 desktop/laptop/mobile/offline accessibility audits pass.
+
+No provider expansion, executed policy patch or hosted publication is included. Offline HTML shows its saved one-statement scenario; server-only multi-control planning is explicit.
+
+## Repository Review Delivery: WP_020-WP_024
+
+- [x] SARIF review findings retain source regions, witness flow, remediation numbers and no-proof diagnostics.
+- [x] Saved JSON exports are integrity-checked; zero-finding exit status is completion, not safety.
+- [x] Distinct workflow jobs do not pool privileges; unsupported explicit restrictions cannot silently create a complete path.
+- [x] Counterfactual removal follows every modeled use of the selected trust statement, preserving alternate statements.
+- [x] Local/Public GitHub input -> path evidence -> simulation -> HTML/Markdown/JSON/SARIF download is usable in the browser.
+- [x] Service rejects invalid host/origin/token, oversized/duplicate requests, network paths, stale exports and concurrent analyses; no raw file-serving route exists.
+- [x] CI installs the trusted base analyzer and treats target contents as data; target startup/shadow Python modules never execute in regression tests.
+- [x] All 273 Python tests pass with one Windows symlink skip; six desktop/mobile/offline accessibility audits have zero violations.
+- [x] SARIF schema, clean wheel/packaged example, one-click launcher and public immutable-commit acquisition were exercised.
+- [x] README, security, decisions and continuity updated without rewriting historical research work.
+- [ ] Hosted Actions/SARIF publication: not performed; requires a separate authorized commit/push and manual execution.
+
+Acceptance records and exact hashes are in TEST_REPORT.md. No live IAM state, full-provider support or production security clearance is implied by delivery.
+
 ## `WP_001`: Deterministic acquisition core
 
 Description: Add the repository package and the smallest working acquisition path for regular files.
