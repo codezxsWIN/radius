@@ -1,0 +1,699 @@
+{
+  "browser": {
+    "protocolVersion": "1.3",
+    "product": "Chrome/152.0.7977.83",
+    "revision": "@79460ebecaa5625e57a5fb679a735659e73dc687",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/152.0.0.0 Safari/537.36",
+    "jsVersion": "15.2.124.21"
+  },
+  "view_checks": [
+    {
+      "view": "disc",
+      "svg": 6,
+      "heading": "What this credential reaches",
+      "overflow": false
+    },
+    {
+      "view": "treemap",
+      "svg": 1,
+      "heading": "Every credential, one common scale",
+      "overflow": false
+    },
+    {
+      "view": "distribution",
+      "svg": 2,
+      "heading": "Where privilege accumulates",
+      "overflow": false
+    },
+    {
+      "view": "models",
+      "svg": 1,
+      "heading": "The cost of an assumption",
+      "overflow": false
+    },
+    {
+      "view": "whatif",
+      "svg": 19,
+      "heading": "One binding. Measured consequences.",
+      "overflow": false
+    },
+    {
+      "view": "privacy",
+      "svg": 1,
+      "heading": "The shape of a contribution",
+      "overflow": false
+    },
+    {
+      "view": "playground",
+      "svg": 5,
+      "heading": "A small graph, a verifiable result",
+      "overflow": false
+    },
+    {
+      "view": "incidents",
+      "svg": 2,
+      "heading": "Evidence before interpretation",
+      "overflow": false
+    },
+    {
+      "view": "conformance",
+      "svg": 0,
+      "heading": "The same definition, two implementations",
+      "overflow": false
+    }
+  ],
+  "export_controls": [
+    {
+      "view": "disc",
+      "viewport": "desktop",
+      "controls": [
+        {
+          "id": "figure-kind",
+          "label": "Credential reach",
+          "width": 208,
+          "required": 121.22784423828125,
+          "fits": true
+        },
+        {
+          "id": "column-width",
+          "label": "IEEE double",
+          "width": 99,
+          "required": 98.69187927246094,
+          "fits": true
+        }
+      ]
+    },
+    {
+      "view": "treemap",
+      "viewport": "desktop",
+      "controls": [
+        {
+          "id": "figure-kind",
+          "label": "Credential population",
+          "width": 208,
+          "required": 148.0358123779297,
+          "fits": true
+        },
+        {
+          "id": "column-width",
+          "label": "IEEE double",
+          "width": 99,
+          "required": 98.69187927246094,
+          "fits": true
+        }
+      ]
+    },
+    {
+      "view": "distribution",
+      "viewport": "desktop",
+      "controls": [
+        {
+          "id": "figure-kind",
+          "label": "Lorenz curve",
+          "width": 208,
+          "required": 101.65586853027344,
+          "fits": true
+        },
+        {
+          "id": "column-width",
+          "label": "IEEE double",
+          "width": 99,
+          "required": 98.69187927246094,
+          "fits": true
+        }
+      ]
+    },
+    {
+      "view": "models",
+      "viewport": "desktop",
+      "controls": [
+        {
+          "id": "figure-kind",
+          "label": "Model comparison",
+          "width": 208,
+          "required": 131.99188232421875,
+          "fits": true
+        },
+        {
+          "id": "column-width",
+          "label": "IEEE double",
+          "width": 99,
+          "required": 98.69187927246094,
+          "fits": true
+        }
+      ]
+    },
+    {
+      "view": "whatif",
+      "viewport": "desktop",
+      "controls": [
+        {
+          "id": "figure-kind",
+          "label": "Counterfactual comparison",
+          "width": 208,
+          "required": 176.58380126953125,
+          "fits": true
+        },
+        {
+          "id": "column-width",
+          "label": "IEEE double",
+          "width": 99,
+          "required": 98.69187927246094,
+          "fits": true
+        }
+      ]
+    },
+    {
+      "view": "privacy",
+      "viewport": "desktop",
+      "controls": [
+        {
+          "id": "figure-kind",
+          "label": "Structural silhouette",
+          "width": 208,
+          "required": 140.35580444335938,
+          "fits": true
+        },
+        {
+          "id": "column-width",
+          "label": "IEEE double",
+          "width": 99,
+          "required": 98.69187927246094,
+          "fits": true
+        }
+      ]
+    },
+    {
+      "view": "playground",
+      "viewport": "desktop",
+      "controls": [
+        {
+          "id": "figure-kind",
+          "label": "Fixture reach",
+          "width": 208,
+          "required": 103.08387756347656,
+          "fits": true
+        },
+        {
+          "id": "column-width",
+          "label": "IEEE double",
+          "width": 99,
+          "required": 98.69187927246094,
+          "fits": true
+        }
+      ]
+    },
+    {
+      "view": "incidents",
+      "viewport": "desktop",
+      "controls": [
+        {
+          "id": "figure-kind",
+          "label": "Reconstructed reach",
+          "width": 208,
+          "required": 143.0078125,
+          "fits": true
+        },
+        {
+          "id": "column-width",
+          "label": "IEEE double",
+          "width": 99,
+          "required": 98.69187927246094,
+          "fits": true
+        }
+      ]
+    },
+    {
+      "view": "conformance",
+      "viewport": "desktop",
+      "controls": [
+        {
+          "id": "figure-kind",
+          "label": "No exportable figure",
+          "width": 208,
+          "required": 142.39581298828125,
+          "fits": true
+        },
+        {
+          "id": "column-width",
+          "label": "IEEE double",
+          "width": 99,
+          "required": 98.69187927246094,
+          "fits": true
+        }
+      ]
+    },
+    {
+      "view": "disc",
+      "viewport": "mobile",
+      "controls": [
+        {
+          "id": "figure-kind",
+          "label": "Credential reach",
+          "width": 290,
+          "required": 121.22784423828125,
+          "fits": true
+        },
+        {
+          "id": "column-width",
+          "label": "IEEE double",
+          "width": 123,
+          "required": 98.69187927246094,
+          "fits": true
+        }
+      ]
+    },
+    {
+      "view": "treemap",
+      "viewport": "mobile",
+      "controls": [
+        {
+          "id": "figure-kind",
+          "label": "Credential population",
+          "width": 290,
+          "required": 148.0358123779297,
+          "fits": true
+        },
+        {
+          "id": "column-width",
+          "label": "IEEE double",
+          "width": 123,
+          "required": 98.69187927246094,
+          "fits": true
+        }
+      ]
+    },
+    {
+      "view": "distribution",
+      "viewport": "mobile",
+      "controls": [
+        {
+          "id": "figure-kind",
+          "label": "Lorenz curve",
+          "width": 290,
+          "required": 101.65586853027344,
+          "fits": true
+        },
+        {
+          "id": "column-width",
+          "label": "IEEE double",
+          "width": 123,
+          "required": 98.69187927246094,
+          "fits": true
+        }
+      ]
+    },
+    {
+      "view": "models",
+      "viewport": "mobile",
+      "controls": [
+        {
+          "id": "figure-kind",
+          "label": "Model comparison",
+          "width": 290,
+          "required": 131.99188232421875,
+          "fits": true
+        },
+        {
+          "id": "column-width",
+          "label": "IEEE double",
+          "width": 123,
+          "required": 98.69187927246094,
+          "fits": true
+        }
+      ]
+    },
+    {
+      "view": "whatif",
+      "viewport": "mobile",
+      "controls": [
+        {
+          "id": "figure-kind",
+          "label": "Counterfactual comparison",
+          "width": 290,
+          "required": 176.58380126953125,
+          "fits": true
+        },
+        {
+          "id": "column-width",
+          "label": "IEEE double",
+          "width": 123,
+          "required": 98.69187927246094,
+          "fits": true
+        }
+      ]
+    },
+    {
+      "view": "privacy",
+      "viewport": "mobile",
+      "controls": [
+        {
+          "id": "figure-kind",
+          "label": "Structural silhouette",
+          "width": 290,
+          "required": 140.35580444335938,
+          "fits": true
+        },
+        {
+          "id": "column-width",
+          "label": "IEEE double",
+          "width": 123,
+          "required": 98.69187927246094,
+          "fits": true
+        }
+      ]
+    },
+    {
+      "view": "playground",
+      "viewport": "mobile",
+      "controls": [
+        {
+          "id": "figure-kind",
+          "label": "Fixture reach",
+          "width": 290,
+          "required": 103.08387756347656,
+          "fits": true
+        },
+        {
+          "id": "column-width",
+          "label": "IEEE double",
+          "width": 123,
+          "required": 98.69187927246094,
+          "fits": true
+        }
+      ]
+    },
+    {
+      "view": "incidents",
+      "viewport": "mobile",
+      "controls": [
+        {
+          "id": "figure-kind",
+          "label": "Reconstructed reach",
+          "width": 290,
+          "required": 143.0078125,
+          "fits": true
+        },
+        {
+          "id": "column-width",
+          "label": "IEEE double",
+          "width": 123,
+          "required": 98.69187927246094,
+          "fits": true
+        }
+      ]
+    },
+    {
+      "view": "conformance",
+      "viewport": "mobile",
+      "controls": [
+        {
+          "id": "figure-kind",
+          "label": "No exportable figure",
+          "width": 290,
+          "required": 142.39581298828125,
+          "fits": true
+        },
+        {
+          "id": "column-width",
+          "label": "IEEE double",
+          "width": 123,
+          "required": 98.69187927246094,
+          "fits": true
+        }
+      ]
+    }
+  ],
+  "accessibility": [
+    {
+      "view": "disc",
+      "viewport": "desktop",
+      "violations": [],
+      "passes": 29
+    },
+    {
+      "view": "treemap",
+      "viewport": "desktop",
+      "violations": [],
+      "passes": 29
+    },
+    {
+      "view": "distribution",
+      "viewport": "desktop",
+      "violations": [],
+      "passes": 29
+    },
+    {
+      "view": "models",
+      "viewport": "desktop",
+      "violations": [],
+      "passes": 30
+    },
+    {
+      "view": "whatif",
+      "viewport": "desktop",
+      "violations": [],
+      "passes": 31
+    },
+    {
+      "view": "privacy",
+      "viewport": "desktop",
+      "violations": [],
+      "passes": 28
+    },
+    {
+      "view": "playground",
+      "viewport": "desktop",
+      "violations": [],
+      "passes": 28
+    },
+    {
+      "view": "incidents",
+      "viewport": "desktop",
+      "violations": [],
+      "passes": 30
+    },
+    {
+      "view": "conformance",
+      "viewport": "desktop",
+      "violations": [],
+      "passes": 30
+    },
+    {
+      "view": "disc",
+      "viewport": "mobile",
+      "violations": [],
+      "passes": 28
+    },
+    {
+      "view": "treemap",
+      "viewport": "mobile",
+      "violations": [],
+      "passes": 28
+    },
+    {
+      "view": "distribution",
+      "viewport": "mobile",
+      "violations": [],
+      "passes": 28
+    },
+    {
+      "view": "models",
+      "viewport": "mobile",
+      "violations": [],
+      "passes": 29
+    },
+    {
+      "view": "whatif",
+      "viewport": "mobile",
+      "violations": [],
+      "passes": 30
+    },
+    {
+      "view": "privacy",
+      "viewport": "mobile",
+      "violations": [],
+      "passes": 26
+    },
+    {
+      "view": "playground",
+      "viewport": "mobile",
+      "violations": [],
+      "passes": 28
+    },
+    {
+      "view": "incidents",
+      "viewport": "mobile",
+      "violations": [],
+      "passes": 30
+    },
+    {
+      "view": "conformance",
+      "viewport": "mobile",
+      "violations": [],
+      "passes": 28
+    }
+  ],
+  "regressions": [
+    {
+      "view": "disc",
+      "viewport": "desktop",
+      "byte_identical": true,
+      "first_sha256": "e607036a13a3eaa07267d590da2dfc75da2e5d795538219ab1589396607add7a",
+      "second_sha256": "e607036a13a3eaa07267d590da2dfc75da2e5d795538219ab1589396607add7a"
+    },
+    {
+      "view": "treemap",
+      "viewport": "desktop",
+      "byte_identical": true,
+      "first_sha256": "5b9107d8f3e3d1d22c924480ce7d737904f396c909546de65064b49fc8cf1b9e",
+      "second_sha256": "5b9107d8f3e3d1d22c924480ce7d737904f396c909546de65064b49fc8cf1b9e"
+    },
+    {
+      "view": "distribution",
+      "viewport": "desktop",
+      "byte_identical": true,
+      "first_sha256": "ebb620563779bc42a8be53d91d110e00fab3ffa93261aeecb5cfcd239587ac2a",
+      "second_sha256": "ebb620563779bc42a8be53d91d110e00fab3ffa93261aeecb5cfcd239587ac2a"
+    },
+    {
+      "view": "models",
+      "viewport": "desktop",
+      "byte_identical": true,
+      "first_sha256": "77694231fae0b5489eaf58e588f1d07d9b657f65ff00da5fbdde69c758d748f4",
+      "second_sha256": "77694231fae0b5489eaf58e588f1d07d9b657f65ff00da5fbdde69c758d748f4"
+    },
+    {
+      "view": "whatif",
+      "viewport": "desktop",
+      "byte_identical": true,
+      "first_sha256": "d316905facfb4511a9ff669e475f11e4361152915482a5b393ab2e6464e3c40e",
+      "second_sha256": "d316905facfb4511a9ff669e475f11e4361152915482a5b393ab2e6464e3c40e"
+    },
+    {
+      "view": "privacy",
+      "viewport": "desktop",
+      "byte_identical": true,
+      "first_sha256": "527bfb676c67754e2d03106367b699a8e1ecc08cbf2242864278dc4e980dae81",
+      "second_sha256": "527bfb676c67754e2d03106367b699a8e1ecc08cbf2242864278dc4e980dae81"
+    },
+    {
+      "view": "playground",
+      "viewport": "desktop",
+      "byte_identical": true,
+      "first_sha256": "21da78626e57e7ed94b3a6a0fa3c3a52e4aa22919a5416a6f0f625e751340c92",
+      "second_sha256": "21da78626e57e7ed94b3a6a0fa3c3a52e4aa22919a5416a6f0f625e751340c92"
+    },
+    {
+      "view": "incidents",
+      "viewport": "desktop",
+      "byte_identical": true,
+      "first_sha256": "5fcd3962c112dddabc24e6e3e611a62cfa467b8b5630844ec868ff76df773ef1",
+      "second_sha256": "5fcd3962c112dddabc24e6e3e611a62cfa467b8b5630844ec868ff76df773ef1"
+    },
+    {
+      "view": "conformance",
+      "viewport": "desktop",
+      "byte_identical": true,
+      "first_sha256": "e3b383fb655313a2b9abda0ce1fbbc01497855876c0d57691b6b25a29d41c192",
+      "second_sha256": "e3b383fb655313a2b9abda0ce1fbbc01497855876c0d57691b6b25a29d41c192"
+    },
+    {
+      "view": "disc",
+      "viewport": "mobile",
+      "byte_identical": true,
+      "first_sha256": "194a788cf46fedea41f02920a92c17ff3974c5d30077a2d1c9503d0e94b1ebd7",
+      "second_sha256": "194a788cf46fedea41f02920a92c17ff3974c5d30077a2d1c9503d0e94b1ebd7"
+    },
+    {
+      "view": "treemap",
+      "viewport": "mobile",
+      "byte_identical": true,
+      "first_sha256": "842d0e7d046ea3c03b8946009d06fb571b59807efa9e0ca58bcc35c540f0d628",
+      "second_sha256": "842d0e7d046ea3c03b8946009d06fb571b59807efa9e0ca58bcc35c540f0d628"
+    },
+    {
+      "view": "distribution",
+      "viewport": "mobile",
+      "byte_identical": true,
+      "first_sha256": "42d097e21899ab8e15957bb5b80f1e2a13c25b56c5a84accdab0fdc1ff135536",
+      "second_sha256": "42d097e21899ab8e15957bb5b80f1e2a13c25b56c5a84accdab0fdc1ff135536"
+    },
+    {
+      "view": "models",
+      "viewport": "mobile",
+      "byte_identical": true,
+      "first_sha256": "cf342839a23fde4b27ea59cf879a3297c7f07e71f4ce02bcc7445f090124846b",
+      "second_sha256": "cf342839a23fde4b27ea59cf879a3297c7f07e71f4ce02bcc7445f090124846b"
+    },
+    {
+      "view": "whatif",
+      "viewport": "mobile",
+      "byte_identical": true,
+      "first_sha256": "1ebe5eae90a9e258c675d8ab54f2a8e595e9a309152a83b8c038d3f4f0ed368e",
+      "second_sha256": "1ebe5eae90a9e258c675d8ab54f2a8e595e9a309152a83b8c038d3f4f0ed368e"
+    },
+    {
+      "view": "privacy",
+      "viewport": "mobile",
+      "byte_identical": true,
+      "first_sha256": "69b8b038cd021a88fdd1f809ea2636ae5942d681d6e1b0965650552def3f82e9",
+      "second_sha256": "69b8b038cd021a88fdd1f809ea2636ae5942d681d6e1b0965650552def3f82e9"
+    },
+    {
+      "view": "playground",
+      "viewport": "mobile",
+      "byte_identical": true,
+      "first_sha256": "1dbbf368ec5440453b070a99871b2ee57205d228cacb0473cbf2c871fbbc479f",
+      "second_sha256": "1dbbf368ec5440453b070a99871b2ee57205d228cacb0473cbf2c871fbbc479f"
+    },
+    {
+      "view": "incidents",
+      "viewport": "mobile",
+      "byte_identical": true,
+      "first_sha256": "94b2b2d681f6c87f5989ae2e32d5e56d8cf4d5dfce2ab036e272c5ba63345da7",
+      "second_sha256": "94b2b2d681f6c87f5989ae2e32d5e56d8cf4d5dfce2ab036e272c5ba63345da7"
+    },
+    {
+      "view": "conformance",
+      "viewport": "mobile",
+      "byte_identical": true,
+      "first_sha256": "71948ca0cfa4e4dbc20123d3a1963f4c8898acaa3228d8c770d388304d237465",
+      "second_sha256": "71948ca0cfa4e4dbc20123d3a1963f4c8898acaa3228d8c770d388304d237465"
+    }
+  ],
+  "interaction": [
+    {
+      "test": "model-switch",
+      "model": "strict",
+      "selected_pairs": 45
+    },
+    {
+      "test": "provenance-dialog",
+      "passed": true
+    },
+    {
+      "test": "nhi-filter",
+      "passed": true
+    },
+    {
+      "test": "binding-removal",
+      "before": 0.6197183098591549,
+      "after": 0.5774647887323944,
+      "universe_fixed": true
+    }
+  ],
+  "network_requests": [],
+  "errors": [],
+  "summary": {
+    "viewports": 2,
+    "view_checks": 9,
+    "accessibility_runs": 18,
+    "critical": 0,
+    "violations": 0,
+    "visual_regressions": 18,
+    "identical": 18,
+    "network_requests": 0,
+    "script_errors": 0
+  }
+}

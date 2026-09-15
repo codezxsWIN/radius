@@ -1,58 +1,202 @@
-# Blast Radius: Metric Standard and Conformance Artifacts
+# Blast Radius
 
-Blast Radius is **not a product**. This directory contains a candidate cross-platform authorization-reach specification, free public conformance suite/reference implementation, and a planned aggregate-data protocol. The specification/profile is1.0-draft; the existing Python implementation and graph wire format remain0.1. No real tenant is contacted or represented, no paid tier or certification exists, and no neutral host or real dataset is claimed.
+**A deterministic standard for measuring how far one compromised credential can reach.**
 
-Start with `spec/METRIC_SPECIFICATION_v1.0-draft.md`, CONFORMANCE.md, PRIVACY_ANALYSIS.md, research/NHI_RESULTS.md, RECONSTRUCTION_METHOD.md and GOVERNANCE.md. LICENSING.md assigns Apache-2.0 to code, CC-BY-4.0 to specification/schema and CC0-1.0 to generated/approved aggregate data. The single existing `demo/index.html` is preserved as an illustrative reference aid, not an executive product roadmap.
+Blast Radius models authorization as a graph and reports the resource-action pairs reachable from each credential under an explicit attacker model. The repository contains the draft metric specification, conformance suite, Python and JavaScript reference implementations, synthetic research artifacts, offline connector profiles, and a self-contained visual instrument.
 
-## Standards Quickstart
+> [!IMPORTANT]
+> Blast Radius is a research standard and reference implementation, not a production security product. It does not contact a tenant by default, does not collect secrets, and must not be treated as a compliance certification or proof of exploitability.
 
-```powershell
-.venv/Scripts/blastradius.exe conformance run --tool '.venv/Scripts/python.exe -B -m blastradius conformance adapter'
-.venv/Scripts/python.exe -B tools/build_reconstructions.py
-.venv/Scripts/python.exe -B tools/run_research.py
-.venv/Scripts/python.exe -B tools/verify.py
-```
+![Blast Radius visual instrument showing credential reach](ui/reports/screenshots/disc-desktop.png)
 
-Run from this directory after installing the local package as below. The suite includes 40 frozen fixtures across three required models (120 cases), exact rational values, pair sets, deterministic witnesses and two executions per case. **Python and JavaScript both pass 120/120; the integrated Python suite passes 179 tests.** Reports are in conformance/reports/reference and conformance/reports/javascript. Re-running research validates the frozen protocol hashes before recreating the 500 paired synthetic populations.
+## Why Blast Radius?
 
-Optional artifacts are complete within their stated bounds: `node reference-js/verify.mjs` checks the second-language reference; `tools/build_kubernetes_fixture.py` generates the offline read-only Kubernetes normalization fixture (17 tests); research/STATE_OF_BLAST_RADIUS_TEMPLATE.md is a future aggregate-report template, not a published industry finding. The clean wheel passed all 120 core cases under isolated Python outside the source tree. See TEST_REPORT.md for exact evidence and remaining gaps.
+Traditional permission inventories answer _what access is assigned?_ Blast Radius asks a narrower, reproducible question:
 
-Measured:500/500 exact structural summaries were unique; rounding counts left161/500 unique. The prespecified epsilon ln2 aggregate had1.014762 count MAE including suppression and96.8% retained synthetic support. NHI primary joint successes were54/500 under the null,250/500 with deliberately broader NHI grants and54/500 with deliberately broader human grants. These are synthetic falsification/sanity checks, not real-population findings. The five reconstruction dossiers contain four supported incident mechanisms and one explicitly hypothetical MLflow post-acquisition scenario; historical top-decile ranks are unidentified.
+> Given one credential and a declared attacker model, which resource-action pairs are reachable through direct grants, group membership, role activation, identity assumption, and credential acquisition?
 
-## Five-Command Quickstart
+The result is a family of exact metrics rather than a single opaque score:
+
+| Metric | What it measures |
+| --- | --- |
+| Canonical radius | Reachable pairs divided by the fixed resource-action universe |
+| Sensitivity-weighted radius | Reach weighted by the declared sensitivity of each pair |
+| Action-weighted radius | Reach weighted by the relative impact of each action |
+| Bounded radius | Reach attainable within an explicit escalation budget |
+| Population statistics | Maximum, nearest-rank p95, threshold share, and Gini concentration |
+
+The denominator and weights are frozen for permission-only comparisons. Duplicate paths do not increase a score, cycles terminate, and every reported path has deterministic evidence.
+
+## Repository Status
+
+The current public profile is **1.0-draft**. The Python package and graph wire format remain **0.1**.
+
+- 40 frozen conformance fixtures across 3 required attacker models
+- 120/120 conformance cases passing in both Python and JavaScript
+- 179 integrated Python tests passing with 93.40% line coverage
+- Dependency-free JavaScript reference implementation
+- Offline Entra/Azure, AWS IAM, and Kubernetes normalization profiles with explicit limits
+- Deterministic synthetic research runs and reconstruction dossiers
+- Static, offline-first visual instrument with figure export and accessibility checks
+
+These are repository test results, not independent certification. See [TEST_REPORT.md](TEST_REPORT.md) for commands, hashes, measurements, and caveats.
+
+## Quickstart
+
+Requirements: Python 3.12+, [uv](https://docs.astral.sh/uv/), and Node.js for the optional JavaScript reference and UI tooling.
 
 ```powershell
 uv venv --python 3.12 .venv
 uv pip install --python .venv/Scripts/python.exe -e ".[test]"
-.venv/Scripts/blastradius.exe synth --principals 80 --resources 40 --seed 7 --out results/tenant.json --force
-.venv/Scripts/blastradius.exe analyze results/tenant.json --constraint-model default --out results/result.json --force
-.venv/Scripts/blastradius.exe report results/result.json --format html --out demo/index.html --force
+
+.venv/Scripts/blastradius.exe synth `
+  --principals 80 --resources 40 --seed 7 `
+  --out results/tenant.json --force
+
+.venv/Scripts/blastradius.exe analyze results/tenant.json `
+  --constraint-model default `
+  --out results/result.json --force
+
+.venv/Scripts/blastradius.exe report results/result.json `
+  --format html --out demo/index.html --force
 ```
 
-These legacy demo workflows have been executed. Private signing keys and local signed result files must not be committed; public synthetic conformance/research reports are intentionally versioned. Fictional names and credential metadata only. Existing output files require `--force`; input files cannot be overwritten. On macOS/Linux replace `.venv/Scripts` with `.venv/bin`. Do not regenerate a user-edited demo unless its changes have been reviewed.
+Open `demo/index.html` directly in a browser. The report has no runtime server, CDN, or external font dependency. On macOS or Linux, replace `.venv/Scripts` with `.venv/bin` and use shell line continuations.
 
-Additional commands: `blastradius explain results/result.json --credential credential-principal-00001`, `blastradius whatif results/tenant.json --remove-binding shared-2`, and `blastradius verify-manifest results/result.json`. Reports support `--format json|sarif|html|md`. An external OS-random local HMAC key is created at the platform's local application-data directory; it is not shipped with artifacts. Another machine can regenerate its own signed result, but verifying an existing result requires trusted access to its original key.
+Generated outputs are never overwritten unless `--force` is supplied, and an input file cannot be replaced by its output.
 
-See TEST_REPORT.md for actual fixture/coverage/benchmark results and demo/DEMO_SCRIPT.md for the exact five-minute walkthrough. No runtime server or CDN is required.
+## Run Conformance
 
-## Earlier Prototype Measurements
-
-The earlier prototype session recorded108 passing pytest tests and94.81% Python line coverage; current standards-session checks are recorded separately in TEST_REPORT.md. The10000-principal,2000-resource,32119-edge synthetic pipeline completed in51.63 seconds; the50000-principal stretch completed in215.38 seconds. These historical scale runs were not repeated as research population observations. Benchmark scope and exclusions are in TEST_REPORT.md.
-
-The dashboard's 80 fictional credentials have a maximum canonical radius of 51.26%, p95 34.45%, and Gini 0.026. Every number is generated by the analyzer; 90 single-binding removals were actually evaluated. The best modeled change reduces p95 to 27.73%. These are constructed-tenant results, not claims about real organizations.
-
-## Reproduce and Inspect
+Validate the Python implementation against the public suite:
 
 ```powershell
-.venv/Scripts/python.exe -B tools/verify.py
-.venv/Scripts/python.exe -B tools/build_demo.py
-.venv/Scripts/blastradius.exe collect-entra-azure --exports connectors/entra_azure/fixtures/rich --out results/connector-tenant.json
-.venv/Scripts/blastradius.exe collect-aws-iam --exports connectors/aws_iam/fixtures/basic --out results/aws-tenant.json
-.venv/Scripts/blastradius.exe submit results/result.json --dry-run
+.venv/Scripts/blastradius.exe conformance run `
+  --tool ".venv/Scripts/python.exe -B -m blastradius conformance adapter"
 ```
 
-Existing output files need `--force`. The Entra/Azure adapter and optional bounded AWS adapter are offline-verified only; read their connector manifests and limitations. The Graph/ARM live transport is library-only, disabled by default and mock-tested, not a live tenant scanner. The structural preview is explicitly not anonymous and cannot submit anything. CI workflow source is included but has not run on GitHub in this session.
+Validate the independent-language implementation:
 
-See ARCHITECTURE.md, DECISIONS.md, HANDOVER.md, SECURITY.md and tests/fixtures/README.md for module boundaries, technical criticisms, deferred work and independent hand calculations.
+```powershell
+node reference-js/verify.mjs
 
-The five-command demo quickstart is for a freshly extracted copy; skip environment creation if a working environment already exists. `--force` deliberately replaces only generated outputs, never input files. A clean wheel installation of the earlier prototype was tested under Python `-I` from outside the source tree; it is not a claim that an old wheel includes subsequent standards additions. Public conformance needs neither cloud access nor the private HMAC key.
+.venv/Scripts/blastradius.exe conformance run `
+  --tool "node reference-js/reference.mjs" `
+  --out conformance/reports/javascript
+```
+
+Each case checks exact rational metrics, reachable pair sets, deterministic witnesses, and repeatability. Read [CONFORMANCE.md](CONFORMANCE.md) for the protocol and [conformance/REQUIREMENT_COVERAGE.md](conformance/REQUIREMENT_COVERAGE.md) for the boundary between automated, partial, and manual claims.
+
+## Explore the Instrument
+
+The current visual instrument is a static, local application:
+
+```powershell
+node tools/build_ui.mjs
+```
+
+Then open `ui/index.html`. It includes credential paths, population and distribution views, attacker-model contrast, counterfactual analysis, privacy experiments, reconstruction evidence, conformance results, and SVG/PNG/PDF figure export.
+
+The source is split across `ui/index.template.html`, `ui/app.js`, `ui/render.js`, and `ui/styles.css`. The generated `ui/index.html` embeds its data and dependencies for offline inspection.
+
+## CLI Workflows
+
+```powershell
+# Explain one credential's deterministic witness paths
+.venv/Scripts/blastradius.exe explain results/result.json `
+  --credential credential-principal-00001
+
+# Recompute the graph after a hypothetical binding removal
+.venv/Scripts/blastradius.exe whatif results/tenant.json `
+  --remove-binding shared-2
+
+# Verify a locally signed result manifest
+.venv/Scripts/blastradius.exe verify-manifest results/result.json
+
+# Normalize supported synthetic export bundles without cloud access
+.venv/Scripts/blastradius.exe collect-entra-azure `
+  --exports connectors/entra_azure/fixtures/rich `
+  --out results/connector-tenant.json
+```
+
+Reports support JSON, SARIF, HTML, and Markdown. Local result integrity uses an external OS-random HMAC key; this is not public attestation, and the key is never included in repository artifacts.
+
+## How It Fits Together
+
+```mermaid
+flowchart LR
+  A[Synthetic graph or supported offline export] --> B[Schema and semantic validation]
+  B --> C[Normalized authorization graph]
+  C --> D[Reachability engine]
+  M[Explicit attacker model] --> D
+  U[Fixed resource-action universe] --> D
+  D --> E[Exact metric family]
+  D --> F[Deterministic path evidence]
+  E --> G[JSON / SARIF / Markdown / HTML]
+  F --> G
+  E --> H[Counterfactual analysis]
+```
+
+The engine consumes effective authorization decisions; it does not attempt to reproduce every cloud provider's policy evaluator. Unsupported semantics are rejected or identified as coverage gaps rather than silently inferred.
+
+For the formal definitions and implementation boundaries, read:
+
+- [Metric Specification](spec/METRIC_SPECIFICATION_v1.0-draft.md)
+- [Architecture](ARCHITECTURE.md)
+- [Conformance Protocol](CONFORMANCE.md)
+- [Decision Log](DECISIONS.md)
+- [Reconstruction Method](RECONSTRUCTION_METHOD.md)
+
+## Reproduce the Evidence
+
+```powershell
+# Full Python test, coverage, and artifact gate
+.venv/Scripts/python.exe -B tools/verify.py
+
+# Frozen historical reconstructions
+.venv/Scripts/python.exe -B tools/build_reconstructions.py
+
+# Preregistered synthetic privacy and NHI runs
+.venv/Scripts/python.exe -B tools/run_research.py
+
+# Offline Kubernetes normalization fixture
+.venv/Scripts/python.exe -B tools/build_kubernetes_fixture.py
+```
+
+Research outputs use fictional tenants and investigator-designed distributions. They test methods and failure modes; they do not estimate a real-world population. See [PRIVACY_ANALYSIS.md](PRIVACY_ANALYSIS.md), [research/NHI_RESULTS.md](research/NHI_RESULTS.md), and [research/DATASET_CARD.md](research/DATASET_CARD.md).
+
+## Safety and Scope
+
+Blast Radius currently supports synthetic inputs and bounded offline export profiles. Before using real organizational data, the project still requires protected persistence, public-verifier signing, reviewed key custody, connector ground-truth studies, complete policy semantics, independent privacy review, and an authorized disclosure process.
+
+The Entra/Azure live transport is library-only, disabled by default, and tested with fake responses. The AWS and Kubernetes adapters intentionally cover finite profiles rather than full provider semantics. Read each connector manifest before interpreting its output.
+
+Never commit signing keys, `.env` files, live exports, or private result files. See [SECURITY.md](SECURITY.md) for the data boundary and reporting process.
+
+## Project Map
+
+| Path | Purpose |
+| --- | --- |
+| `spec/` | Normative draft metric specification and visual vocabulary |
+| `schema/` | Versioned graph and result schemas |
+| `src/blastradius/` | Python reference implementation and CLI |
+| `reference-js/` | Dependency-free JavaScript reference implementation |
+| `conformance/` | Frozen fixtures, manifest, requirements, and reports |
+| `connectors/` | Explicitly bounded offline normalization profiles |
+| `research/` | Synthetic protocols, outputs, and dataset documentation |
+| `reconstructions/` | Public-incident mechanism dossiers and countermodels |
+| `ui/` | Visual instrument source, generated app, and test evidence |
+| `tools/` | Reproduction, audit, benchmark, and build scripts |
+
+## Contributing
+
+Start with [CONTRIBUTING.md](CONTRIBUTING.md), then read [GOVERNANCE.md](GOVERNANCE.md), [NEUTRALITY.md](NEUTRALITY.md), and the [Code of Conduct](CODE_OF_CONDUCT.md). Contributions should preserve deterministic outputs, explicit uncertainty, and the distinction between validated structure and verified provider semantics.
+
+## License
+
+Licensing is split by artifact type:
+
+- Code: [Apache License 2.0](LICENSE)
+- Specification and schema: [Creative Commons Attribution 4.0](LICENSING.md)
+- Generated or approved aggregate data: [CC0 1.0](LICENSING.md)
+
+See [LICENSING.md](LICENSING.md) for the authoritative file-level policy.

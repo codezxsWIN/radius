@@ -1,0 +1,248 @@
+{
+  "method": "Machado et al. 2009 severity100 matrices; linear sRGB; CIE76 Delta E diagnostic",
+  "source": "https://www.inf.ufrgs.br/~oliveira/pubs_files/CVD_Simulation/CVD_Simulation.html",
+  "criterion": "Categorical minimum DeltaE >=10; sequential lightness must increase. Labels and icons remain mandatory, not color alone.",
+  "simulations": {
+    "protanopia": {
+      "categorical_min_delta_e": 22.72907038377871,
+      "closest_pair": [
+        "human_user",
+        "workload_identity"
+      ],
+      "categorical_pass": true,
+      "sensitivity_lightness_monotonic": true,
+      "categories": [
+        {
+          "kind": "human_user",
+          "color": "#5375b5",
+          "lab": [
+            49.21573832833481,
+            6.8701887619559425,
+            -37.638181325796126
+          ]
+        },
+        {
+          "kind": "service_principal",
+          "color": "#817100",
+          "lab": [
+            47.4993640633077,
+            -4.042764415358501,
+            53.55500848383245
+          ]
+        },
+        {
+          "kind": "managed_identity",
+          "color": "#9a9271",
+          "lab": [
+            60.36691637414589,
+            -2.221039214189202,
+            18.719817368373313
+          ]
+        },
+        {
+          "kind": "workload_identity",
+          "color": "#808ba9",
+          "lab": [
+            57.88563655193529,
+            2.6290482393176995,
+            -17.06012912520116
+          ]
+        },
+        {
+          "kind": "ai_agent",
+          "color": "#b9a200",
+          "lab": [
+            66.74790682365838,
+            -5.215440743731703,
+            69.79273231934707
+          ]
+        }
+      ],
+      "sensitivity": [
+        {
+          "color": "#002256",
+          "lightness": 14.34922505996342
+        },
+        {
+          "color": "#3a588d",
+          "lightness": 37.42639761161532
+        },
+        {
+          "color": "#88898c",
+          "lightness": 57.118871672449316
+        },
+        {
+          "color": "#ccb959",
+          "lightness": 74.98438724989387
+        },
+        {
+          "color": "#fee000",
+          "lightness": 88.96879321610417
+        }
+      ]
+    },
+    "deuteranopia": {
+      "categorical_min_delta_e": 17.87899194234576,
+      "closest_pair": [
+        "managed_identity",
+        "workload_identity"
+      ],
+      "categorical_pass": true,
+      "sensitivity_lightness_monotonic": true,
+      "categories": [
+        {
+          "kind": "human_user",
+          "color": "#3b67b1",
+          "lab": [
+            43.783877932543206,
+            9.48696972350238,
+            -44.06951563795465
+          ]
+        },
+        {
+          "kind": "service_principal",
+          "color": "#9e8c00",
+          "lab": [
+            57.99711847834273,
+            -5.535345184691176,
+            62.35260731285264
+          ]
+        },
+        {
+          "kind": "managed_identity",
+          "color": "#8a8676",
+          "lab": [
+            55.843952721825886,
+            -1.287943914940859,
+            9.218854573425773
+          ]
+        },
+        {
+          "kind": "workload_identity",
+          "color": "#9498a5",
+          "lab": [
+            63.05593073963607,
+            1.095921345279971,
+            -6.96641380143288
+          ]
+        },
+        {
+          "kind": "ai_agent",
+          "color": "#cab411",
+          "lab": [
+            72.95231650621875,
+            -6.677923339893366,
+            72.92078191460205
+          ]
+        }
+      ],
+      "sensitivity": [
+        {
+          "color": "#042752",
+          "lightness": 16.082038043161894
+        },
+        {
+          "color": "#30508a",
+          "lightness": 34.542297580579124
+        },
+        {
+          "color": "#787e8d",
+          "lightness": 52.687995478635344
+        },
+        {
+          "color": "#beaf69",
+          "lightness": 71.3818613377049
+        },
+        {
+          "color": "#ffe939",
+          "lightness": 91.56364914064395
+        }
+      ]
+    },
+    "tritanopia": {
+      "categorical_min_delta_e": 16.97224908699942,
+      "closest_pair": [
+        "human_user",
+        "managed_identity"
+      ],
+      "categorical_pass": true,
+      "sensitivity_lightness_monotonic": true,
+      "categories": [
+        {
+          "kind": "human_user",
+          "color": "#008289",
+          "lab": [
+            49.15079831235553,
+            -26.61610969674455,
+            -12.639817551219213
+          ]
+        },
+        {
+          "kind": "service_principal",
+          "color": "#eb4050",
+          "lab": [
+            53.90511239719402,
+            65.13009644493145,
+            30.677768615697808
+          ]
+        },
+        {
+          "kind": "managed_identity",
+          "color": "#009e92",
+          "lab": [
+            58.65090429689205,
+            -37.37501302897428,
+            -3.581604458038967
+          ]
+        },
+        {
+          "kind": "workload_identity",
+          "color": "#d6788a",
+          "lab": [
+            61.29443624463612,
+            38.635826282666095,
+            6.792262026477913
+          ]
+        },
+        {
+          "kind": "ai_agent",
+          "color": "#fb8c87",
+          "lab": [
+            70.14924010610284,
+            41.7409789935837,
+            21.18224572775722
+          ]
+        }
+      ],
+      "sensitivity": [
+        {
+          "color": "#43172e",
+          "lightness": 15.673787595335288
+        },
+        {
+          "color": "#085f67",
+          "lightness": 36.2410213834826
+        },
+        {
+          "color": "#00958f",
+          "lightness": 55.60394876151469
+        },
+        {
+          "color": "#4dc4b1",
+          "lightness": 72.42805086671711
+        },
+        {
+          "color": "#ffd6c6",
+          "lightness": 88.54778116251518
+        }
+      ]
+    }
+  },
+  "text_contrast": {
+    "ink": 14.986065392377787,
+    "muted": 6.40718016066866,
+    "accent": 6.6059723679049975,
+    "focus": 6.68001176814366
+  },
+  "all_criteria_pass": true
+}

@@ -1,0 +1,807 @@
+{
+  "synthetic": true,
+  "renderer": "Visual Vocabulary v0.1",
+  "outputs": [
+    {
+      "view": "disc",
+      "column": "single",
+      "files": [
+        {
+          "name": "disc-single.svg",
+          "bytes": 91497,
+          "sha256": "ceee85f475c1604f0dc92c8194ed624ce6402c660169b606c814bdbd6996f5be"
+        },
+        {
+          "name": "disc-single.png",
+          "bytes": 261972,
+          "sha256": "b2380a7bf45d28434934b11bb596576c5c256004ced050edd905f0e94200dd5f"
+        },
+        {
+          "name": "disc-single.pdf",
+          "bytes": 17944,
+          "sha256": "505d65359adc788b3362071022264b8b53b4e6b1f2608ee61659e7ecfe8d9bce"
+        }
+      ],
+      "snapshot": "96f926b53093d6cbd3a1210bf71d703ef5e9580e38fc8578a460f8cb5e34de7b",
+      "validation": {
+        "svg_repeat_identical": true,
+        "widthMm": 88.9,
+        "heightMm": 148.16666666666669,
+        "viewBox": [
+          0,
+          0,
+          420,
+          700
+        ],
+        "clipped": [],
+        "labelCrossings": [],
+        "minFontPoints": 7.200000000000001,
+        "embeddedFont": true,
+        "fullHash": true,
+        "qualified": true,
+        "rasterDpi": 300,
+        "png": {
+          "width": 1050,
+          "height": 1750,
+          "painted_samples": 90546
+        },
+        "pdf": {
+          "widthMm": 88.9,
+          "heightMm": 148.16666666666669,
+          "embedded_font": true
+        }
+      }
+    },
+    {
+      "view": "disc",
+      "column": "double",
+      "files": [
+        {
+          "name": "disc-double.svg",
+          "bytes": 91537,
+          "sha256": "ea36b182e1099c9a672510961acfa1a7d1138ff68553746dbfadf898a14662d6"
+        },
+        {
+          "name": "disc-double.png",
+          "bytes": 364523,
+          "sha256": "aaf8ce9e04d3befa48f34d5af7e4d90ed3656ca0995863a86d6f36247540f587"
+        },
+        {
+          "name": "disc-double.pdf",
+          "bytes": 17936,
+          "sha256": "74d4f19d3b65c2843069581d6e52b2fc6609084b8efc6f5e927c0d990aeffe2b"
+        }
+      ],
+      "snapshot": "96f926b53093d6cbd3a1210bf71d703ef5e9580e38fc8578a460f8cb5e34de7b",
+      "validation": {
+        "svg_repeat_identical": true,
+        "widthMm": 182,
+        "heightMm": 134.33333333333334,
+        "viewBox": [
+          0,
+          0,
+          840,
+          620
+        ],
+        "clipped": [],
+        "labelCrossings": [],
+        "minFontPoints": 7.370078740157481,
+        "embeddedFont": true,
+        "fullHash": true,
+        "qualified": true,
+        "rasterDpi": 300,
+        "png": {
+          "width": 2150,
+          "height": 1587,
+          "painted_samples": 140783
+        },
+        "pdf": {
+          "widthMm": 182,
+          "heightMm": 134.33333333333334,
+          "embedded_font": true
+        }
+      }
+    },
+    {
+      "view": "path",
+      "column": "single",
+      "files": [
+        {
+          "name": "path-single.svg",
+          "bytes": 78037,
+          "sha256": "ff052a0ebda4815d2524f3cd8cb03d2035b73843f86376322a534a564cdf8599"
+        },
+        {
+          "name": "path-single.png",
+          "bytes": 221978,
+          "sha256": "3abc6ba3e26d02cc76b25d1f5b58058aeaf531551dc0faceb91f9115feb3956f"
+        },
+        {
+          "name": "path-single.pdf",
+          "bytes": 14234,
+          "sha256": "2e2e43fd97a02fa377a0ea43417b0b178a1d19a2ab18f0a2e6e5ca7e44822672"
+        }
+      ],
+      "snapshot": "96f926b53093d6cbd3a1210bf71d703ef5e9580e38fc8578a460f8cb5e34de7b",
+      "validation": {
+        "svg_repeat_identical": true,
+        "widthMm": 88.9,
+        "heightMm": 164.6766666666667,
+        "viewBox": [
+          0,
+          0,
+          420,
+          778
+        ],
+        "clipped": [],
+        "labelCrossings": [],
+        "minFontPoints": 7.200000000000001,
+        "embeddedFont": true,
+        "fullHash": true,
+        "qualified": true,
+        "rasterDpi": 300,
+        "png": {
+          "width": 1050,
+          "height": 1945,
+          "painted_samples": 27202
+        },
+        "pdf": {
+          "widthMm": 88.9,
+          "heightMm": 164.67666666666673,
+          "embedded_font": true
+        }
+      }
+    },
+    {
+      "view": "path",
+      "column": "double",
+      "files": [
+        {
+          "name": "path-double.svg",
+          "bytes": 77774,
+          "sha256": "0832c053f9e2e1553029ebecfb28fb5ec5cb7e96af805bbae846c24eed5625b2"
+        },
+        {
+          "name": "path-double.png",
+          "bytes": 223111,
+          "sha256": "cd61177978d42262bab5c06b2dcdb08cff96bdfa08df67f6a8d4f9c5abfc239c"
+        },
+        {
+          "name": "path-double.pdf",
+          "bytes": 14096,
+          "sha256": "9309e1bcdef9d67817f08796101f1218405daa903ccc4df9373a13ea19a2c4d2"
+        }
+      ],
+      "snapshot": "96f926b53093d6cbd3a1210bf71d703ef5e9580e38fc8578a460f8cb5e34de7b",
+      "validation": {
+        "svg_repeat_identical": true,
+        "widthMm": 182,
+        "heightMm": 102.7,
+        "viewBox": [
+          0,
+          0,
+          840,
+          474
+        ],
+        "clipped": [],
+        "labelCrossings": [],
+        "minFontPoints": 7.370078740157481,
+        "embeddedFont": true,
+        "fullHash": true,
+        "qualified": true,
+        "rasterDpi": 300,
+        "png": {
+          "width": 2150,
+          "height": 1213,
+          "painted_samples": 28974
+        },
+        "pdf": {
+          "widthMm": 182,
+          "heightMm": 102.7,
+          "embedded_font": true
+        }
+      }
+    },
+    {
+      "view": "treemap",
+      "column": "single",
+      "files": [
+        {
+          "name": "treemap-single.svg",
+          "bytes": 89307,
+          "sha256": "6ab993aa29bae5eeede360e48f2501c7f729870996e219a157356e06eadc2887"
+        },
+        {
+          "name": "treemap-single.png",
+          "bytes": 198173,
+          "sha256": "6a034fb2ab48a5d27555a1fd455f23b5071470cc9f39ec0be88c93ea13f9d5c0"
+        },
+        {
+          "name": "treemap-single.pdf",
+          "bytes": 15509,
+          "sha256": "cafcf90f11e3716e539e514c25ba29f37ac8ae2888bc7fb512dc3b0118f1ad9d"
+        }
+      ],
+      "snapshot": "96f926b53093d6cbd3a1210bf71d703ef5e9580e38fc8578a460f8cb5e34de7b",
+      "validation": {
+        "svg_repeat_identical": true,
+        "widthMm": 88.9,
+        "heightMm": 148.16666666666669,
+        "viewBox": [
+          0,
+          0,
+          420,
+          700
+        ],
+        "clipped": [],
+        "labelCrossings": [],
+        "minFontPoints": 7.200000000000001,
+        "embeddedFont": true,
+        "fullHash": true,
+        "qualified": true,
+        "rasterDpi": 300,
+        "png": {
+          "width": 1050,
+          "height": 1750,
+          "painted_samples": 234508
+        },
+        "pdf": {
+          "widthMm": 88.9,
+          "heightMm": 148.16666666666669,
+          "embedded_font": true
+        }
+      }
+    },
+    {
+      "view": "treemap",
+      "column": "double",
+      "files": [
+        {
+          "name": "treemap-double.svg",
+          "bytes": 91265,
+          "sha256": "983aff326c865b6e661e8963f418b95d4d56e805fb77cbc74485d26ddb50f732"
+        },
+        {
+          "name": "treemap-double.png",
+          "bytes": 336071,
+          "sha256": "32da9225d3a62364520c87081e4e11ead48baacff253a6c84ac38b362a111b91"
+        },
+        {
+          "name": "treemap-double.pdf",
+          "bytes": 16231,
+          "sha256": "168af2475e1100c8452ded398e9ba766e95e8dd8f5da6cb9943f91ed9cfe4515"
+        }
+      ],
+      "snapshot": "96f926b53093d6cbd3a1210bf71d703ef5e9580e38fc8578a460f8cb5e34de7b",
+      "validation": {
+        "svg_repeat_identical": true,
+        "widthMm": 182,
+        "heightMm": 134.33333333333334,
+        "viewBox": [
+          0,
+          0,
+          840,
+          620
+        ],
+        "clipped": [],
+        "labelCrossings": [],
+        "minFontPoints": 7.370078740157481,
+        "embeddedFont": true,
+        "fullHash": true,
+        "qualified": true,
+        "rasterDpi": 300,
+        "png": {
+          "width": 2150,
+          "height": 1587,
+          "painted_samples": 507082
+        },
+        "pdf": {
+          "widthMm": 182,
+          "heightMm": 134.33333333333334,
+          "embedded_font": true
+        }
+      }
+    },
+    {
+      "view": "lorenz",
+      "column": "single",
+      "files": [
+        {
+          "name": "lorenz-single.svg",
+          "bytes": 76277,
+          "sha256": "d095e77f73603189fe1cbcd3702ad29031fd985fb187e0012cd7bc6f554204c7"
+        },
+        {
+          "name": "lorenz-single.png",
+          "bytes": 213884,
+          "sha256": "cef94b46db10553096d3bbd5ccc4fe710e9b32b9ab1fd49b5fc1132b9c9fd8bd"
+        },
+        {
+          "name": "lorenz-single.pdf",
+          "bytes": 14405,
+          "sha256": "cc63633dfd519719623c782666f1adde850159125016719faeff8a085fa88b6d"
+        }
+      ],
+      "snapshot": "96f926b53093d6cbd3a1210bf71d703ef5e9580e38fc8578a460f8cb5e34de7b",
+      "validation": {
+        "svg_repeat_identical": true,
+        "widthMm": 88.9,
+        "heightMm": 148.16666666666669,
+        "viewBox": [
+          0,
+          0,
+          420,
+          700
+        ],
+        "clipped": [],
+        "labelCrossings": [],
+        "minFontPoints": 7.200000000000001,
+        "embeddedFont": true,
+        "fullHash": true,
+        "qualified": true,
+        "rasterDpi": 300,
+        "png": {
+          "width": 1050,
+          "height": 1750,
+          "painted_samples": 21536
+        },
+        "pdf": {
+          "widthMm": 88.9,
+          "heightMm": 148.16666666666669,
+          "embedded_font": true
+        }
+      }
+    },
+    {
+      "view": "lorenz",
+      "column": "double",
+      "files": [
+        {
+          "name": "lorenz-double.svg",
+          "bytes": 76126,
+          "sha256": "e10dd7ea88edab84deb6155b6e34bbbb386046e3e1abef9bb34152cb2ff73501"
+        },
+        {
+          "name": "lorenz-double.png",
+          "bytes": 272800,
+          "sha256": "ef875ab6a91cd50ae9b628b05c44eb5a2232921ea4de1ad4d2c3d3fe4785d1bd"
+        },
+        {
+          "name": "lorenz-double.pdf",
+          "bytes": 14390,
+          "sha256": "8798dbf7fb3760526b687518961b69e2aaa60d45b8d3c445a4382809970b7344"
+        }
+      ],
+      "snapshot": "96f926b53093d6cbd3a1210bf71d703ef5e9580e38fc8578a460f8cb5e34de7b",
+      "validation": {
+        "svg_repeat_identical": true,
+        "widthMm": 182,
+        "heightMm": 134.33333333333334,
+        "viewBox": [
+          0,
+          0,
+          840,
+          620
+        ],
+        "clipped": [],
+        "labelCrossings": [],
+        "minFontPoints": 7.370078740157481,
+        "embeddedFont": true,
+        "fullHash": true,
+        "qualified": true,
+        "rasterDpi": 300,
+        "png": {
+          "width": 2150,
+          "height": 1587,
+          "painted_samples": 29765
+        },
+        "pdf": {
+          "widthMm": 182,
+          "heightMm": 134.33333333333334,
+          "embedded_font": true
+        }
+      }
+    },
+    {
+      "view": "histogram",
+      "column": "single",
+      "files": [
+        {
+          "name": "histogram-single.svg",
+          "bytes": 84647,
+          "sha256": "8063c065c2f1ffdfea3eccd53d05ec08fc8a03ed490bb93310ffa0daa5b7ecb3"
+        },
+        {
+          "name": "histogram-single.png",
+          "bytes": 168844,
+          "sha256": "52cd486e469b00a2571d0f8d14083d43e93e7b5467ed090c1f8084d45acafb22"
+        },
+        {
+          "name": "histogram-single.pdf",
+          "bytes": 14170,
+          "sha256": "e2bcc3ce9b50a6c43331aa5264ac06dad6e475f1f2e333888772f82fd20eca65"
+        }
+      ],
+      "snapshot": "96f926b53093d6cbd3a1210bf71d703ef5e9580e38fc8578a460f8cb5e34de7b",
+      "validation": {
+        "svg_repeat_identical": true,
+        "widthMm": 88.9,
+        "heightMm": 148.16666666666669,
+        "viewBox": [
+          0,
+          0,
+          420,
+          700
+        ],
+        "clipped": [],
+        "labelCrossings": [],
+        "minFontPoints": 7.200000000000001,
+        "embeddedFont": true,
+        "fullHash": true,
+        "qualified": true,
+        "rasterDpi": 300,
+        "png": {
+          "width": 1050,
+          "height": 1750,
+          "painted_samples": 32565
+        },
+        "pdf": {
+          "widthMm": 88.9,
+          "heightMm": 148.16666666666669,
+          "embedded_font": true
+        }
+      }
+    },
+    {
+      "view": "histogram",
+      "column": "double",
+      "files": [
+        {
+          "name": "histogram-double.svg",
+          "bytes": 84440,
+          "sha256": "a371c6c45a2f8102be6da20b569cbe6c909660dbb84f8ff3726bb1ba249f0472"
+        },
+        {
+          "name": "histogram-double.png",
+          "bytes": 199117,
+          "sha256": "38c836e92033c9480f24b4fcb670bc5dcd75537d6fd120b49eadc2b4e528e314"
+        },
+        {
+          "name": "histogram-double.pdf",
+          "bytes": 14146,
+          "sha256": "368d90976f5c35181262766c84c1c82dd2eaf44226d33e81bdb44cc0269846b2"
+        }
+      ],
+      "snapshot": "96f926b53093d6cbd3a1210bf71d703ef5e9580e38fc8578a460f8cb5e34de7b",
+      "validation": {
+        "svg_repeat_identical": true,
+        "widthMm": 182,
+        "heightMm": 134.33333333333334,
+        "viewBox": [
+          0,
+          0,
+          840,
+          620
+        ],
+        "clipped": [],
+        "labelCrossings": [],
+        "minFontPoints": 7.370078740157481,
+        "embeddedFont": true,
+        "fullHash": true,
+        "qualified": true,
+        "rasterDpi": 300,
+        "png": {
+          "width": 2150,
+          "height": 1587,
+          "painted_samples": 63188
+        },
+        "pdf": {
+          "widthMm": 182,
+          "heightMm": 134.33333333333334,
+          "embedded_font": true
+        }
+      }
+    },
+    {
+      "view": "models",
+      "column": "single",
+      "files": [
+        {
+          "name": "models-single.svg",
+          "bytes": 76289,
+          "sha256": "02a663287d1cb6a7eb7175f9ed143560dbea3c3e250fd427ae37328334d2940c"
+        },
+        {
+          "name": "models-single.png",
+          "bytes": 215513,
+          "sha256": "456f9b97a5c0858cb7f7c48bc9049ff25090c452684b4f09c7066e7a17c99f33"
+        },
+        {
+          "name": "models-single.pdf",
+          "bytes": 14524,
+          "sha256": "09027f5f2c4144cb7dfb9a9974f8ca5ca4afce2213202aae27c7e8968be94a5d"
+        }
+      ],
+      "snapshot": "96f926b53093d6cbd3a1210bf71d703ef5e9580e38fc8578a460f8cb5e34de7b",
+      "validation": {
+        "svg_repeat_identical": true,
+        "widthMm": 88.9,
+        "heightMm": 148.16666666666669,
+        "viewBox": [
+          0,
+          0,
+          420,
+          700
+        ],
+        "clipped": [],
+        "labelCrossings": [],
+        "minFontPoints": 7.200000000000001,
+        "embeddedFont": true,
+        "fullHash": true,
+        "qualified": true,
+        "rasterDpi": 300,
+        "png": {
+          "width": 1050,
+          "height": 1750,
+          "painted_samples": 32923
+        },
+        "pdf": {
+          "widthMm": 88.9,
+          "heightMm": 148.16666666666669,
+          "embedded_font": true
+        }
+      }
+    },
+    {
+      "view": "models",
+      "column": "double",
+      "files": [
+        {
+          "name": "models-double.svg",
+          "bytes": 78099,
+          "sha256": "7d60311799d1520ce6a2173d7325fb704b5fd2c2a3604aaffb0cd7ea4fb4ee3a"
+        },
+        {
+          "name": "models-double.png",
+          "bytes": 325417,
+          "sha256": "e0e7eb37340a8cf4bdb05301e9f75dc06e83a2aa6a766bd9d8b41fbcfabb49b7"
+        },
+        {
+          "name": "models-double.pdf",
+          "bytes": 15312,
+          "sha256": "08d204c2e4bf1dd929ba9eeb04658f35541345bf33bbe98b3111d676a6fe91be"
+        }
+      ],
+      "snapshot": "96f926b53093d6cbd3a1210bf71d703ef5e9580e38fc8578a460f8cb5e34de7b",
+      "validation": {
+        "svg_repeat_identical": true,
+        "widthMm": 182,
+        "heightMm": 134.33333333333334,
+        "viewBox": [
+          0,
+          0,
+          840,
+          620
+        ],
+        "clipped": [],
+        "labelCrossings": [],
+        "minFontPoints": 7.370078740157481,
+        "embeddedFont": true,
+        "fullHash": true,
+        "qualified": true,
+        "rasterDpi": 300,
+        "png": {
+          "width": 2150,
+          "height": 1587,
+          "painted_samples": 64954
+        },
+        "pdf": {
+          "widthMm": 182,
+          "heightMm": 134.33333333333334,
+          "embedded_font": true
+        }
+      }
+    },
+    {
+      "view": "whatif",
+      "column": "single",
+      "files": [
+        {
+          "name": "whatif-single.svg",
+          "bytes": 76325,
+          "sha256": "c18d5bc0e4dc0e39683c79e7d3ed56d82bc91701cf0ae014c9cb4167b985e704"
+        },
+        {
+          "name": "whatif-single.png",
+          "bytes": 234918,
+          "sha256": "5615d9af16ac1ddbdbcfda3dfa695b0b588ac46f2b066d43ce065c307c5ed6ee"
+        },
+        {
+          "name": "whatif-single.pdf",
+          "bytes": 14799,
+          "sha256": "f1717cbbdd705b5d12265162f4fe3af085675e18144f8a747da79e177521d67b"
+        }
+      ],
+      "snapshot": "eda188a9260d371e7083e68da163bb0e56681ba527c389fbd1a07dd1ef761598",
+      "validation": {
+        "svg_repeat_identical": true,
+        "widthMm": 88.9,
+        "heightMm": 148.16666666666669,
+        "viewBox": [
+          0,
+          0,
+          420,
+          700
+        ],
+        "clipped": [],
+        "labelCrossings": [],
+        "minFontPoints": 7.200000000000001,
+        "embeddedFont": true,
+        "fullHash": true,
+        "qualified": true,
+        "rasterDpi": 300,
+        "png": {
+          "width": 1050,
+          "height": 1750,
+          "painted_samples": 30811
+        },
+        "pdf": {
+          "widthMm": 88.9,
+          "heightMm": 148.16666666666669,
+          "embedded_font": true
+        }
+      }
+    },
+    {
+      "view": "whatif",
+      "column": "double",
+      "files": [
+        {
+          "name": "whatif-double.svg",
+          "bytes": 78156,
+          "sha256": "116e4314ac433b3b7f4b4e13b83a669c495ff5f269ab0c5cf44fcdeac495c818"
+        },
+        {
+          "name": "whatif-double.png",
+          "bytes": 358991,
+          "sha256": "0bcffbe2d3a093fd39803d78ee4feb2f30aa55dc4f850444bf3385435c7c8376"
+        },
+        {
+          "name": "whatif-double.pdf",
+          "bytes": 15084,
+          "sha256": "944b831182a71bda8b0c5aef1e5aaa23573c295d1c2764d324cb718e1681c10f"
+        }
+      ],
+      "snapshot": "eda188a9260d371e7083e68da163bb0e56681ba527c389fbd1a07dd1ef761598",
+      "validation": {
+        "svg_repeat_identical": true,
+        "widthMm": 182,
+        "heightMm": 134.33333333333334,
+        "viewBox": [
+          0,
+          0,
+          840,
+          620
+        ],
+        "clipped": [],
+        "labelCrossings": [],
+        "minFontPoints": 7.370078740157481,
+        "embeddedFont": true,
+        "fullHash": true,
+        "qualified": true,
+        "rasterDpi": 300,
+        "png": {
+          "width": 2150,
+          "height": 1587,
+          "painted_samples": 64987
+        },
+        "pdf": {
+          "widthMm": 182,
+          "heightMm": 134.33333333333334,
+          "embedded_font": true
+        }
+      }
+    },
+    {
+      "view": "privacy",
+      "column": "single",
+      "files": [
+        {
+          "name": "privacy-single.svg",
+          "bytes": 75407,
+          "sha256": "a8b89643375f0a5b06465e92bdfa0f4d000914df1cdecc473199ea8a2dcdf341"
+        },
+        {
+          "name": "privacy-single.png",
+          "bytes": 187958,
+          "sha256": "7c316faf83b118c575df4a9c3a14d0fec6219434d0ca405179c4bdf645a95835"
+        },
+        {
+          "name": "privacy-single.pdf",
+          "bytes": 13677,
+          "sha256": "8ceb904607b1ba07584f2ac52c03f338c1e3fdfe7bdf5cd3fbdd272ef16d882d"
+        }
+      ],
+      "snapshot": "eda188a9260d371e7083e68da163bb0e56681ba527c389fbd1a07dd1ef761598",
+      "validation": {
+        "svg_repeat_identical": true,
+        "widthMm": 88.9,
+        "heightMm": 148.16666666666669,
+        "viewBox": [
+          0,
+          0,
+          420,
+          700
+        ],
+        "clipped": [],
+        "labelCrossings": [],
+        "minFontPoints": 7.200000000000001,
+        "embeddedFont": true,
+        "fullHash": true,
+        "qualified": true,
+        "rasterDpi": 300,
+        "png": {
+          "width": 1050,
+          "height": 1750,
+          "painted_samples": 43986
+        },
+        "pdf": {
+          "widthMm": 88.9,
+          "heightMm": 148.16666666666669,
+          "embedded_font": true
+        }
+      }
+    },
+    {
+      "view": "privacy",
+      "column": "double",
+      "files": [
+        {
+          "name": "privacy-double.svg",
+          "bytes": 75159,
+          "sha256": "d853fa9a309118ef81ca242df04d78a7ba9d6f3a9e30d32ea5c824570d98c567"
+        },
+        {
+          "name": "privacy-double.png",
+          "bytes": 225427,
+          "sha256": "1a6f4c15552a3ec53609ddb0bce7c79e02b2bc946af5ab9486e3ecc197dd9c26"
+        },
+        {
+          "name": "privacy-double.pdf",
+          "bytes": 13645,
+          "sha256": "9e9628db8369b2f18a951e46803d094d759239178f2a41ac78fb38929cb04988"
+        }
+      ],
+      "snapshot": "eda188a9260d371e7083e68da163bb0e56681ba527c389fbd1a07dd1ef761598",
+      "validation": {
+        "svg_repeat_identical": true,
+        "widthMm": 182,
+        "heightMm": 134.33333333333334,
+        "viewBox": [
+          0,
+          0,
+          840,
+          620
+        ],
+        "clipped": [],
+        "labelCrossings": [],
+        "minFontPoints": 7.370078740157481,
+        "embeddedFont": true,
+        "fullHash": true,
+        "qualified": true,
+        "rasterDpi": 300,
+        "png": {
+          "width": 2150,
+          "height": 1587,
+          "painted_samples": 92305
+        },
+        "pdf": {
+          "widthMm": 182,
+          "heightMm": 134.33333333333334,
+          "embedded_font": true
+        }
+      }
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,13 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const visual = require('./render.js');
+visual.configure(JSON.parse(fs.readFileSync(path.join(__dirname,'tokens.json'),'utf8')));
+assert.equal(visual.discGeometry(0,0,[]).outer,0);
+assert.equal(visual.discGeometry(1,0,[]).outer,190);
+assert.equal(visual.discGeometry(0.25,0,[]).outer,95);
+const first=visual.discGeometry(0.5,2,[{pair:['r','read'],rank:[0,3,[]]},{pair:['s','write'],rank:[2,5,[]]}]);
+assert.deepEqual(first,visual.discGeometry(0.5,2,[{pair:['r','read'],rank:[0,3,[]]},{pair:['s','write'],rank:[2,5,[]]}]));
+assert.ok(Math.hypot(first.marks[0].x,first.marks[0].y)<Math.hypot(first.marks[1].x,first.marks[1].y));
+assert.equal(visual.escape('<script>'), '&lt;script&gt;');
+console.log('6 visual geometry/escaping assertions passed');

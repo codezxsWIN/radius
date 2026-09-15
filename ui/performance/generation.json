@@ -1,0 +1,22 @@
+[
+  {
+    "credentials": 10000,
+    "nodes": 30099,
+    "edges": 30199,
+    "universe": 239,
+    "engine_pipeline_seconds": 21.428995200003556,
+    "result_bytes": 22439258,
+    "snapshot_hash": "1063ce0abbde18f73e91861c84449147398582399d5de495ff5ebe3881e09985",
+    "synthetic": true
+  },
+  {
+    "credentials": 50000,
+    "nodes": 150099,
+    "edges": 150199,
+    "universe": 239,
+    "engine_pipeline_seconds": 107.68700280000121,
+    "result_bytes": 111861263,
+    "snapshot_hash": "23db9c3f51272ec0d28c9dfcd00e7c6ec5c61a271970e55c8e5db68c5dc453b3",
+    "synthetic": true
+  }
+]

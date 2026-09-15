@@ -1,0 +1,871 @@
+{
+  "goals": [
+    {
+      "id": 1,
+      "title": "Static architecture",
+      "acceptance": "One self-contained file opens without a server; no telemetry or network dependency. The build records vendored asset hashes and leaves engine result v0.1 unchanged.",
+      "tier": "T1",
+      "status": "shipped",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 2,
+      "title": "Shared tokens",
+      "acceptance": "UI, SVG and paper exports consume the same JSON tokens. Color-vision simulations and contrast measurements are saved and any failed pair is repaired before a pass claim.",
+      "tier": "T1",
+      "status": "shipped",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 3,
+      "title": "Open icon vocabulary",
+      "acceptance": "Principal, credential and constraint kinds resolve to attributed CC-BY SVG icons. Accessible names remain available without relying on the icon or color.",
+      "tier": "T1",
+      "status": "shipped",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 4,
+      "title": "Normative visual annex",
+      "acceptance": "Publish Visual Vocabulary v0.1 with area, step, certainty, fixed-sensitivity and stamp rules. Every supported renderer is checked against the accompanying checklist.",
+      "tier": "T1",
+      "status": "shipped",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 5,
+      "title": "Component gallery",
+      "acceptance": "A gallery renders each implemented view against an exercising result fixture. Empty, blocked, undefined and long-label states are included rather than only a flattering default.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 6,
+      "title": "Semantic zoom",
+      "acceptance": "Navigate only hierarchy explicitly present in input metadata. Acceptance requires stable breadcrumbs and reversible parent/child transitions; the current schema does not supply subscription/group hierarchy, so it is not fabricated.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 7,
+      "title": "Search grammar",
+      "acceptance": "Document type, radius comparison and name predicates with explicit error behavior. The same parsed predicate filters all relevant population visuals and their text tables without changing the full resource denominator.",
+      "tier": "T2",
+      "status": "stubbed",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 8,
+      "title": "Shareable view state",
+      "acceptance": "A URL fragment identifies the snapshot hash, view, model and ordinal selection. No tenant or credential names/IDs enter the fragment; reopening a known embedded snapshot restores the state.",
+      "tier": "T2",
+      "status": "stubbed",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 9,
+      "title": "Deterministic pseudonyms",
+      "acceptance": "One control replaces all displayed names and relevant export labels with stable local pseudonyms. Acceptance includes titles, tables, tooltips, evidence, annotations and a visible redaction stamp; pseudonymization is not anonymity.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 10,
+      "title": "Light dark print",
+      "acceptance": "Light and dark UI tokens preserve contrast; figures remain a declared paper style. An A3 print portrait removes controls without omitting provenance or implying an independent report.",
+      "tier": "T2",
+      "status": "stubbed",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 11,
+      "title": "Blast disc",
+      "acceptance": "Disc area follows canonical radius on a fixed reference footprint; marks encode resource-action pairs by first escalation step and sensitivity. Zero reach has zero filled area and every mark has an evidence alternative.",
+      "tier": "T1",
+      "status": "stubbed",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 12,
+      "title": "Step propagation",
+      "acceptance": "Play, pause, backward/forward step and scrub expose the same step ordering. Reduced motion presents final state without losing manual step access; elapsed animation time never claims attack duration.",
+      "tier": "T1",
+      "status": "stubbed",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 13,
+      "title": "Tenant treemap",
+      "acceptance": "Rectangle area is absolute reach and color is principal type. A p95 outline has an explicit population/tie rule, zero-area credentials remain in the table, and selection opens the corresponding disc.",
+      "tier": "T1",
+      "status": "stubbed",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 14,
+      "title": "Reach sunburst",
+      "acceptance": "Partition one credential's unique pairs by resource type, sensitivity bin and action without duplicating paths. Acceptance requires conserved counts at each hierarchy level and a readable linear table fallback.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 15,
+      "title": "Plane cross-section",
+      "acceptance": "Separate principal, binding and resource strata using explicit node kinds. No implied cloud boundary or network distance is added; crossing links retain direction, provenance and escalation labels.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 16,
+      "title": "Gravity layout",
+      "acceptance": "Do not ship orbital distance as a second unexplained risk score. A proposed alternative is fixed-axis small multiples; acceptance requires a declared distance function and evidence that overlap does not hide small credentials.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 17,
+      "title": "Egocentric graph",
+      "acceptance": "Show selected-credential reachable states with deterministic layout and an explicit node budget. Bundling must expose the underlying multiplicity and cannot erase distinct actor contexts or deny semantics.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 18,
+      "title": "Same-scale small multiples",
+      "acceptance": "Render compatible tenant or declared-group results with a common full-universe reference area. Acceptance rejects incomparable resource granularities and labels every numerator and denominator.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 19,
+      "title": "Granted versus used",
+      "acceptance": "Usage is absent from the current result contract, so no inner usage ring is invented. A future version must define observation window, missingness and action-level matching before two rings can be compared.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 20,
+      "title": "Model outlines",
+      "acceptance": "Overlay only independently computed default, strict and session-aware discs with named outlines and a common reference area. Atomic model changes avoid implying that interpolated states are valid authorization models.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 21,
+      "title": "Subway witness",
+      "acceptance": "Stations and directed edges represent the engine's chosen explanatory witness. Escalation interchanges, barriers, unknown/assumed segments and step versus hop counts must remain distinguishable.",
+      "tier": "T1",
+      "status": "stubbed",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 22,
+      "title": "Station provenance",
+      "acceptance": "Keyboard and pointer activation expose connector, source API, observed_at and evidence reference. Acceptance checks every node/edge station and restores focus when its evidence dialog closes.",
+      "tier": "T1",
+      "status": "stubbed",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 23,
+      "title": "Alternative paths",
+      "acceptance": "Show at most three independently enumerated valid alternatives with their actor contexts and divergence points. The current result includes one canonical witness; alternatives need verified enumeration rather than duplicated decorative routes.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 24,
+      "title": "Path intervention",
+      "acceptance": "A binding station can open the existing binding-removal counterfactual. Arbitrary edge deletion is not mislabeled a supported binding intervention; unsupported edge kinds explain the limitation.",
+      "tier": "T2",
+      "status": "stubbed",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 25,
+      "title": "Deterministic narrative",
+      "acceptance": "Build a factual sequence from witness edge kinds and provenance, with no language model. Copy exports plain text and retains the model, evidence and synthetic qualification rather than making a ticketing integration.",
+      "tier": "T2",
+      "status": "shipped",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 26,
+      "title": "Research summaries",
+      "acceptance": "Replace the executive-sales framing with a data-derived research abstract for selected credentials. Acceptance requires exact reach, assumptions and limitations in exported Markdown, with no predicted-loss prose.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 27,
+      "title": "Secret unfolding",
+      "acceptance": "Reveal only explicitly modeled stored-credential links after the required read_secret capability is present. Metadata access must not unfold invented credentials or imply that all vault contents were read.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 28,
+      "title": "Trust bridges",
+      "acceptance": "Use platform regions only when an input extension provides authoritative boundary labels. Every bridge must map to an explicit assumption/federation capability; provider names in provenance are not sufficient.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 29,
+      "title": "Guest crossings",
+      "acceptance": "A versioned boundary/guest classification is needed before counting crossings. Acceptance excludes guessed guest status from names or domains and shows unknown classification separately.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 30,
+      "title": "Witness by model",
+      "acceptance": "Display the independently selected path or an explicit absence for each required model. Do not simply remove stations from a different model's witness and call the remnant a valid route.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 31,
+      "title": "Model control",
+      "acceptance": "Switch all credential results to the selected computed model and list every delta against a fixed baseline. Discrete redraw replaces misleading intermediate-model numeric tweening; reduced motion preserves all comparisons.",
+      "tier": "T1",
+      "status": "stubbed",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 32,
+      "title": "Binding surgery",
+      "acceptance": "Remove or add one validated binding and recompute per-credential and tenant metrics on a fixed universe. Restoring the source snapshot is reversible; invalid actions and graph shapes reject without retaining a misleading score.",
+      "tier": "T1",
+      "status": "stubbed",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 33,
+      "title": "Evaluated changes",
+      "acceptance": "Show five supplied single-binding evaluations and their before/after p95 discs. State candidate count and zero-improvement outcomes; never label the set globally optimal or multi-change minimal.",
+      "tier": "T1",
+      "status": "stubbed",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 34,
+      "title": "Path choke points",
+      "acceptance": "Count use by the selected canonical high-radius witnesses, not all possible paths. Acceptance labels that limited denominator and recomputes a proposed removal before claiming an actual effect.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 35,
+      "title": "Weight policy editor",
+      "acceptance": "Edit declared sensitivity weights with bounds and a visible policy-choice notice. The changed weights and result hash must be exported; no silently updated canonical radius or empirical-risk interpretation is permitted.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 36,
+      "title": "Variant disagreement",
+      "acceptance": "Compare ordinal rankings for canonical, sensitivity and action variants using deterministic tie rules. A flag explains the chosen threshold and is not a claim that a tool or tenant is gaming deliberately.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 37,
+      "title": "Local annotations",
+      "acceptance": "Notes remain in opt-in browser storage and export as a versioned JSON sidecar. They never modify engine evidence or silently enter public exports; redaction and deletion are testable.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 38,
+      "title": "Snapshot comparison",
+      "acceptance": "Accept two compatible results and show added/removed capabilities with fixed population and universe qualifications. Unknown inventory coverage must prevent a false improvement claim from missing resources.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 39,
+      "title": "Target planning",
+      "acceptance": "The engine evaluates single changes, not a global optimizer, so no minimal ordered plan is fabricated. A future planner needs a declared search objective, cost model and optimality bound; current evaluated choices remain separate.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 40,
+      "title": "Command palette",
+      "acceptance": "A keyboard command dialog exposes all supported view and export actions with focus return. Commands must mirror visible controls and never execute network or platform mutations.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 41,
+      "title": "Lorenz and Gini",
+      "acceptance": "Compute a sorted cumulative curve from per-credential reach and annotate the exact top share. The sum may overlap across credentials and must not be described as unique tenant surface.",
+      "tier": "T1",
+      "status": "stubbed",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 42,
+      "title": "Typed histogram",
+      "acceptance": "Use fixed canonical bins and grouped principal-type counts with a threshold marker. Linear and explicitly labeled log(1+count) scales preserve zero counts without deceptive log stacking.",
+      "tier": "T1",
+      "status": "stubbed",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 43,
+      "title": "Benchmark position",
+      "acceptance": "No real anonymized comparison population exists in this artifact. A future percentile requires a compatible released cohort and uncertainty; synthetic distributions cannot be presented as enterprise percentiles.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 44,
+      "title": "Public benchmark shell",
+      "acceptance": "A static methodology/download view may render the approved aggregate file. It must visibly state synthetic or pending status, release budget and cohort limits, with no pretend contributor count.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 45,
+      "title": "State report figures",
+      "acceptance": "Generate report charts only from a released aggregate and preserve suppression/noise metadata. The existing report template remains a template until governance and real-data gates are satisfied.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 46,
+      "title": "Reach flow",
+      "acceptance": "Naive Sankey flows can double-count shared bindings and violate conservation. Redesign around an explicitly unique attribution scheme or pair-overlap matrix; acceptance proves conservation and explains overlap losses.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 47,
+      "title": "Boundary chord",
+      "acceptance": "A chord requires declared boundary metadata and a precise directed pair-count definition. It cannot infer subscriptions/accounts from resource names or convert duplicate trust paths into additional exposure.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 48,
+      "title": "Team budgets",
+      "acceptance": "Teams, budgets and time snapshots are not supplied by the current contract. Specify an optional policy sidecar and comparable history; no invented team scorecard or compliance status is shown.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 49,
+      "title": "Resource shadow map",
+      "acceptance": "Invert computed reach to count how many credentials reach each resource-action pair. Rank exposure with sensitivity and principal-type mix, keeping credential counts distinct from unique resources.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 50,
+      "title": "Synthetic population explorer",
+      "acceptance": "Parameter controls invoke a documented local synthetic generator with a fixed seed. Every resulting distribution says illustrative and never uses animation as a substitute for engine completion.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 51,
+      "title": "Non-human lens",
+      "acceptance": "Filter service, managed, workload and AI-agent identities while comparing human/NHI count, median and p95. The denominator and whether statistics concern credentials or principals are explicitly labeled.",
+      "tier": "T1",
+      "status": "stubbed",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 52,
+      "title": "Agent budget",
+      "acceptance": "A gauge needs an explicit policy ceiling with a version and scope. No default threshold is falsely described as a real agent task budget; missing ceilings show unavailable.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 53,
+      "title": "Identity lineage",
+      "acceptance": "Creation lineage is not inferred from an authorization edge. A future creator relation requires provenance and time, with unknown creators preserved rather than a fabricated branching story.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 54,
+      "title": "Lifetime strip",
+      "acceptance": "Validity and last-used windows require corresponding fields and observation coverage. Missing telemetry must not become never-used, stale or expired; absent data renders an unavailable state.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 55,
+      "title": "Radius time-lapse",
+      "acceptance": "Animate only a sequence of comparable, independently computed snapshots. Assignment attribution must be proven by a counterfactual, not assumed from a simultaneous timestamp.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 56,
+      "title": "Threshold regressions",
+      "acceptance": "Compare exact before/after radii for shared credentials and label inventory/model changes. New identities and missing observations form separate classes, not automatic regressions.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 57,
+      "title": "Ephemeral timeline",
+      "acceptance": "Task appearance and expiry require explicit validity evidence. A view must distinguish deletion, observation gaps and real expiration; no synthetic clock progression masquerades as recorded history.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 58,
+      "title": "Federation lens",
+      "acceptance": "Use explicit trust edges with declared source/target identity boundaries. The lens must retain credential scope and unknown OIDC conditions rather than treating every federation label as unconditional access.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 59,
+      "title": "Task containment",
+      "acceptance": "Require a supplied task-scope set and compute set difference against reachable pairs. A missing task scope cannot yield zero out-of-scope access or a containment success badge.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 60,
+      "title": "Human machine violin",
+      "acceptance": "Use a declared bandwidth and enough observations for a meaningful density. For small fixture populations use an exact dot plot instead of a smooth distribution that implies unsupported precision.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 61,
+      "title": "Certainty overlay",
+      "acceptance": "Dash explicit assumed edges and compute dependent reach by removing those allow transitions. Unknown metadata remains unknown; illustrative annotations, alternative exact routes and the ratio denominator are disclosed.",
+      "tier": "T1",
+      "status": "stubbed",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 62,
+      "title": "Reproducibility stamp",
+      "acceptance": "Every view and SVG/PNG/PDF includes snapshot hash, engine/schema, model, parameters, snapshot time and vocabulary version. Redaction and illustrative status persist through exports.",
+      "tier": "T1",
+      "status": "stubbed",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 63,
+      "title": "Observation timeline",
+      "acceptance": "Plot supplied observation times only, not inferred event occurrence. Staleness thresholds are declared policy choices and simultaneous fixture timestamps are not presented as a real history.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 64,
+      "title": "Connector freshness",
+      "acceptance": "Compute age relative to an explicitly selected reference time, not ambient time in deterministic exports. Unknown or mixed source coverage must not receive a healthy freshness badge.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 65,
+      "title": "Structural silhouette",
+      "acceptance": "Render the exact local dry-run payload and make raw JSON accessible. Rename the anonymized claim: exact structural summaries are not anonymous and the current instrument submits nothing.",
+      "tier": "T1",
+      "status": "stubbed",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 66,
+      "title": "Local versus shared",
+      "acceptance": "Compare the closed dry-run field allowlist with fields retained locally. No upload button or submission promise is added; the exact difference is inspectable in JSON and text.",
+      "tier": "T2",
+      "status": "stubbed",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 67,
+      "title": "Linkage warning",
+      "acceptance": "Show measured synthetic uniqueness with its population and limitations before any hypothetical submission context. It is not a real-company re-identification probability or a safety certificate.",
+      "tier": "T2",
+      "status": "stubbed",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 68,
+      "title": "Network ledger",
+      "acceptance": "Instrument or audit attempted runtime requests and report local file/embedded asset behavior. Acceptance includes a no-network test, not merely a decorative offline badge.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 69,
+      "title": "Data and computation",
+      "acceptance": "Every shipped chart exposes its tabular values and the specification clause/code path used. Truncation, pagination and filter scope are explicit; unsupported computations cannot borrow an unrelated definition.",
+      "tier": "T2",
+      "status": "stubbed",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 70,
+      "title": "Assumption ledger",
+      "acceptance": "Show declared sensitivity choices, visual approximation annotations and public-reconstruction assumptions. Ledger entries are evidence context, not engine permissions or externally validated facts.",
+      "tier": "T2",
+      "status": "stubbed",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 71,
+      "title": "Fixture playground",
+      "acceptance": "Edit a tiny graph, add resource/grant/constraint and recompute through the reference engine. Invalid presets and mutations suppress scores and show rejection; derivations remain attached to their original fixture, not falsely to edited graphs.",
+      "tier": "T1",
+      "status": "stubbed",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 72,
+      "title": "Reconstruction gallery",
+      "acceptance": "Each sourced minimal graph selects its credential and exposes control and assumption ledger. Historical rank remains unidentifiable; a toy first rank cannot become a real top-decile claim.",
+      "tier": "T1",
+      "status": "stubbed",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 73,
+      "title": "Guided tour",
+      "acceptance": "A short optional sequence walks through actual evidence states without blocking ordinary navigation. Each overlay is keyboard-dismissable and restores focus; no scripted number differs from the engine result.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 74,
+      "title": "Reading overlay",
+      "acceptance": "Provide optional encoding definitions and a text equivalent per view. It must not cover critical controls or turn the instrument into a marketing landing page.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 75,
+      "title": "Specification browser",
+      "acceptance": "Map numbered requirements to frozen fixtures and code paths. Manual requirements are identified as manual; a click must open the actual relevant fixture rather than a generic success page.",
+      "tier": "T2",
+      "status": "stubbed",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 76,
+      "title": "Conformance viewer",
+      "acceptance": "Show requirement-by-tool outcomes and explicit manual/uncovered cells. Any downloadable self-claim includes suite/tool version and never implies certification or external endorsement.",
+      "tier": "T2",
+      "status": "stubbed",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 77,
+      "title": "Glossary",
+      "acceptance": "Terms such as radius, absolute reach, p95 and escalation expose concise definitions on keyboard focus/activation. A tooltip cannot be the only way to obtain a critical definition.",
+      "tier": "T2",
+      "status": "stubbed",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 78,
+      "title": "Talk mode",
+      "acceptance": "Use deterministic pseudonyms, a declared larger layout and reversible prepared state sequence. No names remain in the DOM, figure metadata or evidence drawer when redaction is claimed complete.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 79,
+      "title": "Embedded static demo",
+      "acceptance": "Publish an embeddable fixture-driven visual with the same engine result and vocabulary stamp. It must remain useful offline and retain a text alternative in constrained hosts.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 80,
+      "title": "Classroom exercises",
+      "acceptance": "Questions compare learner predictions with exact fixture outcomes and explain counterexamples. Correctness is computed, not a hardcoded visual celebration; no personal learner telemetry is retained.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 81,
+      "title": "Byte-identical SVG",
+      "acceptance": "Same input, tokens, font bytes and options produce byte-identical SVG across repeated rendering. The test covers all renderers and input permutations allowed by the contract.",
+      "tier": "T1",
+      "status": "stubbed",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 82,
+      "title": "IEEE export",
+      "acceptance": "Export SVG, PNG and PDF at declared single/double-column widths with embedded open fonts and full stamps. Tests inspect dimensions, nonblank pixels and PDF font embedding; tiny illegible scaled labels are not a publication-quality pass.",
+      "tier": "T1",
+      "status": "shipped",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 83,
+      "title": "Paper figure command",
+      "acceptance": "Provide make figures and a direct no-make equivalent that generate the complete declared figure set from result JSONs. Captions identify the input hashes, encodings, widths and synthetic limitations.",
+      "tier": "T1",
+      "status": "shipped",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 84,
+      "title": "Embeddable component",
+      "acceptance": "A blast-radius custom element consumes a result and options with no network requirement. It retains keyboard/evidence alternatives and rejects unsupported result formats instead of silently rendering arbitrary data.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 85,
+      "title": "Terminal view",
+      "acceptance": "A tty formatter may show sparkline bins, ranked counts and ASCII witness with the same definitions. It must preserve undefined values and work without terminal color; no extra live collector is introduced.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 86,
+      "title": "Notebook wrapper",
+      "acceptance": "A notebook widget wraps the static component or embeds self-contained HTML safely. It needs a tested notebook frontend contract and cannot claim widget support from an unexecuted screenshot.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 87,
+      "title": "Declarative charts",
+      "acceptance": "Publish a versioned declarative chart description for statistical views, including data fields, transforms and scale domains. Community extensions must reproduce exact tables and stamps.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 88,
+      "title": "View plugins",
+      "acceptance": "A static manifest declares inputs, encodings, dependencies, licence and review status. Loading arbitrary untrusted script plugins is out of scope; review must cover truthfulness, privacy and accessibility.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 89,
+      "title": "Markdown deltas",
+      "acceptance": "Export per-credential before/after Markdown from compatible results, with evidence and fixed-universe qualifications. This is a local artifact, not a ticketing or CI service integration.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 90,
+      "title": "Headless screenshots",
+      "acceptance": "A local command opens a view, waits for fonts/engine readiness and saves a reproducible viewport capture. Screenshot state and viewport metadata are recorded; hidden-tab animation artifacts are not mistaken for UI failures.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 91,
+      "title": "Accessibility gate",
+      "acceptance": "Run WCAG2.2 AA-tagged automated checks with zero critical issues on all shipped views and keyboard workflows. Report full results and manual gaps; zero automated violations alone is not full WCAG certification.",
+      "tier": "T1",
+      "status": "stubbed",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 92,
+      "title": "Text alternatives",
+      "acceptance": "Every chart has a narrated description and inspectable data table; paths have deterministic prose. Optional speech is opt-in and never required to access evidence.",
+      "tier": "T1",
+      "status": "stubbed",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 93,
+      "title": "Reduced motion",
+      "acceptance": "The operating-system preference disables propagation animation and all optional transitions without omitting a reachable step. Manual step/scrub and before/after evidence remain available.",
+      "tier": "T2",
+      "status": "stubbed",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 94,
+      "title": "Large-population budget",
+      "acceptance": "Use canvas for10000 credentials and explicit aggregation for50000, based on fresh engine results. Report observed frame/render timings, hardware/runtime and scope; do not assert60fps from a static screenshot.",
+      "tier": "T1",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 95,
+      "title": "Visual regression",
+      "acceptance": "Save and compare screenshots for every shipped view on explicit fixtures at desktop/mobile dimensions. Tests report count and pixel differences with deterministic state/fonts; baselines are review artifacts, not unexplained golden files.",
+      "tier": "T1",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 96,
+      "title": "Browser matrix",
+      "acceptance": "Record actual Chromium, Firefox and Safari execution status separately. An unavailable engine is not marked pass; compatibility limitations and a viable external test plan remain visible.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 97,
+      "title": "Internationalization",
+      "acceptance": "Externalize English strings and use locale-aware formatting under a declared locale option. Deterministic figure exports fix the locale and do not silently depend on the host machine.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 98,
+      "title": "UI threat model",
+      "acceptance": "No telemetry, eval or runtime CDN; strict CSP blocks connections and unsafe content insertion. Document the inline static-bundle exception, dependency versions, hash inventory and private-signature verification limitations.",
+      "tier": "T2",
+      "status": "stubbed",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 99,
+      "title": "Design-system guide",
+      "acceptance": "Document tokens, accessible component states, encoding rules and contribution checks. New visuals need an exercising fixture, common-scale proof, text alternative and deterministic export test.",
+      "tier": "T2",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    },
+    {
+      "id": 100,
+      "title": "Complete goal register",
+      "acceptance": "Maintain all100 stable goal IDs with shipped/stubbed/specified/backlog status, acceptance paragraph and owner slot. Include ten new theme proposals, explicit rejected redesigns and a visual-conformance checklist.",
+      "tier": "T1",
+      "status": "specified",
+      "owner": "Unassigned; maintainer/reviewer slot"
+    }
+  ],
+  "proposals": [
+    [
+      "A",
+      "Denominator ruler",
+      "Show the full-universe footprint beside every disc so dilution is physically visible. Acceptance: unchanged absolute reach with a larger universe shrinks only the ratio disc, and both denominators remain visible.",
+      "built in the disc reference outline"
+    ],
+    [
+      "B",
+      "Step-mass strip",
+      "A compact strip records newly reached pair counts at each escalation cost. It makes a large one-step jump visible without suggesting elapsed attack time; acceptance compares each bin with minimum path costs.",
+      "proposed"
+    ],
+    [
+      "C",
+      "Witness receipt",
+      "Hash the ordered witness edge IDs and display a compact receipt next to the path. It exposes path changes even when the final score is unchanged; acceptance checks stable receipts and changed-route counterexamples.",
+      "proposed"
+    ],
+    [
+      "D",
+      "Zero-effect intervention ledger",
+      "Show evaluated changes that do not affect p95 alongside changes that do. This prevents the top-five display from hiding redundant paths; acceptance uses actual exhaustive single-binding results and avoids a global optimum claim.",
+      "proposed"
+    ],
+    [
+      "E",
+      "Overlap dual ledger",
+      "Place summed credential-pair exposure beside the unique pair union. The gap physically demonstrates why a Lorenz annotation is not total exposed surface; acceptance derives both from exact reach sets.",
+      "proposed"
+    ],
+    [
+      "F",
+      "Count-versus-reach dumbbell",
+      "Compare NHI population share with its share of summed exposure, with human overlap separately labeled. Acceptance avoids interpreting an extensive union as disproportionate individual privilege.",
+      "proposed"
+    ],
+    [
+      "G",
+      "Unknown-evidence floor",
+      "Reserve a visible unknown band when certainty metadata is absent rather than drawing an empty uncertainty overlay. Acceptance tests a result with no ledger and prohibits an automatic0% confidence burden.",
+      "built as explicit unknown state"
+    ],
+    [
+      "H",
+      "Rank countermodel switch",
+      "Toggle two source-consistent population completions that move the same compromised credential from first to tenth. Acceptance labels both invented backgrounds and keeps actual historical rank unidentified.",
+      "proposed"
+    ],
+    [
+      "I",
+      "Reproduction receipt",
+      "A one-click local proof compares two SVG byte streams and exposes their digest and options. Acceptance detects a changed token or option and never uses a visual similarity score as byte identity.",
+      "proposed"
+    ],
+    [
+      "J",
+      "Truthfulness lint",
+      "Automated checks inspect marks for declared denominators, fixed scales, stamps and unknown states before visual review. Acceptance fails deliberately malformed SVG metadata and pairs a machine report with manual review gaps.",
+      "proposed"
+    ]
+  ],
+  "counts": {
+    "shipped": 7,
+    "specified": 61,
+    "stubbed": 32
+  }
+}

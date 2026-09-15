@@ -60,3 +60,11 @@
 | D56 | Read the22-page Beacon final report after the web PDF extractor failed; preserve its uncertainty and add the published revocation attestation, without redistributing the copyrighted PDF. | High source observation; no actual tenant policy inference |
 | D57 | Execute two fixed-universe assumed population completions per dossier, yielding target ranks1/10 versus10/10; rank nonidentifiability is now demonstrated by saved graph outputs rather than an unexecuted illustration. | High conditional model result |
 | D58 | Pin ordinary text checkout line endings to LF; preserve PREREGISTRATION.md and research/RUN_PLAN.md as exact bytes with -text because their pre-data hashes used original CRLF. Never rewrite a prospective hash to hide a line-ending change; verify a clean checkout. | High |
+| D59 | The visual-session mandate supersedes the single-demo restriction: build an offline visual instrument and normative vocabulary, never an enterprise console; preserve the legacy demo separately. | High |
+| D60 | Use one token JSON and pure deterministic SVG renderers shared by static UI and figures; vendor assets and embed the final HTML to avoid file-origin module/fetch failures. | High |
+| D61 | Disc AREA, not its radius length, encodes canonical reach; step rings order escalation while reference footprint and denominator remain fixed. | High |
+| D62 | Continue to label this dataset synthetic and decline the unsupported "only public dataset" claim; missing approximation metadata displays unknown rather than zero. | High |
+| D63 | Keep engine result/manifest v0.1 unchanged; introduce visual catalog v0.1 for local file hashes, fixture/source context and explicit illustrative approximation annotations. | High |
+| D64 | The first muted categorical palette failed protanopia simulation; switch to Okabe-Ito category colors and retain icons/text, with measured DeltaE and contrast evidence. | High for stated simulator; user testing pending |
+| D65 | Treat constraint models as discrete alternatives, not interpolated numeric states; model controls switch actual computed results and show common-scale deltas. | High |
+| D66 | Rename the anonymized tenant-silhouette claim to local structural payload; exact summaries are not anonymous and no submission is performed. | High |
