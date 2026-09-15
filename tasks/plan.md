@@ -1,0 +1,104 @@
+# WP_ Implementation Plan: Safe Local Repository Acquisition
+
+## Overview
+
+Implement the approved `repo-acquisition` module from `WP_SPEC_repo-acquisition.md`. The slice adds a dependency-free, deterministic and fail-closed inventory of a local repository, then exposes it through `blastradius inspect-repo`. It does not parse repository content or change the existing authorization engine.
+
+## Architecture Decisions
+
+- Add `src/blastradius/repository/` as an input-boundary package; the existing graph engine must not depend on it.
+- Stream file hashing and enforce limits without loading repository contents into the manifest.
+- Treat links/reparse points as skipped evidence and never follow them.
+- Emit canonical JSON through the existing serializer and write through the existing overwrite-safe CLI helper.
+- Keep limits fixed in the `safe-local-v0.1` profile for this module.
+- Use the existing `GraphError` for controlled input failures.
+
+## Dependency Graph
+
+```text
+WP_001 deterministic happy-path acquisition
+    -> WP_002 exclusions, links and safety limits
+    -> WP_003 CLI integration
+    -> WP_004 documentation and final verification
+```
+
+## Task List
+
+### Phase 1: Acquisition foundation
+
+- [x] `WP_001`: Implement deterministic regular-file inventory, raw-byte hashes, summary and snapshot hash with focused tests.
+- [x] `WP_002`: Add exclusions, oversized-file diagnostics, fail-closed global limits, depth/path checks and non-followed link/reparse handling with adversarial tests.
+
+### Checkpoint: Acquisition boundary
+
+- [x] Focused acquisition tests pass.
+- [x] Repeated acquisition produces byte-identical canonical output.
+- [x] No target content, absolute root or link target appears in the manifest.
+
+### Phase 2: Executable vertical slice
+
+- [x] `WP_003`: Add `blastradius inspect-repo`, stdout/file output, overwrite protection, in-repository output rejection and controlled CLI failures.
+
+### Checkpoint: User flow
+
+- [x] A local fixture repository can be inventoried from the CLI.
+- [x] The command performs no network access and executes no target code.
+- [x] Existing CLI behavior remains unchanged.
+
+### Phase 3: Handover and verification
+
+- [x] `WP_004`: Update user documentation, decisions, task state and continuity state; run targeted and complete verification.
+
+### Checkpoint: Complete
+
+- [x] All success criteria in `WP_SPEC_repo-acquisition.md` are satisfied.
+- [x] Full pytest suite passes: 189 passed, 1 skipped.
+- [x] `git diff --check` passes.
+- [ ] Changes are committed and pushed to the `WP_repository-input` branch.
+
+## Risks and Mitigations
+
+### Path escape through links or Windows reparse points
+
+Impact: high. Repository traversal could inspect files outside user scope.
+
+Mitigation: never follow links; inspect each entry with non-following metadata; treat reparse points as skipped; verify relative containment; include platform-specific tests where creation is supported.
+
+### Resource exhaustion
+
+Impact: high. A malicious repository could contain huge files or very large trees.
+
+Mitigation: fixed profile limits; check size before hashing; stream hashes; fail closed on global count/byte overflow; report individual oversized files.
+
+### False appearance of complete analysis
+
+Impact: medium. Skipped directories or files could be mistaken for analyzed content.
+
+Mitigation: emit explicit skipped diagnostics and summary counts; downstream modules must carry coverage forward.
+
+### Platform-dependent path behavior
+
+Impact: medium. Windows case folding and reparse points differ from POSIX links.
+
+Mitigation: normalize output separators; detect case-folded collisions where applicable; keep OS-sensitive tests conditional and document unsupported fixture creation.
+
+### Regression to existing research engine
+
+Impact: medium.
+
+Mitigation: keep the repository module one-way and isolated; run all existing tests; do not change graph schema or engine behavior.
+
+## Verification Commands
+
+```powershell
+pytest -q tests/test_repository_acquisition.py tests/test_cli.py
+pytest -q
+git diff --check
+```
+
+## Open Questions Resolved for This Plan
+
+- Inventory present filesystem entries except fixed safe-profile exclusions; do not honor `.gitignore` yet.
+- Permit a valid zero-file manifest.
+- Skip and report individual files larger than 5 MiB.
+- Do not invoke Git or emit revision metadata in this module.

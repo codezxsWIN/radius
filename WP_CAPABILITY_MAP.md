@@ -1,7 +1,8 @@
 # Capability Map: Repository-to-Production Attack Paths
 
-Status: **Proposed for review**  
-Created: 2026-09-15  
+Status: **Approved for implementation**
+
+Created: 2026-09-15
 Active objective: make a GitHub repository a practical primary input without weakening the existing deterministic Blast Radius engine.
 
 ## Product Boundary
@@ -155,6 +156,6 @@ The capability map is successful when it supports a fixture repository in which:
 - Automated remediation writes.
 - Multi-repository portfolio dashboards.
 
-## Review Gate
+## Approval Record
 
-Approve or revise the module boundaries, dependency direction, build order and six assumptions before module specifications or implementation begin. Once approved, each module will receive a scoped specification and acceptance tests in dependency order.
+The user approved these module boundaries and directed implementation to begin on 2026-09-15. Each module receives a scoped specification and acceptance tests in dependency order.

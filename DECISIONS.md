@@ -68,3 +68,4 @@
 | D64 | The first muted categorical palette failed protanopia simulation; switch to Okabe-Ito category colors and retain icons/text, with measured DeltaE and contrast evidence. | High for stated simulator; user testing pending |
 | D65 | Treat constraint models as discrete alternatives, not interpolated numeric states; model controls switch actual computed results and show common-scale deltas. | High |
 | D66 | Rename the anonymized tenant-silhouette claim to local structural payload; exact summaries are not anonymous and no submission is performed. | High |
+| D67 | Begin the product refocus with a dependency-free `safe-local-v0.1` repository acquisition boundary: no execution or network, no followed links/reparse points, fixed fail-closed limits, explicit skipped coverage and out-of-repository manifest output. This creates a trustworthy input foundation without changing the existing graph engine or claiming repository analysis is already complete. | High |

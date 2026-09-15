@@ -70,3 +70,36 @@ def test_no_network_in_synthetic_cli(tmp_path, monkeypatch):
         assert main(["analyze", str(tenant), "--out", str(result), "--signing-key", str(key)]) == 0
         assert main(["report", str(result), "--signing-key", str(key), "--format", "html"]) == 0
         assert main(["whatif", str(tenant), "--remove-binding", "allow"]) == 0
+
+
+def test_inspect_repository_cli_roundtrip_and_output_safety(tmp_path):
+    repository = tmp_path / "sample-repository"
+    repository.mkdir()
+    (repository / "README.md").write_text("# Sample\n", encoding="utf-8")
+    output = tmp_path / "repository-manifest.json"
+
+    completed = run_cli("inspect-repo", repository, "--out", output)
+    assert completed.returncode == 0, completed.stderr
+    manifest = json.loads(output.read_text(encoding="ascii"))
+    assert manifest["profile"] == "safe-local-v0.1"
+    assert manifest["files"][0]["path"] == "README.md"
+
+    stdout = run_cli("inspect-repo", repository)
+    assert stdout.returncode == 0, stdout.stderr
+    assert json.loads(stdout.stdout) == manifest
+
+    denied = run_cli("inspect-repo", repository, "--out", output)
+    assert denied.returncode == 2
+    assert run_cli("inspect-repo", repository, "--out", output, "--force").returncode == 0
+
+    internal = repository / "manifest.json"
+    refused = run_cli("inspect-repo", repository, "--out", internal)
+    assert refused.returncode == 2
+    assert not internal.exists()
+
+
+def test_inspect_repository_cli_has_controlled_invalid_input(tmp_path):
+    missing = tmp_path / "private" / "missing"
+    completed = run_cli("inspect-repo", missing)
+    assert completed.returncode == 2
+    assert str(missing) not in completed.stderr

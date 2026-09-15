@@ -95,6 +95,9 @@ def parser():
     kubernetes = commands.add_parser("collect-kubernetes-rbac", help="Normalize the synthetic read-only Kubernetes RBAC profile; no kubeconfig or cluster calls.")
     kubernetes.add_argument("--exports", type=Path, required=True)
     output(kubernetes)
+    inspect = commands.add_parser("inspect-repo", help="Safely inventory an untrusted local repository without executing or parsing its contents.")
+    inspect.add_argument("repository", type=Path)
+    output(inspect)
     submit = commands.add_parser("submit", help="Print a local structural preview only; not anonymized or approved for publication.")
     submit.add_argument("result", type=Path)
     submit.add_argument("--dry-run", action="store_true", required=True)
@@ -139,6 +142,19 @@ def main(argv=None):
             from .connectors.kubernetes_rbac import ingest
             graph = ingest(arguments.exports)
             emit(arguments.out, canonical(graph) + b"\n", arguments.force, (arguments.exports,))
+        elif command == "inspect-repo":
+            from .repository import acquire_repository
+            repository = arguments.repository.resolve(strict=True)
+            if arguments.out is not None:
+                destination = arguments.out.resolve(strict=False)
+                try:
+                    destination.relative_to(repository)
+                except ValueError:
+                    pass
+                else:
+                    raise GraphError("Repository manifest output must be outside the analyzed repository.")
+            manifest = acquire_repository(repository)
+            emit(arguments.out, canonical(manifest) + b"\n", arguments.force)
         elif command == "synth":
             graph = validate(classic() if arguments.classic else synth(arguments.principals, arguments.resources, arguments.seed))
             payload = canonical(graph) + b"\n"

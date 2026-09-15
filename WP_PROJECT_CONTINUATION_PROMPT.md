@@ -65,7 +65,7 @@ As last verified on 2026-09-15:
 - Verified commit: `8c4965d17614f224ff38fc7a609e4094aa85f4df`
 - Python: 3.12.10
 - Node.js: v24.18.0
-- Test result in this workspace: `179 passed in 16.48s`
+- Upstream baseline test result before refocus: `179 passed in 16.48s`
 - The working tree was clean before this continuity documentation was added.
 - Approximate inventory at that commit: 660 tracked files, 56 Python files, 19 JavaScript files, 345 JSON files, and 87 Markdown files.
 
@@ -416,15 +416,18 @@ Do not silently decide these without examining constraints and recording the rat
 Status as of creation of this continuity file:
 
 - The upstream repository has been pulled into the workspace.
-- The existing Python test suite passes: 179 tests.
+- The current Python suite passes: `189 passed, 1 skipped in 21.35s`. The skipped test requires Windows symlink creation privileges; the link-like non-read path is also covered without OS symlink privileges.
 - The repository has been studied at a high level.
 - The user and assistant identified the confusing/synthetic input model as the primary product weakness.
 - GitHub-repository input has been selected as the leading direction to investigate.
 - `WP_CAPABILITY_MAP.md` defines the approved module boundaries, dependency direction, first AWS OIDC vertical slice and explicit deferrals.
-- `WP_SPEC_repo-acquisition.md` now defines the proposed safe local repository inventory contract, manifest format, limits, CLI boundary and acceptance tests. It is awaiting user review before implementation.
-- No GitHub repository scanner, workflow parser, IaC parser, evidence schema, product specification, or new UI flow has been implemented yet.
-- No existing analysis behavior has been modified.
-- The next phase should be specification and architecture-boundary discovery, followed by one tested vertical slice.
+- `WP_SPEC_repo-acquisition.md` is approved and implemented.
+- `blastradius inspect-repo <local-directory>` now emits a deterministic `safe-local-v0.1` manifest with normalized paths, raw-byte hashes, explicit exclusions/skips and fixed fail-closed limits.
+- Repository acquisition does not execute target code, invoke a subprocess or use the network; links/reparse points are not followed or read.
+- CLI output inside the analyzed repository is rejected so the manifest cannot change its own next snapshot.
+- The existing graph schema, analysis engine and conformance behavior were not changed.
+- No GitHub Actions parser, IaC evidence parser, evidence-to-graph mapper, repository attack-path finding or new UI flow has been implemented yet.
+- The next phase is the scoped specification for `repository-evidence`, followed by a bounded GitHub Actions/AWS OIDC parser fixture.
 
 ### 22. Decisions Made During the Refocus
 
@@ -434,6 +437,8 @@ Status as of creation of this continuity file:
 - Make evidence, coverage, uncertainty, and remediation counterfactuals central product outputs.
 - Validate one narrow CI/CD-to-sensitive-resource slice before expanding providers or UI surface.
 - Be transparent about upstream attribution, licensing, and inherited versus new work.
+- Make repository acquisition a dependency-free, local-first, non-executing boundary with explicit skipped coverage and deterministic hashes.
+- Require saved manifests to live outside the analyzed repository to preserve repeatability.
 
 These are working decisions for the refocus. If implementation evidence contradicts them, document the reason and superseding decision.
 
@@ -443,14 +448,15 @@ These are working decisions for the refocus. If implementation evidence contradi
 - The current schema is intentionally synthetic-only.
 - Existing connectors are bounded offline profiles, not complete live-provider evaluators.
 - Repository-only evidence cannot establish complete deployed cloud permissions.
-- There is no repository acquisition or untrusted-content threat model implementation yet.
 - There is no user-facing import validation and coverage workflow yet.
+- Local acquisition exists, but public GitHub URL cloning, Git revision metadata and private repository authentication are intentionally deferred.
+- The current acquisition profile inventories present filesystem content rather than honoring `.gitignore`.
 - Product naming conflicts conceptually with the unrelated Blast-RADIUS vulnerability site.
 - A clear ownership/fork/upstream contribution strategy has not been chosen.
 
 ### 24. Exact Next Action
 
-Review `WP_SPEC_repo-acquisition.md` with the user. Once approved, create `tasks/plan.md` and `tasks/todo.md` for this module, then implement it test-first. The remaining module specifications follow in dependency order and must define:
+Create a scoped `WP_SPEC_repository-evidence.md` for the next approved capability-map module. It must define the exact bounded GitHub Actions and AWS OIDC/Terraform constructs, source-region evidence contract, unsupported-expression behavior, diagnostics and fixture-based acceptance tests. Review that spec before implementing its parser. The remaining module specifications follow in dependency order and must define:
 
 - Supported threat scenario.
 - Supported GitHub Actions constructs.

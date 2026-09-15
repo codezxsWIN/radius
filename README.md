@@ -33,7 +33,7 @@ The current public profile is **1.0-draft**. The Python package and graph wire f
 
 - 40 frozen conformance fixtures across 3 required attacker models
 - 120/120 conformance cases passing in both Python and JavaScript
-- 179 integrated Python tests passing with 93.40% line coverage
+- 189 integrated Python tests passing with 92% line coverage on the current repository-input branch
 - Dependency-free JavaScript reference implementation
 - Offline Entra/Azure, AWS IAM, and Kubernetes normalization profiles with explicit limits
 - Deterministic synthetic research runs and reconstruction dossiers
@@ -64,6 +64,19 @@ uv pip install --python .venv/Scripts/python.exe -e ".[test]"
 Open `demo/index.html` directly in a browser. The report has no runtime server, CDN, or external font dependency. On macOS or Linux, replace `.venv/Scripts` with `.venv/bin` and use shell line continuations.
 
 Generated outputs are never overwritten unless `--force` is supplied, and an input file cannot be replaced by its output.
+
+## Inspect a Local Repository
+
+The first repository-input boundary can safely inventory a local checkout without executing or parsing its contents:
+
+```powershell
+.venv/Scripts/blastradius.exe inspect-repo C:\path\to\repository `
+  --out results/repository-manifest.json
+```
+
+The deterministic manifest records normalized relative paths, byte sizes and SHA-256 hashes. It excludes common metadata/dependency trees, never follows links or Windows reparse points, enforces fixed file and byte limits, and reports skipped content so coverage is visible. Save `--out` outside the analyzed repository to prevent the manifest from becoming part of its own next snapshot.
+
+This command is a safe acquisition foundation, not yet a source-code or cloud-permission analysis. GitHub Actions evidence parsing, infrastructure-as-code mapping and repository-to-resource attack paths are being added as bounded, separately tested profiles. No repository code, hook, workflow, package manager or build command is executed.
 
 ## Run Conformance
 

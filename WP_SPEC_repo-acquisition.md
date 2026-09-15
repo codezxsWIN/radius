@@ -1,8 +1,11 @@
 # Spec: Safe Local Repository Acquisition
 
-Module id: `repo-acquisition`  
-Status: **Proposed for review**  
-Capability map: `WP_CAPABILITY_MAP.md`  
+Module id: `repo-acquisition`
+
+Status: **Approved for implementation**
+
+Capability map: `WP_CAPABILITY_MAP.md`
+
 Created: 2026-09-15
 
 ## Objective
@@ -31,6 +34,8 @@ blastradius inspect-repo C:\path\to\repository `
   --out results\repository-manifest.json `
   --force
 ```
+
+When `--out` is used, the destination must be outside the analyzed repository root. This prevents a saved manifest from changing the input of the next acquisition. Standard output remains available for callers that want to redirect or post-process the manifest.
 
 Development commands:
 
@@ -218,6 +223,7 @@ CLI tests must cover:
 - Successful stdout output when `--out` is omitted.
 - Successful file output.
 - Existing-output protection and `--force` behavior.
+- Rejection of an output path inside the analyzed repository.
 - Missing or non-directory input.
 - Generic controlled errors without unsafe value echoing.
 
@@ -245,6 +251,7 @@ Regression verification:
 - Making network requests or cloning URLs.
 - Adding configurable limits or ignore rules.
 - Including absolute paths in any persisted artifact.
+- Allowing a saved acquisition manifest to become part of its own subsequent input.
 - Changing the existing graph schema or conformance behavior.
 
 ### Never do
@@ -270,6 +277,7 @@ The module is complete when:
 8. The target repository is never executed and no network call occurs.
 9. Targeted acquisition/CLI tests pass.
 10. The complete pre-existing test suite passes unchanged.
+11. CLI output is written outside the analyzed repository or emitted to standard output.
 
 ## Open Questions for Review
 
@@ -278,6 +286,6 @@ The module is complete when:
 3. Should oversized files be skipped or fail the entire acquisition? This spec skips and reports them, while global count/byte overflow fails closed.
 4. Should the manifest include optional Git revision and dirty-state metadata in v0.1? This spec defers it to avoid invoking Git and to keep acquisition dependency-free.
 
-## Approval Gate
+## Approval Record
 
-Review and approve this input/output contract, safety behavior and four open-question defaults before implementation. Any changed decision must update this specification before code is written.
+The user approved implementation from this specification and the associated capability map on 2026-09-15. Any changed decision must update this specification before its code changes.
