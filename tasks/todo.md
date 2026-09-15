@@ -113,3 +113,65 @@ Estimated scope: medium, four files.
 
 - [x] Every success criterion in `WP_SPEC_repo-acquisition.md` is met.
 - [x] Branch is committed and pushed to `origin/WP_repository-input` (`daa4ede`).
+
+---
+
+# WP_ Task List: Repository Evidence
+
+## `WP_005`: Verified reads and restricted marked nodes
+
+Acceptance criteria:
+
+- [x] Selected bytes are reread beneath the root and must match manifest size/hash.
+- [x] Mapping keys, source locations, duplicate keys, aliases, merge keys, custom tags, node count and depth are handled deterministically and safely.
+- [x] No YAML object construction, subprocess or network access occurs.
+
+Verification:
+
+- [x] `pytest -q tests/test_repository_evidence.py -k "snapshot or yaml or location"`
+
+Dependencies: completed `repo-acquisition` module.
+
+## `WP_006`: GitHub Actions evidence
+
+Acceptance criteria:
+
+- [x] Workflow/job permissions and literal configure-credentials role requests are extracted with source locations.
+- [x] Exact push branches are retained for subject matching.
+- [x] Missing token permission and dynamic/unsupported constructs produce diagnostics rather than verified role requests.
+
+Verification:
+
+- [x] `pytest -q tests/test_repository_evidence.py -k "workflow or oidc"`
+
+Dependencies: `WP_005`.
+
+## `WP_007`: CloudFormation IAM evidence
+
+Acceptance criteria:
+
+- [x] Literal role, exact GitHub trust and finite Secrets Manager grant facts are extracted.
+- [x] Role/subject correlation is deterministic and confidence never exceeds declared configuration.
+- [x] Wildcards, denies, intrinsic functions and unsupported conditions do not create allow facts.
+
+Verification:
+
+- [x] `pytest -q tests/test_repository_evidence.py -k "cloudformation or trust or grant"`
+
+Dependencies: `WP_006`.
+
+## `WP_008`: Evidence command and checkpoint
+
+Acceptance criteria:
+
+- [x] Intermediate CLI emits canonical deterministic evidence and protects output paths.
+- [x] Coverage says deployed AWS state is unverified.
+- [x] Docs, decisions and continuity state match completed behavior.
+
+Verification:
+
+- [x] `pytest -q tests/test_repository_evidence.py tests/test_cli.py` — 19 passed.
+- [x] `pytest -q` — 203 passed, 1 skipped.
+- [x] `git diff --check`
+
+Dependencies: `WP_007`.

@@ -429,6 +429,10 @@ Status as of creation of this continuity file:
 - No GitHub Actions parser, IaC evidence parser, evidence-to-graph mapper, repository attack-path finding or new UI flow has been implemented yet.
 - The next phase is the scoped specification for `repository-evidence`, followed by a bounded GitHub Actions/AWS OIDC parser fixture.
 - The repository-acquisition implementation checkpoint is commit `daa4ede` on `WP_repository-input` and is pushed to `origin/WP_repository-input`.
+- `WP_SPEC_repository-evidence.md` is approved and implemented locally: GitHub Actions OIDC requests and literal CloudFormation IAM trust/finite Secrets Manager grants produce deterministic source-backed facts.
+- Evidence files are reverified against acquisition hashes before parsing; duplicate mappings, aliases, merge keys, custom tags and parser resource limits fail closed.
+- `blastradius inspect-repo-evidence` provides the intermediate evidence flow and always labels deployed AWS state unverified.
+- The current suite passes `203 passed, 1 skipped`; the branch has not yet mapped this evidence into the authorization graph or emitted the final attack-path/remediation finding.
 
 ### 22. Decisions Made During the Refocus
 
@@ -457,7 +461,7 @@ These are working decisions for the refocus. If implementation evidence contradi
 
 ### 24. Exact Next Action
 
-Create a scoped `WP_SPEC_repository-evidence.md` for the next approved capability-map module. It must define the exact bounded GitHub Actions and AWS OIDC/Terraform constructs, source-region evidence contract, unsupported-expression behavior, diagnostics and fixture-based acceptance tests. Review that spec before implementing its parser. The remaining module specifications follow in dependency order and must define:
+Create a scoped `WP_SPEC_evidence-graph.md` for the next capability-map modules. It must introduce a truthful repository-derived graph profile without mislabeling real repository evidence as fictional/synthetic, preserve the frozen v0.1 conformance schema, map only exact declared OIDC/trust/grant facts into engine edges, and define the final path/remediation finding contract. The remaining module specifications follow in dependency order and must define:
 
 - Supported threat scenario.
 - Supported GitHub Actions constructs.

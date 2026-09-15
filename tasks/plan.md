@@ -102,3 +102,69 @@ git diff --check
 - Permit a valid zero-file manifest.
 - Skip and report individual files larger than 5 MiB.
 - Do not invoke Git or emit revision metadata in this module.
+
+---
+
+# WP_ Implementation Plan: Repository Evidence
+
+## Overview
+
+Implement `WP_SPEC_repository-evidence.md`: reverify selected files against the acquisition manifest, safely parse a bounded GitHub Actions plus CloudFormation JSON profile, and emit deterministic facts, source locations, diagnostics, coverage and confidence. This phase does not create authorization graph edges yet.
+
+## Architecture Decisions
+
+- Add pinned `PyYAML==6.0.3` and use node composition with explicit structural validation; never construct arbitrary objects.
+- Keep file reopening and hash verification in the acquisition boundary so all downstream parsers share one containment rule.
+- Separate generic marked-node handling from GitHub Actions and CloudFormation extraction.
+- Treat exact literals as evidence and dynamic/unsupported constructs as diagnostics.
+- Carry repository slug as explicit user context; do not infer it from excluded Git metadata.
+
+## Dependency Graph
+
+```text
+WP_005 verified snapshot reads + restricted marked nodes
+    -> WP_006 GitHub Actions evidence
+    -> WP_007 CloudFormation IAM evidence + correlation
+    -> WP_008 evidence CLI + documentation + full verification
+```
+
+## Task List
+
+### Phase 1: Safe parser boundary
+
+- [x] `WP_005`: Add snapshot-file re-verification and restricted marked YAML/JSON nodes with adversarial tests.
+
+### Phase 2: Evidence extraction
+
+- [x] `WP_006`: Extract workflow, permission and literal OIDC role-request facts with exact locations and unsupported diagnostics.
+- [x] `WP_007`: Extract literal CloudFormation role, GitHub trust and finite secret-grant facts; correlate exact role/subject matches without claiming deployment.
+
+### Phase 3: Executable evidence flow
+
+- [x] `WP_008`: Add an intermediate evidence command, deterministic output/hash, coverage summary, README/decision/continuity updates and full verification.
+
+## Risks and Mitigations
+
+### YAML ambiguity or unsafe features
+
+Mitigation: node-only parsing, scalar-key handling independent of YAML 1.1 tags, duplicate/alias/merge/custom-tag rejection, node/depth limits and no object construction.
+
+### Stale snapshot race
+
+Mitigation: reopen only manifest-listed files beneath the same root and verify byte size/hash immediately before parsing; fail closed on mismatch.
+
+### False deployed-state claim
+
+Mitigation: confidence vocabulary is explicit; IaC remains `declared-configuration`; unmatched or broad trust is `potential`; coverage always states live AWS was not checked.
+
+### Policy-semantic overreach
+
+Mitigation: exact allowlist for OIDC trust and finite Secrets Manager grants; unsupported operators, conditions, intrinsic functions, denies and wildcards never become allow facts.
+
+## Verification Commands
+
+```powershell
+pytest -q tests/test_repository_evidence.py tests/test_cli.py
+pytest -q
+git diff --check
+```

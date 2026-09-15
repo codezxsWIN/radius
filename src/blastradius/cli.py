@@ -39,6 +39,17 @@ def load_result(path, key_path=None):
     return result
 
 
+def reject_internal_output(root, output_path):
+    if output_path is None:
+        return
+    destination = output_path.resolve(strict=False)
+    try:
+        destination.relative_to(root)
+    except ValueError:
+        return
+    raise GraphError("Repository-derived output must be outside the analyzed repository.")
+
+
 def parser():
     root = argparse.ArgumentParser(prog="blastradius", description="Synthetic-only identity blast-radius prototype. No tenant is contacted.")
     root.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
@@ -98,6 +109,10 @@ def parser():
     inspect = commands.add_parser("inspect-repo", help="Safely inventory an untrusted local repository without executing or parsing its contents.")
     inspect.add_argument("repository", type=Path)
     output(inspect)
+    evidence = commands.add_parser("inspect-repo-evidence", help="Extract bounded GitHub Actions and declared AWS CloudFormation OIDC evidence from a local repository.")
+    evidence.add_argument("repository", type=Path)
+    evidence.add_argument("--repository-slug", required=True)
+    output(evidence)
     submit = commands.add_parser("submit", help="Print a local structural preview only; not anonymized or approved for publication.")
     submit.add_argument("result", type=Path)
     submit.add_argument("--dry-run", action="store_true", required=True)
@@ -145,16 +160,16 @@ def main(argv=None):
         elif command == "inspect-repo":
             from .repository import acquire_repository
             repository = arguments.repository.resolve(strict=True)
-            if arguments.out is not None:
-                destination = arguments.out.resolve(strict=False)
-                try:
-                    destination.relative_to(repository)
-                except ValueError:
-                    pass
-                else:
-                    raise GraphError("Repository manifest output must be outside the analyzed repository.")
+            reject_internal_output(repository, arguments.out)
             manifest = acquire_repository(repository)
             emit(arguments.out, canonical(manifest) + b"\n", arguments.force)
+        elif command == "inspect-repo-evidence":
+            from .repository import acquire_repository, collect_repository_evidence
+            repository = arguments.repository.resolve(strict=True)
+            reject_internal_output(repository, arguments.out)
+            manifest = acquire_repository(repository)
+            evidence = collect_repository_evidence(repository, manifest, arguments.repository_slug)
+            emit(arguments.out, canonical(evidence) + b"\n", arguments.force)
         elif command == "synth":
             graph = validate(classic() if arguments.classic else synth(arguments.principals, arguments.resources, arguments.seed))
             payload = canonical(graph) + b"\n"

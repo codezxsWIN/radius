@@ -33,7 +33,7 @@ The current public profile is **1.0-draft**. The Python package and graph wire f
 
 - 40 frozen conformance fixtures across 3 required attacker models
 - 120/120 conformance cases passing in both Python and JavaScript
-- 189 integrated Python tests passing with 92% line coverage on the current repository-input branch
+- 203 integrated Python tests passing on the current repository-input branch; the latest measured line coverage is 92%
 - Dependency-free JavaScript reference implementation
 - Offline Entra/Azure, AWS IAM, and Kubernetes normalization profiles with explicit limits
 - Deterministic synthetic research runs and reconstruction dossiers
@@ -77,6 +77,18 @@ The first repository-input boundary can safely inventory a local checkout withou
 The deterministic manifest records normalized relative paths, byte sizes and SHA-256 hashes. It excludes common metadata/dependency trees, never follows links or Windows reparse points, enforces fixed file and byte limits, and reports skipped content so coverage is visible. Save `--out` outside the analyzed repository to prevent the manifest from becoming part of its own next snapshot.
 
 This command is a safe acquisition foundation, not yet a source-code or cloud-permission analysis. GitHub Actions evidence parsing, infrastructure-as-code mapping and repository-to-resource attack paths are being added as bounded, separately tested profiles. No repository code, hook, workflow, package manager or build command is executed.
+
+The first bounded evidence profile can connect a literal GitHub Actions OIDC role request to a literal AWS IAM role, trust policy and finite Secrets Manager grant declared in CloudFormation JSON:
+
+```powershell
+.venv/Scripts/blastradius.exe inspect-repo-evidence C:\path\to\repository `
+  --repository-slug owner/repository `
+  --out results/repository-evidence.json
+```
+
+The evidence output retains one-based file/line locations, deterministic fact IDs, unsupported diagnostics and confidence labels. `repository-verified` means the workflow syntax is directly present; `declared-configuration` means supported IaC declares a relationship; `potential` means matching or external state remains incomplete. The command always reports deployed AWS state as unverified and never treats absence of a supported fact as proof of safety.
+
+The current profile is intentionally narrow: exact push branches, `id-token: write`, literal `aws-actions/configure-aws-credentials` role ARNs, literal CloudFormation `AWS::IAM::Role` trust, and finite `secretsmanager:GetSecretValue` resource ARNs. Dynamic expressions, YAML aliases/tags/merge keys, wildcard secret resources, unsupported conditions and stale snapshots are rejected or reported rather than guessed.
 
 ## Run Conformance
 

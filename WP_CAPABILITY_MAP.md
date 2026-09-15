@@ -15,7 +15,7 @@ This is not a generic secret scanner, a complete cloud authorization evaluator, 
 
 1. The first user is a platform or security engineer reviewing CI/CD access to production.
 2. The first acquisition mode is a local Git checkout; public GitHub URL acquisition follows after untrusted-input boundaries are tested.
-3. The first provider slice should use GitHub Actions plus AWS OIDC/IAM declarations because the repository already has a bounded AWS policy normalizer and these relationships are explicit in common IaC.
+3. The first provider slice uses GitHub Actions plus literal AWS OIDC/IAM declarations in CloudFormation JSON. Terraform follows after the evidence and graph boundaries are proven because evaluating HCL expressions safely and soundly is a separate capability.
 4. The first interface is a deterministic CLI/JSON contract; the visual product flow follows once the analysis slice is proven.
 5. The existing graph and analysis engine remain unchanged unless a documented incompatibility forces a versioned extension.
 6. Repository source and IaC describe declared intent, not necessarily deployed reality; every result must expose that limitation.
@@ -128,7 +128,7 @@ Dependencies flow in one direction. The existing engine must not import reposito
 5. `findings-remediation`
 6. `product-interface`
 
-The first end-to-end checkpoint spans all six modules but implements only one bounded GitHub Actions -> AWS OIDC/IAM -> sensitive resource scenario.
+The first end-to-end checkpoint spans all six modules but implements only one bounded GitHub Actions -> AWS OIDC/CloudFormation IAM -> sensitive resource scenario.
 
 ## First-Slice Acceptance Boundary
 

@@ -103,3 +103,33 @@ def test_inspect_repository_cli_has_controlled_invalid_input(tmp_path):
     completed = run_cli("inspect-repo", missing)
     assert completed.returncode == 2
     assert str(missing) not in completed.stderr
+
+
+def test_inspect_repository_evidence_cli_roundtrip(tmp_path):
+    repository = ROOT / "tests" / "fixtures" / "repositories" / "aws-oidc-path"
+    output = tmp_path / "repository-evidence.json"
+    arguments = ("inspect-repo-evidence", repository, "--repository-slug", "acme/payments")
+
+    completed = run_cli(*arguments, "--out", output)
+    assert completed.returncode == 0, completed.stderr
+    evidence = json.loads(output.read_text(encoding="ascii"))
+    assert evidence["profile"] == "github-actions-aws-cfn-v0.1"
+    assert evidence["facts"]["oidc_role_requests"][0]["trust_match"] == "exact-declared-configuration"
+    assert evidence["coverage"]["deployed_aws_state"] == "unverified"
+
+    stdout = run_cli(*arguments)
+    assert stdout.returncode == 0, stdout.stderr
+    assert json.loads(stdout.stdout) == evidence
+    assert run_cli(*arguments, "--out", output).returncode == 2
+    assert run_cli(*arguments, "--out", output, "--force").returncode == 0
+
+
+def test_inspect_repository_evidence_cli_rejects_internal_output_and_bad_slug(tmp_path):
+    repository = tmp_path / "repository"
+    repository.mkdir()
+    internal = repository / "evidence.json"
+    refused = run_cli("inspect-repo-evidence", repository, "--repository-slug", "acme/repo", "--out", internal)
+    assert refused.returncode == 2
+    assert not internal.exists()
+    invalid = run_cli("inspect-repo-evidence", repository, "--repository-slug", "invalid")
+    assert invalid.returncode == 2
