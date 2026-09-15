@@ -160,6 +160,28 @@ pytest -q
 git diff --check
 ```
 
+---
+
+# WP_ Implementation Plan: Human Repository Report
+
+## Overview
+
+Implement `WP_SPEC_repository-report.md` as a deterministic presentation layer over the repository finding contract. Preserve JSON for machines and add neutralized Markdown for humans.
+
+## Tasks
+
+- [x] `WP_017`: Render positive and no-proof results with assumptions, impact, path and exact evidence locations.
+- [x] `WP_018`: Include remediation delta, diagnostics, skipped coverage and deployed-state limitations; neutralize untrusted text.
+- [x] `WP_019`: Add `--format md` to local/public commands, document the flow and pass full verification.
+
+## Verification
+
+```powershell
+pytest -q tests/test_repository_report.py tests/test_cli.py
+pytest -q
+git diff --check
+```
+
 ## Open Questions Resolved for This Plan
 
 - Inventory present filesystem entries except fixed safe-profile exclusions; do not honor `.gitignore` yet.

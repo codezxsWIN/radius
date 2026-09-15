@@ -242,3 +242,27 @@ Verify: `pytest -q tests/test_repository_graph.py tests/test_repository_findings
 - [x] Run the full suite and diff check, commit with `WP_` prefix and push.
 
 Verify: `pytest -q tests/test_public_github.py tests/test_cli.py`, then `pytest -q` and `git diff --check`.
+
+---
+
+# WP_ Task List: Human Repository Report
+
+## `WP_017`: Evidence-first Markdown
+
+- [x] Render repository identity, finding summary, assumptions, impact and ordered path.
+- [x] Show primary and compound workflow/trust `path:line:column` evidence.
+- [x] Reproduce the no-proof/not-safe conclusion for zero findings.
+
+## `WP_018`: Honest limits and safe display
+
+- [x] Show remediation applied state, before/after reach and path-broken result.
+- [x] Show parser diagnostics, archive skips, coverage and deployed AWS state.
+- [x] Neutralize control characters and Markdown metacharacters from untrusted source fields.
+
+## `WP_019`: CLI and checkpoint
+
+- [x] Add `--format md` without changing default JSON behavior.
+- [x] Test deterministic/non-mutating rendering and CLI source locations.
+- [x] Update docs/state, run full verification, commit with `WP_` prefix and push.
+
+Verify: `pytest -q tests/test_repository_report.py tests/test_cli.py`, then `pytest -q` and `git diff --check`.

@@ -416,7 +416,7 @@ Do not silently decide these without examining constraints and recording the rat
 Status after the first complete repository-analysis vertical slice:
 
 - The upstream repository has been pulled into the workspace.
-- The latest full Python suite passes `230 passed, 1 skipped`; the skipped test requires Windows symlink creation privileges and the link-like non-read path is separately covered without that privilege.
+- The latest full Python suite passes `234 passed, 1 skipped`; the skipped test requires Windows symlink creation privileges and the link-like non-read path is separately covered without that privilege.
 - The repository has been studied at a high level.
 - The user and assistant identified the confusing/synthetic input model as the primary product weakness.
 - GitHub-repository input is now the implemented primary product direction, beginning with a local checkout plus explicit `owner/repository` slug.
@@ -438,6 +438,7 @@ Status after the first complete repository-analysis vertical slice:
 - `WP_SPEC_public-github-input.md` is implemented: `blastradius analyze-github https://github.com/owner/repository [--ref REF]` resolves an immutable public commit and analyzes its bounded source ZIP locally without Git, tokens or source upload.
 - URL, network and archive boundaries reject confused authorities, unapproved redirects, traversal, links, special entries, path collisions, excessive expansion and unsupported compression. Temporary source is deleted after analysis and oversized files are reported as skipped.
 - A live public smoke run against `codezxsWIN/radius` commit `8c4965d17614f224ff38fc7a609e4094aa85f4df` completed successfully and returned the explicit no-proof conclusion for the supported profile.
+- `WP_SPEC_repository-report.md` is implemented: both repository commands accept `--format md` and render an inert evidence-first report with assumptions, impact, exact source locations, remediation delta, diagnostics, skipped coverage and deployment caveats. JSON remains the default machine format.
 
 ### 22. Decisions Made During the Refocus
 
@@ -452,6 +453,7 @@ Status after the first complete repository-analysis vertical slice:
 - Keep synthetic graph v0.1 frozen and introduce repository-declared graph v0.2 rather than mislabeling real source evidence as fictional.
 - Make the useful result a source-backed path plus remediation counterfactual; do not expose an unexplained aggregate risk score as the repository product.
 - Keep public GitHub acquisition token-free and pinned to an immutable commit; route private repositories through the no-network local-checkout command.
+- Keep JSON as the deterministic integration contract and use a separate neutralized Markdown view for human review rather than mixing presentation fields into findings.
 
 These are working decisions for the refocus. If implementation evidence contradicts them, document the reason and superseding decision.
 
@@ -461,7 +463,7 @@ These are working decisions for the refocus. If implementation evidence contradi
 - Repository graph v0.2 currently supports one narrow GitHub Actions/AWS CloudFormation profile; it is not a general source graph.
 - Existing connectors are bounded offline profiles, not complete live-provider evaluators.
 - Repository-only evidence cannot establish complete deployed cloud permissions.
-- JSON is currently the only final repository-analysis presentation; a concise terminal/Markdown report and visual path are still missing.
+- Markdown and JSON are available; a focused visual path and SARIF/CI annotation output are still missing.
 - Public GitHub URL acquisition exists; private repository authentication, GitHub Enterprise and server-side analysis are intentionally deferred. Private repositories can be analyzed from a local checkout without network access.
 - The current acquisition profile inventories present filesystem content rather than honoring `.gitignore`.
 - Product naming conflicts conceptually with the unrelated Blast-RADIUS vulnerability site.
@@ -469,7 +471,7 @@ These are working decisions for the refocus. If implementation evidence contradi
 
 ### 24. Exact Next Action
 
-Specify and implement a concise Markdown/terminal report over `repository-attack-path-v0.1`. The default human flow should make the assumed starting condition, workflow -> role -> secret path, exact `path:line` evidence, unsupported coverage, deployed-state limitation and remediation counterfactual understandable without reading canonical JSON. Preserve JSON as the deterministic machine contract, and do not build a broad dashboard until this focused report is useful in a CLI demo.
+Define the next adoption slice around CI: a GitHub Actions workflow that runs the local analyzer on pull requests, emits SARIF or check-friendly annotations for proven paths, and uploads the Markdown/JSON artifacts without requiring AWS credentials or repository source upload to a third-party service. Keep unsupported/no-proof outcomes distinct from passing security assurance.
 
 ### 25. End-of-Session Continuity Protocol
 

@@ -116,10 +116,12 @@ def parser():
     repository_analysis = commands.add_parser("analyze-repo", help="Find supported GitHub Actions-to-AWS secret paths in repository declarations and simulate a trust remediation.")
     repository_analysis.add_argument("repository", type=Path)
     repository_analysis.add_argument("--repository-slug", required=True)
+    repository_analysis.add_argument("--format", choices=("json", "md"), default="json")
     output(repository_analysis)
     github_analysis = commands.add_parser("analyze-github", help="Download and locally analyze one immutable commit from a public GitHub repository without Git or an access token.")
     github_analysis.add_argument("url")
     github_analysis.add_argument("--ref")
+    github_analysis.add_argument("--format", choices=("json", "md"), default="json")
     output(github_analysis)
     submit = commands.add_parser("submit", help="Print a local structural preview only; not anonymized or approved for publication.")
     submit.add_argument("result", type=Path)
@@ -179,15 +181,17 @@ def main(argv=None):
             evidence = collect_repository_evidence(repository, manifest, arguments.repository_slug)
             emit(arguments.out, canonical(evidence) + b"\n", arguments.force)
         elif command == "analyze-repo":
-            from .repository import analyze_repository
+            from .repository import analyze_repository, render_repository_markdown
             repository = arguments.repository.resolve(strict=True)
             reject_internal_output(repository, arguments.out)
             result = analyze_repository(repository, arguments.repository_slug)
-            emit(arguments.out, canonical(result) + b"\n", arguments.force)
+            payload = canonical(result) + b"\n" if arguments.format == "json" else render_repository_markdown(result)
+            emit(arguments.out, payload, arguments.force)
         elif command == "analyze-github":
-            from .repository import analyze_public_github_repository
+            from .repository import analyze_public_github_repository, render_repository_markdown
             result = analyze_public_github_repository(arguments.url, arguments.ref)
-            emit(arguments.out, canonical(result) + b"\n", arguments.force)
+            payload = canonical(result) + b"\n" if arguments.format == "json" else render_repository_markdown(result)
+            emit(arguments.out, payload, arguments.force)
         elif command == "synth":
             graph = validate(classic() if arguments.classic else synth(arguments.principals, arguments.resources, arguments.seed))
             payload = canonical(graph) + b"\n"

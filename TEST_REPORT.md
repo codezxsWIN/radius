@@ -2,7 +2,7 @@
 
 ## Repository Product Refocus Checkpoint
 
-On 2026-09-15, the local plus public-GitHub repository analysis slices passed **230 tests with 1 platform-dependent skip in 16.71 seconds**. The new tests cover safe acquisition, marked-node workflow/IaC evidence, non-synthetic graph v0.2 validation, exact evidence-to-path mapping, duplicate secret declarations, deterministic findings, non-mutating remediation simulation, no-proof wording, CLI stdout/file behavior, overwrite refusal, strict GitHub URL/ref handling, pinned-commit network routing, bounded ZIP extraction, hostile archive rejection, and temporary-checkout cleanup.
+On 2026-09-15, the local plus public-GitHub repository analysis and human-report slices passed **234 tests with 1 platform-dependent skip in 17.76 seconds**. The new tests cover safe acquisition, marked-node workflow/IaC evidence, non-synthetic graph v0.2 validation, exact evidence-to-path mapping, duplicate secret declarations, deterministic findings, non-mutating remediation simulation, no-proof wording, CLI stdout/file behavior, overwrite refusal, strict GitHub URL/ref handling, pinned-commit network routing, bounded ZIP extraction, hostile archive rejection, temporary-checkout cleanup, deterministic Markdown evidence output and neutralization of untrusted report text.
 
 The source-tree CLI smoke command successfully produced one four-hop GitHub Actions workflow -> AWS role -> finite Secrets Manager path from the checked-in fixture, with source locations and a trust-removal counterfactual reducing absolute reach from 1 to 0. Deployed AWS state remains explicitly unverified.
 

@@ -69,7 +69,7 @@ uv pip install --python .venv/Scripts/python.exe -e ".[test]"
 # Analyze a public repository at an immutable resolved commit.
 .venv/Scripts/blastradius.exe analyze-github `
   https://github.com/owner/repository `
-  --out results/repository-analysis.json
+  --format md --out results/repository-analysis.md
 
 # The synthetic standards/research workflow remains available.
 .venv/Scripts/blastradius.exe synth `
@@ -96,12 +96,15 @@ For a public repository, pass its GitHub URL directly:
 .venv/Scripts/blastradius.exe analyze-github `
   https://github.com/owner/repository `
   --ref main `
-  --out results/repository-analysis.json
+  --format md `
+  --out results/repository-analysis.md
 ```
 
 Blast Radius resolves the ref to an immutable commit, downloads only that public source archive from GitHub, validates and extracts it under fixed limits, analyzes it locally, and deletes the temporary checkout. It does not run Git, hooks, filters, workflows, package managers, or repository code. It does not request a GitHub token or upload the repository to a Blast Radius service.
 
 The public URL profile accepts only HTTPS `github.com/owner/repository` inputs and only follows GitHub's archive redirect to `codeload.github.com`. Archive traversal, links, special entries, path collisions, excessive expansion, and unsupported compression fail closed. Oversized individual files are skipped and reported just as they are for local acquisition.
+
+Use `--format md` for a review-ready human report. It leads with the compromise assumption and concrete impact, then shows the ordered path, exact `path:line:column` evidence, remediation counterfactual, skipped/unsupported coverage and deployed-state limitation. JSON remains the default deterministic format for CI and integrations.
 
 ### Analyze a local or private checkout
 
@@ -110,7 +113,8 @@ For private code, clone it using your normal trusted workflow and point Blast Ra
 ```powershell
 .venv/Scripts/blastradius.exe analyze-repo C:\path\to\repository `
   --repository-slug owner/repository `
-  --out C:\path\outside\repository-analysis.json
+  --format md `
+  --out C:\path\outside\repository-analysis.md
 ```
 
 For every complete supported path, the result names the workflow and job whose compromise is assumed, the exact AWS role and secret action, the source file/line evidence for every hop, and a counterfactual showing whether removal of the modeled OIDC trust edge breaks reachability. It does not modify the repository or AWS. Output must be outside the analyzed repository so it cannot contaminate the next snapshot.

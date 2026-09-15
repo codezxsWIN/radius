@@ -149,6 +149,10 @@ def test_analyze_repository_cli_roundtrip_and_output_safety(tmp_path):
     stdout = run_cli(*arguments)
     assert stdout.returncode == 0, stdout.stderr
     assert json.loads(stdout.stdout) == analysis
+    markdown = run_cli(*arguments, "--format", "md")
+    assert markdown.returncode == 0, markdown.stderr
+    assert "# Blast Radius Repository Analysis" in markdown.stdout
+    assert ".github/workflows/deploy.yml:17:27" in markdown.stdout
     assert run_cli(*arguments, "--out", output).returncode == 2
     assert run_cli(*arguments, "--out", output, "--force").returncode == 0
 
