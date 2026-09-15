@@ -428,6 +428,7 @@ Status as of creation of this continuity file:
 - The existing graph schema, analysis engine and conformance behavior were not changed.
 - No GitHub Actions parser, IaC evidence parser, evidence-to-graph mapper, repository attack-path finding or new UI flow has been implemented yet.
 - The next phase is the scoped specification for `repository-evidence`, followed by a bounded GitHub Actions/AWS OIDC parser fixture.
+- The repository-acquisition implementation checkpoint is commit `daa4ede` on `WP_repository-input` and is pushed to `origin/WP_repository-input`.
 
 ### 22. Decisions Made During the Refocus
 

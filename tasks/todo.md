@@ -112,4 +112,4 @@ Estimated scope: medium, four files.
 ## Checkpoint: Complete
 
 - [x] Every success criterion in `WP_SPEC_repo-acquisition.md` is met.
-- [ ] Branch is committed and pushed to `origin/WP_repository-input`.
+- [x] Branch is committed and pushed to `origin/WP_repository-input` (`daa4ede`).

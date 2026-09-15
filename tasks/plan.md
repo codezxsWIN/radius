@@ -54,7 +54,7 @@ WP_001 deterministic happy-path acquisition
 - [x] All success criteria in `WP_SPEC_repo-acquisition.md` are satisfied.
 - [x] Full pytest suite passes: 189 passed, 1 skipped.
 - [x] `git diff --check` passes.
-- [ ] Changes are committed and pushed to the `WP_repository-input` branch.
+- [x] Changes are committed and pushed to the `WP_repository-input` branch (`daa4ede`).
 
 ## Risks and Mitigations
 
