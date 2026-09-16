@@ -1,5 +1,15 @@
 # Contributing
 
+## Small Educational Contributions
+
+Start with the offline lesson in [ui/index.html](ui/index.html). A good first contribution is a clearer conceptual question, an independently computed fixture answer, an edit/model continuity regression, or a source-profile diagnostic that explains what remains unknown. Keep required access distinct from excessive access; do not label every capability a vulnerability.
+
+Edit lab source, then regenerate with `node tools/build_ui.mjs`. `node tools/build_ui.mjs --check` must find no drift, and `make visual-test` runs the first lesson, lab interactions, both browser suites and accessibility assertions. Python checks run through `tools/verify.py`. Chromium and Node 25+ are developer prerequisites, not learner prerequisites. No new framework or registry dependency is needed for a lesson contribution.
+
+The [educational audit](reviews/2026-09-17-educational-audit.md) remains a historical findings record. Add new verification evidence; do not rewrite failed observations as though they never occurred. Do not make all 520 backlog goals release requirements. Newcomer testing and untested operating systems remain explicit external validation work.
+
+## Engine and Standards Contributions
+
 Use Python 3.12+. Install pinned test extras from pyproject.toml and run `pytest --cov=blastradius --cov-report=term-missing`. Add a hand-computed fixture before changing reachability semantics. Preserve deterministic serialization, action-sensitive escalation guards, fixed denominators and actor-scoped deny behavior.
 
 Only invented tenant exports and credential metadata belong in fixtures. Do not contribute secrets or real tenant records. Proposed live collectors must use documented GET endpoints, least-privilege permissions, pagination, throttling and explicit coverage notes; never execute escalation actions.

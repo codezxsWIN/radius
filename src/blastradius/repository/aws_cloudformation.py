@@ -2,6 +2,7 @@
 
 from hashlib import sha256
 import re
+from yaml.nodes import SequenceNode
 
 from ..model import canonical
 from .yaml_nodes import location, mapping, scalar, scalar_list, sequence
@@ -56,7 +57,7 @@ def _github_trusts(path, role_id, policy):
         if not all(providers) or set(principal) != {"Federated"} or set(statement) - {"Sid", "Effect", "Principal", "Action", "Condition"}:
             diagnostics.append(_diagnostic("UNSUPPORTED_TRUST_PRINCIPAL", "Trust principal or statement elements are outside the literal GitHub OIDC profile.", path, statement_node))
             continue
-        if "sts:AssumeRoleWithWebIdentity" not in actions:
+        if "sts:assumerolewithwebidentity" not in {action.casefold() for action in actions}:
             continue
         condition = mapping(statement.get("Condition")) if "Condition" in statement else None
         if condition is None:
@@ -96,6 +97,7 @@ def _github_trusts(path, role_id, policy):
             "operator": "StringEquals" if subject_node is equals.get("token.actions.githubusercontent.com:sub") else "StringLike",
             "broad": broad,
             "confidence": confidence,
+            "declared_actions": actions,
             "location": location(path, statement_node),
         }
         facts.append(fact)
@@ -139,7 +141,7 @@ def _secret_grants(path, role_id, policies):
                 diagnostics.append(_diagnostic("UNSUPPORTED_PERMISSION_STATEMENT", "Permission statement uses elements outside the finite allow profile.", path, statement_node))
                 continue
             actions = scalar_list(statement.get("Action")) if "Action" in statement else None
-            if not actions or "secretsmanager:GetSecretValue" not in actions:
+            if not actions or "secretsmanager:getsecretvalue" not in {action.casefold() for action in actions}:
                 continue
             resources = scalar_list(statement.get("Resource")) if "Resource" in statement else None
             if not resources:
@@ -153,6 +155,7 @@ def _secret_grants(path, role_id, policies):
                     "id": _identifier("aws-secret-grant", path, role_id, policy_index, statement_index, resource_index, resource),
                     "role_id": role_id,
                     "provider_action": "secretsmanager:GetSecretValue",
+                    "declared_actions": actions,
                     "action": "read_secret",
                     "resource_arn": resource,
                     "confidence": "declared-configuration",
@@ -167,6 +170,36 @@ def extract_cloudformation(path, root):
     if resources is None:
         return [], [], [], [_diagnostic("UNSUPPORTED_CLOUDFORMATION", "CloudFormation document must contain a literal Resources mapping.", path, root)]
     roles, trusts, grants, diagnostics = [], [], [], []
+    attachments = {}
+    blocked_names = set()
+    unresolved_attachment = False
+    declared_names = set()
+    for resource_node in resources.values():
+        resource = mapping(resource_node)
+        properties = mapping(resource.get("Properties")) if resource else None
+        if resource and scalar(resource.get("Type")) == "AWS::IAM::Role" and properties:
+            declared_names.add(scalar(properties.get("RoleName")))
+    for resource_node in resources.values():
+        resource = mapping(resource_node)
+        if not resource or scalar(resource.get("Type")) not in {"AWS::IAM::Policy", "AWS::IAM::ManagedPolicy"}:
+            continue
+        properties = mapping(resource.get("Properties"))
+        if properties is not None and "Roles" not in properties:
+            continue
+        targets = scalar_list(properties.get("Roles")) if properties else None
+        if targets is None or any(not re.fullmatch(r"[A-Za-z0-9+=,.@_-]{1,64}", name) for name in targets):
+            unresolved_attachment = True
+            diagnostics.append({**_diagnostic("UNRESOLVED_POLICY_ATTACHMENT", "Policy role targets are unresolved; role access is incomplete.", path, resource_node), "role_names": None})
+            continue
+        missing = set(targets) - declared_names
+        if missing:
+            diagnostics.append({**_diagnostic("UNRESOLVED_POLICY_ATTACHMENT", "Attached role is outside this template; its policy composition is incomplete.", path, resource_node), "role_names": sorted(missing)})
+        if "Condition" in resource or scalar(resource.get("Type")) == "AWS::IAM::ManagedPolicy":
+            blocked_names.update(targets)
+            diagnostics.append({**_diagnostic("UNRESOLVED_POLICY_ATTACHMENT", "Conditional or managed policy attachment cannot establish effective role access.", path, resource_node), "role_names": targets})
+            continue
+        for name in targets:
+            attachments.setdefault(name, []).append(resource["Properties"])
     for logical_id, resource_node in sorted(resources.items()):
         resource = mapping(resource_node)
         if resource is None or scalar(resource.get("Type")) != "AWS::IAM::Role":
@@ -191,7 +224,7 @@ def extract_cloudformation(path, root):
             "location": location(path, resource_node),
         })
         restrictions = set(properties) & {"PermissionsBoundary", "ManagedPolicyArns"}
-        if restrictions or "Condition" in resource:
+        if restrictions or "Condition" in resource or unresolved_attachment or role_name in blocked_names:
             diagnostics.append(_diagnostic("UNRESOLVED_ROLE_RESTRICTION", "A boundary, managed policy or resource condition has not been evaluated; no complete path is claimed for this role.", path, resource_node))
             continue
         trust_policy = properties.get("AssumeRolePolicyDocument") if properties else None
@@ -200,6 +233,12 @@ def extract_cloudformation(path, root):
             trusts.extend(found)
             diagnostics.extend(issues)
         policies = properties.get("Policies") if properties else None
+        if attachments.get(role_name):
+            inline = sequence(policies) if policies is not None else []
+            if inline is None:
+                diagnostics.append(_diagnostic("UNSUPPORTED_ROLE_POLICIES", "Role policies are unresolved; no allow path is claimed.", path, policies))
+                continue
+            policies = SequenceNode("tag:yaml.org,2002:seq", inline + attachments[role_name])
         if policies is not None:
             found, issues = _secret_grants(path, role_id, policies)
             grants.extend(found)

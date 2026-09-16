@@ -154,3 +154,42 @@ def test_shared_example_has_real_alternate_and_cross_job_paths(server):
     assert full["blocked_findings"] == 4
     assert full["after"] == {"reachable_findings": 1, "reachable_secrets": 1, "reachable_jobs": 1}
     assert compare([control["id"] for control in result["controls"]])["blocked_findings"] == 5
+
+
+def test_cancellation_is_guarded_and_never_publishes_partial_analysis(server, monkeypatch):
+    from threading import Event
+    from blastradius.repository import server as implementation
+    from blastradius.repository.operation import checkpoint
+    started, release = Event(), Event()
+    responses = []
+
+    def controlled(payload, review_context=None):
+        checkpoint("Parsing source declarations")
+        started.set()
+        assert release.wait(5)
+        checkpoint("Completing analysis")
+        return {"partial": True}
+
+    monkeypatch.setattr(implementation, "_analyze", controlled)
+    thread = Thread(target=lambda: responses.append(request(server, payload={"source": "example", "operation_id": "abc123"})))
+    thread.start()
+    try:
+        assert started.wait(5)
+        status, _, body = request(server, "/api/status", {"operation_id": "abc123"})
+        assert status == 200 and json.loads(body)["stage"] == "Parsing source declarations"
+        assert request(server, "/api/cancel", {"operation_id": "stale"})[0] == 409
+        assert request(server, "/api/cancel", {"operation_id": "abc123"})[0] == 202
+    finally:
+        release.set()
+        thread.join(timeout=5)
+    assert not thread.is_alive()
+    assert responses[0][0] == 409
+    assert json.loads(responses[0][2])["cancelled"] is True
+    assert server.last_result is None and server.review_context == {}
+
+
+def test_analysis_deadline_fails_closed():
+    from blastradius.repository.operation import AnalysisCancelled, AnalysisOperation, checkpoint, operation_scope
+    with operation_scope(AnalysisOperation("deadline", seconds=0)):
+        with pytest.raises(AnalysisCancelled, match="deadline"):
+            checkpoint("Starting")

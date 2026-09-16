@@ -1,5 +1,17 @@
 # Security
 
+## Educational Release Boundary
+
+The default lesson is fully offline and ships in the source and installed package. It stores only allowlisted fictional lesson progress/answers. Playground drafts remain in memory, preserve their text across model changes, and reset explicitly. Lesson results compare capabilities with a declared required-access set; zero access is not inherently success.
+
+Repository paths are informational declared capabilities, not automatically high-priority vulnerabilities or policy violations. Simulations remove modeled relationships only. Matching wildcard trust alternatives remain visible as unmodeled evidence and qualify zero-reach comparisons as remaining access unknown. Literal same-template CloudFormation policy attachments participate in restrictive checks; unresolved targets make role access incomplete. IAM action names compare case-insensitively; resources and trust subjects do not.
+
+Only bundled-example identifiers and selected control IDs are stored in session storage to restore example reviews. Real source results, paths, and ARNs are not stored there automatically; leaving a real review produces an unload warning. The server's in-memory latest result is still cleared on new analysis/reset or shutdown. Explicit downloads remain the retention mechanism for real reports.
+
+The guarded status/cancel routes use operation IDs to reject stale cancellation. Analysis has a 120-second cooperative deadline and cancellation checkpoints in acquisition, parsing and comparison. In-flight bounded reads may complete before cancellation is acknowledged; the client does not display or export partial results. This is not a process sandbox or a hard real-time execution limit. Existing host/origin/token guards and trusted-analyzer CI separation remain unchanged.
+
+Terraform HCL is explicitly counted as unassessed. Metadata-only JSON files no longer invalidate literal role evidence; multiple relevant IAM/module files, mixed HCL or malformed configuration in the same directory remain incomplete. The analyzer never recommends rewriting infrastructure to satisfy this profile.
+
 ## Current Repository Review Boundary
 
 Repository analysis accepts an explicitly chosen local directory or a token-free public GitHub repository. Source is untrusted data: no workflows, scripts, package hooks, IaC evaluator, Git helper or target dependencies are executed by the analyzer. Fixed acquisition/file/parser limits reject or report incomplete inputs; links and Windows reparse points are not followed. Local inputs include present files rather than applying arbitrary `.gitignore` rules.
@@ -11,6 +23,8 @@ Finite literal matrix expansion is bounded to 64 variants per matrix, 256 expand
 Unresolved role references record their context/name and job/source coordinates, not a secret value. Locally referenced actions with a role input are retained as unverified observations, never converted into AWS credential-exchange facts. Unsupported credential options remain blockers. Matrix fields named like passwords, tokens or credentials are redacted before output; other literal matrix values are source metadata and may still be sensitive. This is not automatic secret detection or anonymization. Do not send credential values to satisfy an evidence request.
 
 Conventional CloudFormation JSON/YAML files can be composed without constructing Python objects. Known intrinsic tags (`!Ref`, `!Sub`, etc.) remain opaque to all literal-value helpers, with diagnostic source locations; no evaluator runs. Only independent literal declarations may contribute paths. Arbitrary custom tags, aliases, duplicate keys, merge keys and resource limits remain enforced. A parsed template is not a fully evaluated deployment.
+
+Terraform support accepts only `*.tf.json` documents and strict literal JSON strings for IAM trust and inline policies. It does not parse HCL, resolve references or interpolation, load modules/data sources/state/plans, invoke Terraform, or join IAM declarations across files. Boundaries, managed policies, unresolved policies and instance/provider selection suppress complete paths. A parsed Terraform JSON declaration is source evidence, not proof of an applied plan or deployed AWS state.
 
 ### Local Browser Service
 

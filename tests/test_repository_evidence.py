@@ -7,8 +7,9 @@ import subprocess
 
 import pytest
 
+from blastradius.engine import Engine
 from blastradius.model import GraphError, canonical
-from blastradius.repository import acquire_repository, collect_repository_evidence
+from blastradius.repository import acquire_repository, analyze_repository, build_repository_graph, collect_repository_evidence
 from blastradius.repository import yaml_nodes
 
 
@@ -33,6 +34,9 @@ def test_positive_evidence_is_deterministic_source_backed_and_honest():
         "unsupported_files": 0,
         "workflow_files": 1,
         "cloudformation_files": 1,
+        "terraform_files": 0,
+        "terraform_relevant_files": 0,
+        "terraform_hcl_files": 0,
         "deployed_aws_state": "unverified",
     }
     assert len(first["facts"]["workflows"]) == 1
@@ -60,6 +64,211 @@ def test_positive_evidence_is_deterministic_source_backed_and_honest():
     unsigned = {key: value for key, value in first.items() if key != "evidence_hash"}
     assert first["evidence_hash"] == sha256(canonical(unsigned)).hexdigest()
     assert str(FIXTURE) not in json.dumps(first)
+
+
+def test_literal_terraform_json_role_trust_and_policy_are_source_backed(tmp_path):
+    workflows = tmp_path / ".github" / "workflows"
+    workflows.mkdir(parents=True)
+    (workflows / "deploy.yml").write_text(
+        """on:
+  push:
+    branches: [main]
+permissions:
+  id-token: write
+jobs:
+  deploy:
+    steps:
+      - uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: arn:aws:iam::123456789012:role/github-production
+""",
+        encoding="utf-8",
+    )
+    trust = {
+        "Version": "2012-10-17",
+        "Statement": [{
+            "Effect": "Allow",
+            "Principal": {"Federated": "arn:aws:iam::123456789012:oidc-provider/token.actions.githubusercontent.com"},
+            "Action": "sts:AssumeRoleWithWebIdentity",
+            "Condition": {"StringEquals": {
+                "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
+                "token.actions.githubusercontent.com:sub": "repo:acme/payments:ref:refs/heads/main",
+            }},
+        }],
+    }
+    policy = {
+        "Version": "2012-10-17",
+        "Statement": [{
+            "Effect": "Allow",
+            "Action": "secretsmanager:GetSecretValue",
+            "Resource": "arn:aws:secretsmanager:us-east-1:123456789012:secret:production/database",
+        }],
+    }
+    terraform = {
+        "resource": {
+            "aws_iam_role": {"deploy": {
+                "name": "github-production",
+                "assume_role_policy": json.dumps(trust),
+            }},
+            "aws_iam_role_policy": {"secrets": {
+                "role": "github-production",
+                "policy": json.dumps(policy),
+            }},
+        },
+    }
+    (tmp_path / "identity.tf.json").write_text(json.dumps(terraform, indent=2), encoding="utf-8")
+
+    result = collect(tmp_path)
+
+    assert result["coverage"]["terraform_files"] == 1
+    assert result["coverage"]["cloudformation_files"] == 0
+    assert len(result["facts"]["aws_roles"]) == 1
+    assert len(result["facts"]["aws_trusts"]) == 1
+    assert len(result["facts"]["aws_secret_grants"]) == 1
+    assert result["facts"]["oidc_role_requests"][0]["trust_match"] == "exact-declared-configuration"
+    assert all(fact["location"]["path"] == "identity.tf.json" for collection in (
+        result["facts"]["aws_roles"], result["facts"]["aws_trusts"], result["facts"]["aws_secret_grants"]
+    ) for fact in collection)
+    graph, evidence_index = build_repository_graph(result)
+    credential = next(node for node in graph["nodes"] if node["kind"] == "credential")
+    assert len(Engine(graph).reach(credential["id"]).pairs) == 1
+    terraform_items = [item for item in graph["nodes"] + graph["edges"] if item["provenance"]["source_api"] == "terraform-json"]
+    assert terraform_items
+    assert all(item["provenance"]["evidence_ref"] in evidence_index for item in terraform_items)
+    analysis = analyze_repository(tmp_path, "acme/payments")
+    assert analysis["summary"]["finding_count"] == 1
+    assert analysis["findings"][0]["impact"]["resource_arn"].endswith(":secret:production/database")
+    assert analysis["coverage"]["terraform_files"] == 1
+
+
+def test_terraform_json_expressions_and_boundaries_never_create_complete_permissions(tmp_path):
+    terraform = {
+        "resource": {
+            "aws_iam_role": {"deploy": {
+                "name": "github-production",
+                "permissions_boundary": "${aws_iam_policy.boundary.arn}",
+                "assume_role_policy": "${data.aws_iam_policy_document.trust.json}",
+            }},
+            "aws_iam_role_policy": {
+                "dynamic": {"role": "${aws_iam_role.deploy.name}", "policy": "${data.aws_iam_policy_document.permissions.json}"},
+                "wildcard": {"role": "github-production", "policy": json.dumps({"Statement": [{
+                    "Effect": "Allow",
+                    "Action": "secretsmanager:GetSecretValue",
+                    "Resource": "*",
+                }]})},
+            },
+        },
+    }
+    (tmp_path / "identity.tf.json").write_text(json.dumps(terraform), encoding="utf-8")
+
+    result = collect(tmp_path)
+
+    assert result["facts"]["aws_roles"]
+    assert result["facts"]["aws_trusts"] == []
+    assert result["facts"]["aws_secret_grants"] == []
+    codes = {item["code"] for item in result["diagnostics"]}
+    assert {"UNRESOLVED_ROLE_RESTRICTION", "DYNAMIC_TERRAFORM_ROLE_REFERENCE"} <= codes
+
+
+def test_malformed_terraform_policy_is_diagnostic_not_a_parser_escape(tmp_path):
+    terraform = {"resource": {"aws_iam_role": {"deploy": {
+        "name": "github-production",
+        "assume_role_policy": "not-json",
+    }}}}
+    (tmp_path / "identity.tf.json").write_text(json.dumps(terraform), encoding="utf-8")
+
+    result = collect(tmp_path)
+
+    assert result["facts"]["aws_roles"]
+    assert result["facts"]["aws_trusts"] == []
+    assert any(item["code"] == "MALFORMED_TERRAFORM_POLICY" for item in result["diagnostics"])
+
+
+def test_terraform_explicit_deny_in_separate_policy_suppresses_allow(tmp_path):
+    trust = {"Statement": [{
+        "Effect": "Allow",
+        "Principal": {"Federated": "arn:aws:iam::123456789012:oidc-provider/token.actions.githubusercontent.com"},
+        "Action": "sts:AssumeRoleWithWebIdentity",
+        "Condition": {"StringEquals": {
+            "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
+            "token.actions.githubusercontent.com:sub": "repo:acme/payments:ref:refs/heads/main",
+        }},
+    }]}
+    allow = {"Statement": [{
+        "Effect": "Allow", "Action": "secretsmanager:GetSecretValue",
+        "Resource": "arn:aws:secretsmanager:us-east-1:123456789012:secret:production/database",
+    }]}
+    deny = {"Statement": [{
+        "Effect": "Deny", "Action": "secretsmanager:GetSecretValue", "Resource": "*",
+    }]}
+    terraform = {"resource": {
+        "aws_iam_role": {"deploy": {"name": "github-production", "assume_role_policy": json.dumps(trust)}},
+        "aws_iam_role_policy": {
+            "allow": {"role": "github-production", "policy": json.dumps(allow)},
+            "deny": {"role": "github-production", "policy": json.dumps(deny)},
+        },
+    }}
+    (tmp_path / "identity.tf.json").write_text(json.dumps(terraform), encoding="utf-8")
+
+    result = collect(tmp_path)
+
+    assert result["facts"]["aws_secret_grants"] == []
+    assert any(item["code"] == "EXPLICIT_DENY_UNSUPPORTED" for item in result["diagnostics"])
+
+
+def test_multiple_terraform_json_files_are_visible_but_not_joined(tmp_path):
+    for name in ("role.tf.json", "policy.tf.json"):
+        (tmp_path / name).write_text(json.dumps({"resource": {"aws_iam_role": {}}}), encoding="utf-8")
+
+    result = collect(tmp_path)
+
+    assert result["coverage"]["terraform_files"] == 2
+    assert result["facts"]["aws_roles"] == []
+    assert sum(item["code"] == "MULTIPLE_TERRAFORM_FILES_UNSUPPORTED" for item in result["diagnostics"]) == 2
+    analysis = analyze_repository(tmp_path, "acme/payments")
+    gap = next(item for item in analysis["evidence_gaps"] if item["code"] == "MULTIPLE_TERRAFORM_FILES_UNSUPPORTED")
+    assert "does not combine Terraform declarations" in gap["evidence_needed"]
+
+
+def test_terraform_version_only_file_does_not_erase_literal_role_evidence(tmp_path):
+    import shutil
+    root = tmp_path / "repository"
+    shutil.copytree(ROOT / "tests/fixtures/repositories/aws-oidc-terraform-json", root)
+    (root / "infra/versions.tf.json").write_text(json.dumps({"terraform": {"required_version": ">= 1.5"}}))
+    result = analyze_repository(root, "acme/terraform-service")
+    assert len(result["findings"]) == 1
+    assert result["coverage"]["terraform_files"] == 2
+    assert result["coverage"]["terraform_relevant_files"] == 1
+    assert not any(issue["code"] == "MULTIPLE_TERRAFORM_FILES_UNSUPPORTED" for issue in result["diagnostics"])
+
+
+def test_hcl_is_counted_as_unassessed_not_silently_omitted(tmp_path):
+    (tmp_path / "main.tf").write_text('resource "aws_iam_role" "deployment" {}')
+    result = analyze_repository(tmp_path, "acme/example")
+    assert result["coverage"]["terraform_hcl_files"] == 1
+    assert result["coverage"]["out_of_profile_files"] == 1
+    assert result["findings"] == []
+    assert any(issue["code"] == "TERRAFORM_HCL_UNSUPPORTED" for issue in result["diagnostics"])
+
+
+@pytest.mark.parametrize("restriction", ["unknown-policy", "missing-policy", "count-zero"])
+def test_unresolved_terraform_restriction_cannot_leave_a_complete_allow(tmp_path, restriction):
+    import shutil
+    root = tmp_path / "repository"
+    shutil.copytree(ROOT / "tests/fixtures/repositories/aws-oidc-terraform-json", root)
+    template = root / "infra/identity.tf.json"
+    document = json.loads(template.read_text())
+    if restriction == "count-zero":
+        document["resource"]["aws_iam_role"]["deploy"]["count"] = 0
+    else:
+        policy = {"role": "github-production"}
+        if restriction == "unknown-policy":
+            policy["policy"] = "${data.aws_iam_policy_document.restriction.json}"
+        document["resource"]["aws_iam_role_policy"]["restriction"] = policy
+    template.write_text(json.dumps(document))
+    result = analyze_repository(root, "acme/terraform-service")
+    assert result["findings"] == []
+    assert result["diagnostics"]
 
 
 def test_changed_snapshot_fails_closed(tmp_path):

@@ -22,7 +22,7 @@ def test_repository_analysis_produces_evidence_path_and_breaking_remediation():
     assert first["repository"]["slug"] == "acme/payments"
     assert first["summary"] == {"finding_count": 1, "declared_reachable_secrets": 1}
     finding = first["findings"][0]
-    assert finding["priority"] == "high"
+    assert finding["priority"] == "informational"
     assert finding["confidence"] == "declared-configuration"
     assert "assumed compromised" in finding["start_condition"]
     assert finding["impact"]["action"] == "secretsmanager:GetSecretValue"
@@ -37,6 +37,8 @@ def test_repository_analysis_produces_evidence_path_and_breaking_remediation():
         "before_absolute_reach": 1,
         "after_absolute_reach": 0,
         "path_broken": True,
+        "remaining_access_unknown": False,
+        "scope": "Modeled routes only; deployed access and required workload permissions remain unverified.",
     }
     assert finding["deployed_aws_state"] == "unverified"
     unsigned = {key: value for key, value in first.items() if key != "analysis_hash"}
@@ -61,6 +63,54 @@ def test_repository_analysis_does_not_modify_source_files():
     analyze_repository(FIXTURE, "acme/payments")
     after = {path.relative_to(FIXTURE).as_posix(): path.read_bytes() for path in FIXTURE.rglob("*") if path.is_file()}
     assert before == after
+
+
+@pytest.mark.parametrize("targets", [["github-production"], [{"Ref": "GitHubProductionRole"}]])
+def test_separately_attached_deny_cannot_disappear(tmp_path, targets):
+    root = tmp_path / "repository"
+    shutil.copytree(FIXTURE, root)
+    template = root / "infra/identity.template.json"
+    document = json.loads(template.read_text())
+    document["Resources"]["RestrictSecret"] = {
+        "Type": "AWS::IAM::Policy",
+        "Properties": {"PolicyName": "RestrictSecret", "Roles": targets, "PolicyDocument": {
+            "Statement": [{"Effect": "Deny", "Action": "secretsmanager:GetSecretValue", "Resource": "*"}],
+        }},
+    }
+    template.write_text(json.dumps(document))
+    result = analyze_repository(root, "acme/payments")
+    assert result["findings"] == []
+    assert any(issue["code"] in {"EXPLICIT_DENY_UNSUPPORTED", "UNRESOLVED_POLICY_ATTACHMENT"} for issue in result["diagnostics"])
+    assert result["evidence_gaps"]
+
+
+def test_literal_attached_policy_retains_its_source(tmp_path):
+    root = tmp_path / "repository"
+    shutil.copytree(FIXTURE, root)
+    template = root / "infra/identity.template.json"
+    document = json.loads(template.read_text())
+    properties = document["Resources"]["GitHubProductionRole"]["Properties"]
+    policy = properties.pop("Policies")[0]
+    document["Resources"]["AttachedRead"] = {"Type": "AWS::IAM::Policy", "Properties": {**policy, "Roles": [properties["RoleName"]]}}
+    template.write_text(json.dumps(document, indent=2))
+    result = analyze_repository(root, "acme/payments")
+    assert len(result["findings"]) == 1
+    source = result["findings"][0]["authorization"]["permission"]["location"]
+    assert source["path"] == "infra/identity.template.json"
+    assert source["start_line"] > template.read_text().splitlines().index('    "AttachedRead": {')
+
+
+def test_iam_action_capitalization_preserves_semantics_and_source_spelling(tmp_path):
+    root = tmp_path / "repository"
+    shutil.copytree(FIXTURE, root)
+    template = root / "infra/identity.template.json"
+    template.write_text(template.read_text().replace("secretsmanager:GetSecretValue", "SecretsManager:GetSecretValue").replace("sts:AssumeRoleWithWebIdentity", "STS:assumerolewithwebidentity"))
+    result = analyze_repository(root, "acme/payments")
+    assert len(result["findings"]) == 1
+    authorization = result["findings"][0]["authorization"]
+    assert "SecretsManager:GetSecretValue" in authorization["permission"]["declared_actions"]
+    assert "STS:assumerolewithwebidentity" in authorization["trust"]["declared_actions"]
+    assert authorization["permission"]["provider_action"] == "secretsmanager:GetSecretValue"
 
 
 @pytest.mark.parametrize("case", ["deny", "boundary", "trust-extra-condition", "trust-deny", "environment", "ambiguous-role", "wrong-account", "wrong-role-path", "managed-policy", "conditional-role", "session-policy"])
@@ -169,6 +219,64 @@ def test_change_set_preserves_alternate_trust_and_recomputes_shared_jobs(tmp_pat
     for invalid in (["unrecognized"], controls * 2, "all", [None]):
         with pytest.raises(Exception, match="trust control"):
             simulate_repository_review(result, context, invalid)
+
+
+def test_unmodeled_wildcard_alternative_survives_exact_trust_simulation(tmp_path):
+    from copy import deepcopy
+    from blastradius.repository.scenarios import simulate_repository_review, render_change_request
+    root = tmp_path / "repository"
+    shutil.copytree(FIXTURE, root)
+    template = root / "infra/identity.template.json"
+    document = json.loads(template.read_text())
+    trusts = document["Resources"]["GitHubProductionRole"]["Properties"]["AssumeRolePolicyDocument"]["Statement"]
+    alternate = deepcopy(trusts[0])
+    alternate["Condition"]["StringEquals"].pop("token.actions.githubusercontent.com:sub")
+    alternate["Condition"]["StringLike"] = {"token.actions.githubusercontent.com:sub": "repo:acme/payments:*"}
+    trusts.append(alternate)
+    template.write_text(json.dumps(document))
+    context = {}
+    result = analyze_repository(root, "acme/payments", review_context=context)
+    finding = result["findings"][0]
+    assert finding["classification"] == "declared-capability"
+    assert finding["priority"] == "informational"
+    assert finding["remediation"]["after_absolute_reach"] == 0
+    assert finding["remediation"]["remaining_access_unknown"] is True
+    assert finding["unmodeled_alternatives"][0]["subjects"] == ["repo:acme/payments:*"]
+    comparison = simulate_repository_review(result, context, [finding["remediation"]["control_id"]])
+    assert comparison["remaining_access_unknown"] is True
+    assert comparison["finding_states"][0]["remaining_access_unknown"] is True
+    assert "remaining access unknown" in render_change_request(comparison)
+
+
+@pytest.mark.parametrize(("job_count", "secret_count"), [(8, 8), (32, 16)])
+def test_shared_control_simulations_validate_once_per_distinct_change(tmp_path, monkeypatch, job_count, secret_count):
+    from time import perf_counter
+    from blastradius.repository import findings as implementation
+    root = tmp_path / "repository"
+    shutil.copytree(FIXTURE, root)
+    workflow = {"on": {"push": {"branches": ["main"]}}, "permissions": {"id-token": "write"}, "jobs": {"deploy": {"strategy": {"matrix": {"job": list(range(job_count))}}, "steps": [{"uses": "aws-actions/configure-aws-credentials@v5", "with": {"role-to-assume": "arn:aws:iam::123456789012:role/github-production"}}]}}}
+    (root / ".github/workflows/deploy.yml").write_text(json.dumps(workflow))
+    template = root / "infra/identity.template.json"
+    document = json.loads(template.read_text())
+    statement = document["Resources"]["GitHubProductionRole"]["Properties"]["Policies"][0]["PolicyDocument"]["Statement"][0]
+    statement["Resource"] = [f"arn:aws:secretsmanager:us-east-1:123456789012:secret:production/secret-{index}" for index in range(secret_count)]
+    template.write_text(json.dumps(document))
+    validations = []
+    original = implementation.validate
+
+    def counted(graph):
+        validations.append(len(graph["edges"]))
+        return original(graph)
+
+    monkeypatch.setattr(implementation, "validate", counted)
+    started = perf_counter()
+    result = analyze_repository(root, "acme/payments")
+    elapsed = perf_counter() - started
+    assert len(result["findings"]) == job_count * secret_count
+    assert len(validations) == 1
+    assert all(finding["remediation"]["after_absolute_reach"] == 0 for finding in result["findings"])
+    assert elapsed < 10, "Repository-shaped analysis exceeded its 10-second regression budget"
+    print(json.dumps({"jobs": job_count, "secrets": secret_count, "findings": len(result["findings"]), "analysis_seconds": elapsed, "result_bytes": len(canonical(result))}))
 
 
 def test_review_reports_parser_scope_and_skipped_inputs(tmp_path):

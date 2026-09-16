@@ -413,6 +413,24 @@ Do not silently decide these without examining constraints and recording the rat
 
 ### 21. Current Execution State
 
+#### Educational audit implementation: 2026-09-17
+
+- Current request supplies the educational readiness audit. Implemented the small educational release, not all 520 goals. The original review files remain historical evidence and are not rewritten.
+- Default offline first lesson in `ui/index.html` and byte-identical installed `assets/lesson.html`: predict 1/4, remove required read (0/4, requirement missing), add write (2/4), remove only write (1/4, requirement preserved). Fictional progress persists and exports; `blastradius learn` needs no server. README now has one learning entry and an optional non-uv analyzer setup.
+- Playground drafts, including invalid text, survive model/view changes; reset is explicit. Exact weighted/bounded captions, export selector and narrative provenance/fallback are restored in source. `build_ui.mjs --check` checks source/generated/packaged parity.
+- IAM attachments and action-case regressions fixed; unknown attachment targets block affected role claims. Capabilities are informational, not policy violations. Wildcard alternatives remain in result/comparison evidence and visible warnings; no zero-count safety claim.
+- Changed-graph validation reused by trust set; 512-finding workload locally measured about 0.20 seconds (prior audit 28.48 seconds on its measured run). Hard CI regression budget is 10 seconds for that bounded fixture, not a general performance guarantee.
+- Guarded analysis stages/cancel/deadlines implemented; no partial results retained. Bundled-example refresh restores controls. Real-source reviews warn before navigation and are not automatically persisted to browser storage.
+- Terraform metadata-only files no longer erase same-module evidence; relevant cross-file restrictions remain conservative, HCL is explicitly unassessed. CI now includes both browser suites and installed/offline journey checks. Hosted execution remains unverified.
+- Verification, installed wheel and residual external gates are recorded in TEST_REPORT.md. Existing uncommitted changes and raw local performance files are preserved. No commit/push or cloud operation was requested.
+
+#### Terraform JSON evidence iteration: 2026-09-17
+
+- Added bounded `*.tf.json` selection and literal same-file `aws_iam_role` / `aws_iam_role_policy` evidence for the existing GitHub OIDC -> IAM role -> finite Secrets Manager path.
+- Strict policy JSON, source locations, `terraform-json` graph provenance, report coverage and review-app source labels are implemented. Existing CloudFormation and graph contracts remain additive.
+- HCL, references/interpolation, modules, data sources, state/plans, cross-file joins, managed policies and boundaries remain unsupported and cannot silently produce a path. Terraform is never executed.
+- Final `tools/verify.py`: **306 passed, 1 Windows privilege skip in 57.88 seconds; 3338/3739 lines covered (89.2752%)**. All 15 review-browser accessibility audits pass with zero violations, page errors or offline requests. The first full run hit the known Windows malformed-request socket race; its focused retry and the complete rerun passed.
+
 #### Expanded evidence iteration verified on 2026-09-16
 
 - Newest user request: **"imrpove it as much as possible"**, after testing a real external repository. Implemented WP_029-WP_032/D79-D81 to address observed evidence gaps, not another cosmetic reskin, provider expansion or secret-value collection.
@@ -423,7 +441,7 @@ Do not silently decide these without examining constraints and recording the rat
 - Final `tools/verify.py`: **301 passed, 1 platform skip, 69.98s**, 3229/3611 covered lines (**89.421213%**). **15 browser accessibility audits, zero violations**, including 46 identity variants grouped into 23 paginated declarations, desktop/1280/390/320px, filters/keyboard and prior shared-path/error/export/offline tests. No page errors/offline HTTP.
 - Same external commit `aws-actions/configure-aws-credentials@ec8e608231b771e3614fc6ea4edadab8703331a5`: 20 jobs, **33 expanded job variants**, **36 identity request variants / 17 declarations**, zero unexpanded matrices. All role values remain unknown and IAM declarations are absent: no complete path claimed. Diagnostic sites now show 17 dynamic roles, 12 local actions, 4 unsupported credential/session configurations. More evidence is not more vulnerabilities.
 - Final current external result `results/aws-actions-expanded-evidence-20260916.{json,md,html}`, analysis hash `de5f8b91f9cb1456cd9867a6dd30f1e39081992b84e6a2e02d8737ed8dbef419`. Prior results below remain historical measurements. No source execution, AWS operations, credentials, commit/push or hosted CI was performed.
-- Current wheel in `dist/repository-expanded-evidence-20260916/` has SHA-256 `fc75c19f6aa7cc0eb62a1f412dad1212615678572dcba1883b580af0840c4a42`. Clean installed-package checks from temporary cwd under `-I` passed matrix/env source resolution, intrinsic opacity, packaged shared example, external identity HTML and SARIF 2.1.0 validation. Playwright verified the external HTML offline with zero HTTP requests, then the same pinned repository through the refreshed app (36 request variants / 17 declarations / 33 job variants / 0 paths). The live app remains on http://127.0.0.1:8765/ with the real repository's Identities view open.
+- Current wheel in `dist/repository-expanded-evidence-20260916/` has SHA-256 `fc75c19f6aa7cc0eb62a1f412dad1212615678572dcba1883b580af0840c4a42`. Clean installed-package checks from temporary cwd under `-I` passed matrix/env source resolution, intrinsic opacity, packaged shared example, external identity HTML and SARIF 2.1.0 validation. Playwright verified the external HTML offline with zero HTTP requests, then the same pinned repository through the refreshed app (36 request variants / 17 declarations / 33 job variants / 0 paths). The live app remains on <http://127.0.0.1:8765/> with the real repository's Identities view open.
 
 #### Real-repository test requested on 2026-09-16
 
@@ -441,7 +459,7 @@ Do not silently decide these without examining constraints and recording the rat
 - Inspector tests found/fixed a real multiple-request provenance defect: role fields now use the actual `can_assume` correlation's request. Baseline Markdown includes matched predicates and file coverage. New change requests export Markdown/JSON with selected controls, all-job deltas, baseline/comparison hashes and simulation-only statements.
 - Full `tools/verify.py`: **280 passed, 1 platform skip in 55.57s**; 2983/3361 lines covered (**88.753347%**). Optional-context wrapper compatibility and a Windows inconsistent-body header-test race were resolved, not waived. Pylance scenarios diagnostics empty.
 - Browser: **12 real-Chromium accessibility audits, zero violations** at 1440/1280/390/320px and offline. Exact evidence, queue/status/file filters, rapid toggles, failed comparison uncertainty, four baseline formats and two plan formats all pass. Generated reports/screenshots are in results/repository-review-browser/. No page errors/offline HTTP requests.
-- Current wheel in `dist/repository-investigation-20260916/` passed isolated installed-package checks for the shared example, alternate/combined comparison and report assets. SHA-256 `1a46d48128c483945e9b01643fd1681df463316b2ec0e047543159eb0cd9dd50`. Shared example analysis hash `1df8e5e9a188ab11e8177a7aabf164785cf039c2fa4623fa65f24b7d9c5daf7e`. Regenerated SARIF schema passes. The updated app is running at http://127.0.0.1:8765/ with the shared baseline loaded; live Playwright verified 5 -> 5 -> 1 -> 5 staging and clear.
+- Current wheel in `dist/repository-investigation-20260916/` passed isolated installed-package checks for the shared example, alternate/combined comparison and report assets. SHA-256 `1a46d48128c483945e9b01643fd1681df463316b2ec0e047543159eb0cd9dd50`. Shared example analysis hash `1df8e5e9a188ab11e8177a7aabf164785cf039c2fa4623fa65f24b7d9c5daf7e`. Regenerated SARIF schema passes. The updated app is running at <http://127.0.0.1:8765/> with the shared baseline loaded; live Playwright verified 5 -> 5 -> 1 -> 5 staging and clear.
 - HTML snapshots keep saved single-statement comparisons only, not a browser graph engine or arbitrary multi-control planner. Live planning needs the guarded local server. No new source execution, secret value read, AWS call, commit, push or hosted CI run was performed. Earlier hashes/test counts below are historical.
 
 #### Repository review delivery verified on 2026-09-16
@@ -501,6 +519,8 @@ Status reported after the first complete repository-analysis vertical slice on t
 
 ### 22. Decisions Made During the Refocus
 
+- The educational audit supersedes the earlier automatic high-priority/fix/minimality presentation. One offline lesson is the front door; advanced repository review and historical standards remain optional. D84-D89 record the verified boundary. Required access, modeled capability, unresolved evidence and actual violations are separate concepts.
+
 - Preserve and evaluate the existing deterministic analysis engine rather than discarding it reflexively.
 - Treat the normalized graph as an internal/developer contract, not the default end-user input.
 - Use GitHub repository analysis only if it leads to cross-layer attack paths; do not build a generic secret/SAST scanner.
@@ -527,6 +547,7 @@ These are working decisions for the refocus. If implementation evidence contradi
 - **Resolved local blocker (2026-09-16):** the approved command/schema/dependency recovery is verified. Unrelated dirty-worktree files remain; do not use a broad reset or assume those edits can be discarded.
 - Older sections of `HANDOVER.md`, the historical README material and `DIRECTION.md` describe standards-only scope. Current repository-first notices explicitly supersede that direction; preserve the history instead of restarting the old roadmap.
 - Repository graph v0.2 currently supports one narrow GitHub Actions/AWS CloudFormation profile; it is not a general source graph.
+- Terraform support is limited to literal same-file IAM declarations in `*.tf.json`; ordinary HCL and evaluated Terraform configuration remain outside the profile.
 - Existing connectors are bounded offline profiles, not complete live-provider evaluators.
 - Repository-only evidence cannot establish complete deployed cloud permissions.
 - The focused review app and HTML/Markdown/JSON/SARIF outputs are implemented and locally verified. CI artifact workflow and optional manual SARIF upload are implemented but not yet run on GitHub; publication/activation needs the user's separate commit/push authorization and a trusted baseline containing the additions.
@@ -541,7 +562,7 @@ These are working decisions for the refocus. If implementation evidence contradi
 
 ### 24. Exact Next Action
 
-Hand over the improved evidence workflow with the actual external repository loaded in Identities, showing what was recovered and what remains missing. Demonstrate 33 expanded job variants / 36 unresolved request variants and the specific evidence-needed list, not a fabricated positive path. Further end-to-end cloud-path validation requires an authorized repository with matching resolvable role/trust/permission source or a separately scoped evidence extension. Publishing/hosted CI still requires commit/push authorization; do not silently add a provider, hosted service or LLM.
+Run a short observed session with actual newcomers using the offline first lesson: can they predict the count, change access, explain missing required work, and preserve their draft across model changes? Record confusion without expanding providers. Separately execute the new hosted CI and uncached OS-install checks only with the necessary environment/authorization; local success is not a substitute for those external gates.
 
 ### 25. End-of-Session Continuity Protocol
 

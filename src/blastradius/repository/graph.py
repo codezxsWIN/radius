@@ -164,7 +164,7 @@ def build_repository_graph(evidence: dict) -> tuple[dict | None, dict]:
             "kind": "principal",
             "subtype": "service_principal",
             "name": _name(role.get("role_name", role["id"]), "AWS IAM role: "),
-            "provenance": _provenance("cloudformation", snapshot_hash, role["id"]),
+            "provenance": _provenance(role.get("source_api", "cloudformation"), snapshot_hash, role["id"]),
         })
         keep_node({
             "id": binding_id,
@@ -174,7 +174,7 @@ def build_repository_graph(evidence: dict) -> tuple[dict | None, dict]:
             "effect": "allow",
             "constraints": [],
             "eligible": False,
-            "provenance": _provenance("cloudformation", snapshot_hash, grant["id"]),
+            "provenance": _provenance(grant.get("source_api", "cloudformation"), snapshot_hash, grant["id"]),
         })
         keep_node({
             "id": resource_id,
@@ -183,7 +183,7 @@ def build_repository_graph(evidence: dict) -> tuple[dict | None, dict]:
             "name": _name(grant["resource_arn"], "AWS secret: "),
             "actions": ["read_secret"],
             "sensitivity": 1.0,
-            "provenance": _provenance("cloudformation", snapshot_hash, resource_references[grant["resource_arn"]]),
+            "provenance": _provenance(grant.get("source_api", "cloudformation"), snapshot_hash, resource_references[grant["resource_arn"]]),
         })
 
         keep_edge({
@@ -205,7 +205,7 @@ def build_repository_graph(evidence: dict) -> tuple[dict | None, dict]:
             "source": role_id,
             "target": binding_id,
             "kind": "assigned",
-            "provenance": _provenance("cloudformation", snapshot_hash, grant["id"]),
+            "provenance": _provenance(grant.get("source_api", "cloudformation"), snapshot_hash, grant["id"]),
         })
         keep_edge({
             "id": _identifier("edge-grants", grant["id"]),
@@ -226,7 +226,7 @@ def build_repository_graph(evidence: dict) -> tuple[dict | None, dict]:
         "nodes": sorted(nodes.values(), key=lambda item: item["id"]),
         "edges": sorted(edges.values(), key=lambda item: item["id"]),
         "coverage": [
-            "GitHub Actions and literal AWS CloudFormation declarations only.",
+            "GitHub Actions, literal AWS CloudFormation declarations and bounded Terraform JSON declarations only.",
             "Deployed AWS state, runtime conditions and effective permissions were not verified.",
         ],
     }

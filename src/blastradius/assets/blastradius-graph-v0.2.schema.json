@@ -30,7 +30,7 @@
       "required": ["connector", "source_api", "snapshot_hash", "evidence_ref"],
       "properties": {
         "connector": {"const": "repository"},
-        "source_api": {"enum": ["github-actions", "cloudformation", "repository-correlation"]},
+        "source_api": {"enum": ["github-actions", "cloudformation", "terraform-json", "repository-correlation"]},
         "snapshot_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
         "evidence_ref": {"$ref": "#/$defs/id"}
       }

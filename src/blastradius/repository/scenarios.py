@@ -73,7 +73,7 @@ def simulate_repository_review(result, context, selected_controls):
                     if edge["kind"] == "can_assume":
                         remaining_controls.append(evidence_index[edge["provenance"]["evidence_ref"]]["trust_id"])
             before_resources.add(resource_id)
-            states.append({"finding_id": finding["id"], "reachable": reachable, "remaining_controls": remaining_controls})
+            states.append({"finding_id": finding["id"], "reachable": reachable, "remaining_controls": remaining_controls, "remaining_access_unknown": bool(finding.get("unmodeled_alternatives"))})
     elif result["findings"]:
         raise GraphError("The retained model for this analysis is unavailable.")
     job_rows = [{"id": job["id"], "name": job["name"], "before_reachable_secrets": len(job["before"]), "after_reachable_secrets": len(job["after"])} for job in sorted(jobs.values(), key=lambda job: job["id"])]
@@ -85,9 +85,13 @@ def simulate_repository_review(result, context, selected_controls):
         "before": {"reachable_findings": len(result["findings"]), "reachable_secrets": len(before_resources), "reachable_jobs": sum(bool(job["before"]) for job in jobs.values())},
         "after": {"reachable_findings": after_count, "reachable_secrets": len(after_resources), "reachable_jobs": sum(bool(job["after"]) for job in jobs.values())},
         "blocked_findings": len(result["findings"]) - after_count,
+        "remaining_access_unknown": any(state["remaining_access_unknown"] for state in states),
+        "unmodeled_alternatives": list({item["id"]: deepcopy(item) for finding in result["findings"] for item in finding.get("unmodeled_alternatives", [])}.values()),
         "finding_states": states, "jobs": job_rows,
         "scope": "All modeled uses of the selected trust statements are removed together. Alternate trust statements remain. Repository and deployed AWS configuration are unchanged.",
     }
+    if comparison["remaining_access_unknown"]:
+        comparison["scope"] += " Blocked counts cover modeled routes only; remaining access unknown. Unmodeled alternative trusts may still authorize access."
     comparison["comparison_hash"] = sha256(canonical(comparison)).hexdigest()
     return comparison
 

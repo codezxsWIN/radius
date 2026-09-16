@@ -3,14 +3,17 @@
 from copy import deepcopy
 from fnmatch import fnmatchcase
 from hashlib import sha256
+from io import StringIO
 from pathlib import Path, PurePosixPath
 import re
 
-from ..model import GraphError, canonical
+from ..model import GraphError, canonical, read_json
 from .acquisition import PROFILE as ACQUISITION_PROFILE, read_snapshot_file
 from .aws_cloudformation import extract_cloudformation
+from .aws_terraform import extract_terraform_json
 from .github_actions import extract_github_actions
-from .yaml_nodes import DocumentSyntaxError, compose_document, intrinsic_locations
+from .operation import checkpoint
+from .yaml_nodes import DocumentSyntaxError, compose_document, intrinsic_locations, mapping
 
 
 PROFILE = "github-actions-aws-cfn-v0.1"
@@ -32,6 +35,14 @@ GAP_GUIDANCE = {
     "DYNAMIC_OIDC_AUDIENCE": ("OIDC audience unresolved", "Provide the declared audience through supported literal source context; the analyzer does not infer runtime values."),
     "MALFORMED_DOCUMENT": ("Source document could not be parsed", "Inspect the file syntax and encoding. No facts from the unparsed file contribute to access paths."),
     "CLOUDFORMATION_INTRINSICS_UNEVALUATED": ("Template expressions remain unevaluated", "Only independent literal declarations contribute to paths. Provide a reviewed resolved configuration to assess resources whose identity or permission depends on intrinsic functions."),
+    "UNSUPPORTED_TERRAFORM_JSON": ("Terraform JSON structure unsupported", "Provide literal Terraform JSON resource mappings. HCL and generated configuration are not evaluated."),
+    "DYNAMIC_TERRAFORM_POLICY": ("Terraform policy unresolved", "Provide a reviewed literal JSON policy declaration. References, interpolation, data sources and runtime values are not evaluated."),
+    "MALFORMED_TERRAFORM_POLICY": ("Terraform policy JSON invalid", "Correct the literal policy JSON. Invalid or non-object policy documents cannot contribute permissions."),
+    "DYNAMIC_TERRAFORM_ROLE_REFERENCE": ("Terraform role reference unresolved", "Use a reviewed literal role name in the same Terraform JSON file. The analyzer does not resolve Terraform references."),
+    "TERRAFORM_ROLE_REFERENCE_NOT_MATCHED": ("Terraform role declaration not matched", "The role declaration cannot be joined safely in this source profile. Keep infrastructure unchanged and review role identity with an authorized owner."),
+    "MULTIPLE_TERRAFORM_FILES_UNSUPPORTED": ("Terraform files require a join model", "The analyzer does not combine Terraform declarations across files in the same module. Keep infrastructure unchanged; this result is incomplete, not a recommendation to consolidate source."),
+    "TERRAFORM_HCL_UNSUPPORTED": ("Terraform HCL is not assessed", "HCL files were inventoried, not interpreted. The supported Terraform subset is literal JSON declarations only; do not treat zero paths as a Terraform assessment."),
+    "UNRESOLVED_ROLE_RESTRICTION": ("Role restriction unresolved", "Review permission boundaries, managed policies and inline policy composition before treating the declared allow as effective."),
 }
 
 
@@ -67,6 +78,8 @@ def _kind(path):
         if "/" not in remainder and remainder.lower().endswith(WORKFLOW_SUFFIXES):
             return "workflow"
     lower = path.lower()
+    if lower.endswith(".tf.json"):
+        return "terraform"
     logical = PurePosixPath(lower)
     if (lower.endswith(CLOUDFORMATION_SUFFIXES) or logical.name in CLOUDFORMATION_NAMES
             or logical.suffix in {".json", ".yml", ".yaml"} and any(part in {"cloudformation", "cfn"} for part in logical.parts[:-1])):
@@ -113,6 +126,7 @@ def _correlate(requests, roles, trusts, slug, diagnostics):
                     exact.append(trust["id"])
                 elif trust["broad"] and any(fnmatchcase(subject, pattern) for subject in exact_subjects for pattern in trust["subjects"]):
                     broad.append(trust["id"])
+        request["unmodeled_alternatives"] = [deepcopy(trust) for role in matching_roles for trust in trusts_by_role.get(role["id"], []) if trust["id"] in broad]
         if exact:
             request["matching_trust_ids"] = sorted(exact)
             request["trust_match"] = "exact-declared-configuration"
@@ -174,30 +188,50 @@ def collect_repository_evidence(root: Path, manifest: dict, repository_slug: str
     selected = [(record, kind) for record, kind in selected if kind is not None]
     workflow_files = sum(kind == "workflow" for record, kind in selected)
     cloudformation_files = sum(kind == "cloudformation" for record, kind in selected)
+    terraform_files = sum(kind == "terraform" for record, kind in selected)
+    hcl_files = [record for record in files if record["path"].lower().endswith(".tf")]
+    for record in hcl_files:
+        diagnostics.append(_diagnostic("TERRAFORM_HCL_UNSUPPORTED", "Terraform HCL is outside the parser profile; permissions in this file were not assessed.", record["path"]))
+    terraform_documents = []
+    incomplete_directories = {str(PurePosixPath(record["path"]).parent) for record in hcl_files}
     parsed_files = 0
     unsupported_files = 0
     source_files = []
 
     for record, kind in sorted(selected, key=lambda item: item[0]["path"]):
+        checkpoint("Parsing source declarations")
         path = record["path"]
         file_status = {"path": path, "kind": kind, "sha256": record["sha256"], "size": record["size"], "status": "parsed"}
         source_files.append(file_status)
         payload = read_snapshot_file(source, record)
         try:
+            if kind == "terraform":
+                try:
+                    read_json(StringIO(payload.decode("utf-8-sig")))
+                except (GraphError, UnicodeError, ValueError, RecursionError):
+                    raise DocumentSyntaxError("Terraform source is not strict JSON.") from None
             document = compose_document(payload, allow_cloudformation_tags=kind == "cloudformation")
         except DocumentSyntaxError:
             unsupported_files += 1
             file_status["status"] = "unparsed"
             diagnostics.append(_diagnostic("MALFORMED_DOCUMENT", "Selected repository document is malformed or not valid UTF-8.", path, "error"))
+            if kind == "terraform":
+                incomplete_directories.add(str(PurePosixPath(path).parent))
             continue
         parsed_files += 1
+        if kind == "terraform":
+            root_map = mapping(document)
+            resources = mapping(root_map.get("resource")) if root_map else None
+            relevant = root_map is None or resources is None and root_map is not None and "resource" in root_map or any(name.startswith("aws_iam_") for name in (resources or {})) or bool(set(root_map or {}) & {"module", "import", "moved", "removed"})
+            terraform_documents.append((path, document, file_status, relevant))
+            continue
         if kind == "workflow":
             workflows, requests, identities, issues = extract_github_actions(path, document)
             facts["workflows"].extend(workflows)
             facts["oidc_role_requests"].extend(requests)
             facts["workflow_identities"].extend(identities)
             diagnostics.extend(issues)
-        else:
+        elif kind == "cloudformation":
             intrinsics = intrinsic_locations(path, document)
             if intrinsics:
                 diagnostics.append(_diagnostic("CLOUDFORMATION_INTRINSICS_UNEVALUATED", f"{len(intrinsics)} intrinsic expression(s) are retained as opaque source; only independent literal declarations can contribute to paths.", intrinsics[0]))
@@ -207,6 +241,32 @@ def collect_repository_evidence(root: Path, manifest: dict, repository_slug: str
             facts["aws_secret_grants"].extend(grants)
             diagnostics.extend(issues)
 
+    terraform_relevant_files = sum(relevant for _, _, _, relevant in terraform_documents)
+    for path, document, file_status, relevant in terraform_documents:
+        if not relevant:
+            continue
+        directory = str(PurePosixPath(path).parent)
+        related = [entry for entry in terraform_documents if str(PurePosixPath(entry[0]).parent) == directory and entry[3]]
+        if len(related) > 1 or directory in incomplete_directories:
+            file_status["status"] = "partial"
+            diagnostics.append(_diagnostic("MULTIPLE_TERRAFORM_FILES_UNSUPPORTED", "Related IAM/module declarations, HCL or malformed configuration prevent a complete Terraform JSON path in this directory.", path))
+            continue
+        roles, trusts, grants, issues = extract_terraform_json(path, document)
+        facts["aws_roles"].extend(roles)
+        facts["aws_trusts"].extend(trusts)
+        facts["aws_secret_grants"].extend(grants)
+        diagnostics.extend(issues)
+
+    incomplete_names = set()
+    unknown_attachment = False
+    for issue in diagnostics:
+        if issue["code"] == "UNRESOLVED_POLICY_ATTACHMENT":
+            if issue.get("role_names") is None:
+                unknown_attachment = True
+            else:
+                incomplete_names.update(issue["role_names"])
+    incomplete_roles = {role["id"] for role in facts["aws_roles"] if unknown_attachment or role["role_name"] in incomplete_names}
+    facts["aws_secret_grants"] = [grant for grant in facts["aws_secret_grants"] if grant["role_id"] not in incomplete_roles]
     for collection in facts.values():
         collection.sort(key=lambda item: item["id"])
     _correlate(facts["oidc_role_requests"], facts["aws_roles"], facts["aws_trusts"], repository_slug, diagnostics)
@@ -252,6 +312,9 @@ def collect_repository_evidence(root: Path, manifest: dict, repository_slug: str
             "unsupported_files": unsupported_files,
             "workflow_files": workflow_files,
             "cloudformation_files": cloudformation_files,
+            "terraform_files": terraform_files,
+            "terraform_relevant_files": terraform_relevant_files,
+            "terraform_hcl_files": len(hcl_files),
             "deployed_aws_state": "unverified",
         },
     }

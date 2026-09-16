@@ -5,6 +5,8 @@ import os
 from pathlib import Path
 import subprocess
 import sys
+import shutil
+import pytest
 
 from blastradius.cli import main
 from blastradius.model import canonical
@@ -41,6 +43,29 @@ def test_full_cli_roundtrip(tmp_path):
     assert scenario.returncode == 0, scenario.stderr
     assert json.loads(scenario.stdout)["simulation_only"]
     assert tenant.read_bytes() == source
+
+
+def test_offline_lesson_is_packaged_and_openable_without_server():
+    completed = run_cli("learn", "--no-open")
+    assert completed.returncode == 0, completed.stderr
+    assert "assets/lesson.html" in completed.stdout
+    lesson = ROOT / "src/blastradius/assets/lesson.html"
+    assert lesson.read_bytes() == (ROOT / "ui/index.html").read_bytes()
+    assert b"Required read preserved" in lesson.read_bytes()
+
+
+@pytest.mark.skipif(os.name != "nt", reason="Windows launcher")
+def test_fresh_launcher_offers_lesson_without_creating_or_destroying_environment(tmp_path):
+    checkout = tmp_path / "fresh checkout"
+    (checkout / "ui").mkdir(parents=True)
+    launcher = checkout / "start-review.cmd"
+    shutil.copyfile(ROOT / "start-review.cmd", launcher)
+    shutil.copyfile(ROOT / "ui/index.html", checkout / "ui/index.html")
+    completed = subprocess.run([os.environ.get("COMSPEC", "cmd.exe"), "/d", "/c", str(launcher), "--no-open"], capture_output=True, text=True, timeout=15)
+    assert completed.returncode == 0, completed.stderr
+    assert "optional repository analyzer is not installed" in completed.stdout
+    assert "Offline lesson:" in completed.stdout
+    assert not (checkout / ".venv").exists()
 
 
 def test_invalid_and_overwrite_inputs(tmp_path):

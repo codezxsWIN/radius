@@ -9,6 +9,7 @@ from ..model import canonical, validate
 from .acquisition import acquire_repository
 from .evidence import collect_repository_evidence, summarize_evidence_gaps
 from .graph import build_repository_graph
+from .operation import checkpoint
 from .scenarios import repository_controls
 
 
@@ -21,6 +22,7 @@ def _finding_id(snapshot_hash, credential_id, resource_id):
 
 
 def _finish(result):
+    checkpoint("Preparing result")
     result["analysis_hash"] = sha256(canonical(result)).hexdigest()
     return result
 
@@ -65,11 +67,20 @@ def analyze_repository(root: Path, repository_slug: str, *, review_context=None)
     nodes = engine.nodes
     findings = []
     reachable_resources = set()
+    changed_engines = {}
+    changed_reaches = {}
+    alternatives_by_job = {}
+    for request in evidence["facts"]["oidc_role_requests"]:
+        alternatives = alternatives_by_job.setdefault((request["workflow_id"], request["job_id"]), {})
+        for alternative in request.get("unmodeled_alternatives", []):
+            alternatives[alternative["id"]] = alternative
     for credential_id, credential in sorted(nodes.items()):
+        checkpoint("Computing reachable capabilities")
         if credential.get("kind") != "credential":
             continue
         reach = engine.reach(credential_id)
         for resource_id, action in sorted(reach.pairs):
+            checkpoint("Comparing modeled trust removals")
             if action != "read_secret":
                 continue
             reachable_resources.add(resource_id)
@@ -90,20 +101,30 @@ def analyze_repository(root: Path, repository_slug: str, *, review_context=None)
             grant_edge = engine.edges[path_ids[-1]]
             grant = evidence_index[grant_edge["provenance"]["evidence_ref"]]
             before_reach = len(reach.pairs)
-            changed = deepcopy(graph)
-            removed_trusts = {evidence_index[engine.edges[edge_id]["provenance"]["evidence_ref"]]["trust_id"] for edge_id in path_ids if engine.edges[edge_id]["kind"] == "can_assume"}
-            changed["edges"] = [edge for edge in changed["edges"] if edge["kind"] != "can_assume" or evidence_index[edge["provenance"]["evidence_ref"]]["trust_id"] not in removed_trusts]
-            validate(changed)
-            changed_reach = Engine(changed).reach(credential_id)
+            removed_trusts = tuple(sorted({evidence_index[engine.edges[edge_id]["provenance"]["evidence_ref"]]["trust_id"] for edge_id in path_ids if engine.edges[edge_id]["kind"] == "can_assume"}))
+            if removed_trusts not in changed_engines:
+                changed = deepcopy(graph)
+                changed["edges"] = [edge for edge in changed["edges"] if edge["kind"] != "can_assume" or evidence_index[edge["provenance"]["evidence_ref"]]["trust_id"] not in removed_trusts]
+                validate(changed)
+                changed_engines[removed_trusts] = Engine(changed)
+            cache_key = (removed_trusts, credential_id)
+            if cache_key not in changed_reaches:
+                changed_reaches[cache_key] = changed_engines[removed_trusts].reach(credential_id)
+            changed_reach = changed_reaches[cache_key]
             after_reach = len(changed_reach.pairs)
             workflow_fact = evidence_index[workflow["provenance"]["evidence_ref"]]
             correlation = next(step["evidence"] for step in path if step["kind"] == "can_assume")
             trust = evidence_index[correlation["trust_id"]]
             matched_request = evidence_index[correlation["request_id"]]
+            alternatives = sorted(alternatives_by_job.get((matched_request["workflow_id"], matched_request["job_id"]), {}).values(), key=lambda item: item["id"])
             findings.append({
                 "id": _finding_id(manifest["snapshot_hash"], credential_id, resource_id),
                 "title": "GitHub Actions job can reach a declared secret",
-                "priority": "high",
+                "priority": "informational",
+                "classification": "declared-capability",
+                "policy_violation": "not-assessed",
+                "required_access": "not-supplied",
+                "unmodeled_alternatives": deepcopy(alternatives),
                 "confidence": "declared-configuration",
                 "start_condition": f"The workflow {workflow_fact.get('name', workflow['name'])} job {request.get('job_id', 'unknown')} is assumed compromised; repository analysis does not prove a compromise occurred.",
                 "impact": {
@@ -134,6 +155,8 @@ def analyze_repository(root: Path, repository_slug: str, *, review_context=None)
                     "before_absolute_reach": before_reach,
                     "after_absolute_reach": after_reach,
                     "path_broken": after_reach < before_reach and (resource_id, action) not in changed_reach.pairs,
+                    "remaining_access_unknown": bool(alternatives),
+                    "scope": "Blocked among modeled routes; remaining access unknown because alternative trust evidence is not modeled." if alternatives else "Modeled routes only; deployed access and required workload permissions remain unverified.",
                 },
                 "deployed_aws_state": evidence["coverage"]["deployed_aws_state"],
             })

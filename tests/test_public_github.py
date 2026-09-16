@@ -19,8 +19,10 @@ COMMIT = "1" * 40
 def archive(files=None, entries=None):
     stream = BytesIO()
     with ZipFile(stream, "w", ZIP_DEFLATED) as bundle:
-        for name, payload in (files or {}).items():
-            bundle.writestr(name, payload)
+        for name, payload in sorted((files or {}).items()):
+            info = ZipInfo(name, date_time=(2026, 9, 17, 0, 0, 0))
+            info.compress_type = ZIP_DEFLATED
+            bundle.writestr(info, payload)
         for info, payload in entries or []:
             bundle.writestr(info, payload)
     return stream.getvalue()
@@ -69,6 +71,12 @@ def test_public_github_url_is_normalized():
     assert github.parse_public_github_url("https://github.com/acme/payments.git/") == (
         "acme", "payments", "https://github.com/acme/payments"
     )
+
+
+def test_fixture_archive_is_independent_of_wall_clock(monkeypatch):
+    first = fixture_archive()
+    monkeypatch.setattr("zipfile.time.localtime", lambda *args: (2030, 1, 1, 12, 0, 0, 1, 1, -1))
+    assert fixture_archive() == first
 
 
 def test_public_github_analysis_pins_commit_runs_locally_and_cleans_up(monkeypatch):

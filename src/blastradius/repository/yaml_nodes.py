@@ -4,6 +4,7 @@ import yaml
 from yaml.nodes import MappingNode, Node, ScalarNode, SequenceNode
 
 from ..model import GraphError
+from .operation import checkpoint
 
 
 MAX_DOCUMENT_NODES = 20_000
@@ -47,6 +48,8 @@ def compose_document(payload: bytes, *, allow_cloudformation_tags=False) -> Node
             raise GraphError("Selected document contains a YAML alias.")
         seen.add(identifier)
         count += 1
+        if count % 512 == 0:
+            checkpoint("Validating parsed declarations")
         if count > MAX_DOCUMENT_NODES:
             raise GraphError("Selected document exceeds the safe YAML node-count limit.")
         if node.tag not in STANDARD_TAGS and not (allow_cloudformation_tags and node.tag in CLOUDFORMATION_TAGS):

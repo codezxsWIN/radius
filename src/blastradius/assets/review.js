@@ -2,6 +2,7 @@
   'use strict';
   const configuration = JSON.parse(document.getElementById('review-data').textContent);
   const snapshot = configuration.mode === 'snapshot';
+  if (!snapshot) document.getElementById('first-lesson-link').href = '/learn';
   const byId = id => document.getElementById(id);
   const element = (tag, content, className) => {
     const node = document.createElement(tag);
@@ -32,6 +33,7 @@
   let selectedNode = 2;
   let sourceMode = 'local';
   let busy = false;
+  let activeOperation = null;
   let lastInput = null;
   let controls = new Set();
   let comparison = null;
@@ -57,14 +59,18 @@
     document.body.classList.toggle('busy', value);
     byId('review-main').setAttribute('aria-busy', String(value));
     for (const button of document.querySelectorAll('#source-panel button, #source-panel input, #rescan, #reset')) button.disabled = value;
+    byId('cancel-analysis').hidden = !value;
+    byId('cancel-analysis').disabled = false;
     if (!value) setMode(sourceMode);
   }
 
-  async function request(route, data, raw = false) {
-    const response = await fetch('/api/' + route, {method: 'POST', credentials: 'omit', cache: 'no-store', redirect: 'error', headers: {'Content-Type': 'application/json', 'X-BlastRadius-Token': configuration.token}, body: JSON.stringify(data)});
+  async function request(route, data, raw = false, signal) {
+    const response = await fetch('/api/' + route, {method: 'POST', credentials: 'omit', cache: 'no-store', redirect: 'error', headers: {'Content-Type': 'application/json', 'X-BlastRadius-Token': configuration.token}, body: JSON.stringify(data), signal});
     if (!response.ok) {
       const failure = await response.json();
-      throw new Error(failure.error || 'The local request could not be completed.');
+      const error = new Error(failure.error || 'The local request could not be completed.');
+      error.cancelled = failure.cancelled === true;
+      throw error;
     }
     return raw ? response : response.json();
   }
@@ -101,6 +107,7 @@
     byId('rescan').hidden = true;
     byId('empty-state').hidden = false;
     byId('error').hidden = true;
+    document.body.classList.remove('has-result');
     text('context-label', 'Investigation workspace');
     text('repository-name', 'Repository review');
     text('source-ref', 'No source selected');
@@ -109,22 +116,57 @@
     document.title = 'Blast Radius | Repository Review';
   }
 
-  async function analyze(data) {
+  async function cancelAnalysis() {
+    const operation = activeOperation;
+    if (!operation) return;
+    operation.cancelRequested = true;
+    byId('cancel-analysis').disabled = true;
+    status('Cancellation requested; waiting for the next safe checkpoint.');
+    try { await request('cancel', {operation_id: operation.id}); } catch {}
+  }
+
+  function saveExample() {
+    if (snapshot) return;
+    try {
+      if (current?.repository.is_example && lastInput?.source === 'example') sessionStorage.setItem('br-example-review', JSON.stringify({version: 1, example: lastInput.example || 'single', controls: [...controls], hash: current.analysis_hash}));
+      else sessionStorage.removeItem('br-example-review');
+    } catch {}
+  }
+
+  async function analyze(data, saved = null) {
     if (busy || comparisonPending) return;
     clearView();
     setBusy(true);
+    const operation = {id: crypto.randomUUID(), cancelRequested: false, polling: false, controller: new AbortController()};
+    activeOperation = operation;
+    const deadline = setTimeout(cancelAnalysis, 120000);
+    const clientDeadline = setTimeout(() => operation.controller.abort(), 135000);
+    const progress = setInterval(async () => {
+      if (activeOperation !== operation || operation.polling) return;
+      operation.polling = true;
+      try {
+        if (operation.cancelRequested) await request('cancel', {operation_id: operation.id});
+        else { const update = await request('status', {operation_id: operation.id}); if (activeOperation === operation && update.state === 'running') status(update.stage); }
+      } catch {} finally { operation.polling = false; }
+    }, 750);
     status(data.source === 'github' ? 'Resolving immutable commit and reading declarations...' : 'Reading repository declarations...');
     try {
-      const response = await request('analyze', data);
+      const response = await request('analyze', {...data, operation_id: operation.id}, false, operation.controller.signal);
+      if (operation.cancelRequested) { await request('clear', {}); status('Analysis cancelled. No result retained.'); return; }
       lastInput = {...data};
       showResult(response);
+      if (saved?.hash === response.analysis_hash && Array.isArray(saved.controls) && saved.controls.length <= 128 && saved.controls.every(identifier => response.controls.some(control => control.id === identifier))) {
+        controls = new Set(saved.controls);
+        if (controls.size) await recompute();
+      }
+      saveExample();
       toggleSource(false);
       status('Snapshot ready.');
     } catch (failure) {
-      error(failure.message === 'Failed to fetch' ? 'The local review service is unavailable.' : failure.message);
-      status('Analysis not completed.');
+      if (failure.cancelled) status(failure.message);
+      else { error(failure.name === 'AbortError' ? 'Client deadline reached. Cancellation was requested; no result is being displayed.' : failure.message === 'Failed to fetch' ? 'The local review service is unavailable.' : failure.message); status('Analysis not completed.'); }
       toggleSource(true);
-    } finally { setBusy(false); }
+    } finally { clearInterval(progress); clearTimeout(deadline); clearTimeout(clientDeadline); activeOperation = null; setBusy(false); }
   }
 
   async function copy(value) {
@@ -161,10 +203,10 @@
   }
 
   function findingState(finding) {
-    if (snapshot) return offlineSimulated && finding === current.findings[selected] && finding.remediation.path_broken ? 'blocked' : 'reachable';
+    if (snapshot) return offlineSimulated && finding === current.findings[selected] && finding.remediation.path_broken ? (finding.unmodeled_alternatives?.length ? 'incomplete' : 'blocked') : 'reachable';
     if (controls.size && (!comparison || comparisonPending)) return 'unknown';
     const state = comparison?.finding_states.find(item => item.finding_id === finding.id);
-    if (state && !state.reachable) return 'blocked';
+    if (state && !state.reachable) return state.remaining_access_unknown ? 'incomplete' : 'blocked';
     if (state && controls.has(controlFor(finding))) return 'alternate';
     return 'reachable';
   }
@@ -175,7 +217,7 @@
     return current.findings.map((finding, index) => ({finding, index})).filter(({finding}) => {
       const searchable = [finding.impact.resource_arn, jobName(finding), finding.authorization?.workflow.name, finding.authorization?.workflow.role_arn, ...finding.path.map(step => step.target.name)].join(' ').toLocaleLowerCase();
       const state = findingState(finding);
-      return searchable.includes(query) && (filter === 'all' || (filter === 'blocked' ? state === 'blocked' : ['reachable', 'alternate'].includes(state)));
+      return searchable.includes(query) && (filter === 'all' || (filter === 'blocked' ? ['blocked', 'incomplete'].includes(state) : ['reachable', 'alternate'].includes(state)));
     }).sort((left, right) => {
       const leftKey = jobName(left.finding) + '\n' + left.finding.impact.resource_arn;
       const rightKey = jobName(right.finding) + '\n' + right.finding.impact.resource_arn;
@@ -200,7 +242,7 @@
       button.dataset.state = state;
       button.setAttribute('aria-pressed', String(index === selected));
       const top = element('span', undefined, 'queue-item-top');
-      top.append(element('span', 'PATH ' + String(index + 1).padStart(2, '0')), element('span', state === 'unknown' ? 'Not recomputed' : state === 'blocked' ? 'Blocked' : state === 'alternate' ? 'Alternate trust' : 'Reachable', 'path-status'));
+      top.append(element('span', 'PATH ' + String(index + 1).padStart(2, '0')), element('span', state === 'unknown' ? 'Not recomputed' : state === 'incomplete' ? 'Remaining access unknown' : state === 'blocked' ? 'Blocked in model' : state === 'alternate' ? 'Alternate trust' : 'Declared access', 'path-status'));
       const job = element('span', undefined, 'queue-job');
       job.append(icon('code'), element('span', jobName(finding)));
       button.append(top, element('strong', resourceName(finding), 'queue-resource'), job);
@@ -315,18 +357,22 @@
     text('assumption', finding.start_condition);
     text('remediation-description', finding.remediation.description);
     const state = findingState(finding);
-    text('finding-state', state === 'unknown' ? 'Change-set impact not recomputed' : state === 'blocked' ? 'Blocked in the modified model' : state === 'alternate' ? 'Reachable through an alternate trust' : 'Reachable in declarations');
+    text('finding-state', state === 'unknown' ? 'Change-set impact not recomputed' : state === 'incomplete' ? 'Modeled path removed; remaining access unknown' : state === 'blocked' ? 'Blocked among modeled routes' : state === 'alternate' ? 'Reachable through an alternate trust' : 'Declared capability');
+    const alternatives = finding.unmodeled_alternatives || [];
+    byId('alternative-warning').hidden = alternatives.length === 0;
+    text('alternative-warning', `${alternatives.length} unmodeled alternative trust(s). Remaining access is unknown: ${alternatives.map(item => (item.subjects || []).join(', ') + ' at ' + locationText(item.location)).join('; ')}`);
     byId('selected-finding').classList.toggle('simulated', state === 'blocked');
     const trust = trustFor(finding);
     text('selected-control-location', trust ? locationText(trust.location) : 'Selected path trust');
     const staged = snapshot ? offlineSimulated : controls.has(controlFor(finding));
-    text('stage-label', snapshot ? (offlineSimulated ? 'Show baseline' : 'Saved removal') : (staged ? 'Unstage removal' : 'Stage removal'));
+    text('stage-label', snapshot ? (offlineSimulated ? 'Show baseline' : 'Simulate removal') : (staged ? 'Undo simulation' : 'Simulate removal'));
     byId('after').setAttribute('aria-pressed', String(staged));
     byId('after').disabled = !snapshot && !controlFor(finding);
-    let outcome = 'Baseline declaration. No change applied.';
+    let outcome = 'Current result: this declared path reaches the secret.';
     if (comparisonPending) outcome = 'Recomputing the selected change set...';
     else if (state === 'unknown') outcome = 'Comparison unavailable. No impact result is being claimed.';
-    else if (state === 'blocked') outcome = 'This job-to-secret path is blocked in the modified model.';
+    else if (state === 'incomplete') outcome = 'Blocked among modeled routes; remaining access unknown. The excluded alternatives were not removed.';
+    else if (state === 'blocked') outcome = snapshot ? `Model only: ${finding.remediation.before_absolute_reach} -> ${finding.remediation.after_absolute_reach} reachable secrets. No policy change applied.` : 'Blocked among modeled routes. Deployed access and workload impact remain unverified.';
     else if (state === 'alternate') outcome = 'The selected removal leaves another declared trust path.';
     else if (controls.size) outcome = 'This path remains reachable after the selected removals.';
     else if (snapshot && offlineSimulated) outcome = 'The saved removal leaves an alternate modeled path.';
@@ -337,11 +383,13 @@
 
   function renderChanges() {
     if (!current) return;
+    saveExample();
     const baseline = {reachable_findings: current.findings.length, reachable_secrets: current.summary.declared_reachable_secrets, reachable_jobs: new Set(current.findings.map(finding => finding.path[0].target.id)).size};
     const before = comparison?.before || baseline;
     const after = comparison?.after || baseline;
     const unavailable = !snapshot && (comparisonPending || controls.size > 0 && !comparison);
     text('change-count', snapshot ? (offlineSimulated ? 1 : 0) : controls.size);
+    text('after-label', (snapshot ? offlineSimulated : controls.size > 0) ? 'After modeled removal' : 'Current model');
     text('before-reach', snapshot ? current.findings[selected]?.remediation.before_absolute_reach || 0 : before.reachable_findings);
     text('after-reach', snapshot ? (offlineSimulated ? current.findings[selected].remediation.after_absolute_reach : current.findings[selected]?.remediation.before_absolute_reach || 0) : unavailable ? '-' : after.reachable_findings);
     text('secret-delta', `${before.reachable_secrets} -> ${unavailable ? '-' : after.reachable_secrets}`);
@@ -432,7 +480,8 @@
       source.append(element('small', `${file.size} bytes / SHA ${file.sha256.slice(0, 12)}`));
       const state = element('td');
       state.append(element('span', {parsed: 'Parsed', partial: 'Partial', unparsed: 'Unparsed'}[file.status] || file.status, 'file-state ' + file.status));
-      row.append(source, element('td', file.kind === 'workflow' ? 'GitHub Actions' : 'CloudFormation'), state, element('td', file.fact_count), element('td', file.diagnostic_count));
+      const sourceKind = { workflow: 'GitHub Actions', cloudformation: 'CloudFormation', terraform: 'Terraform JSON' }[file.kind] || file.kind;
+      row.append(source, element('td', sourceKind), state, element('td', file.fact_count), element('td', file.diagnostic_count));
       byId('source-files').append(row);
     }
     if (!byId('source-files').children.length) { const row = element('tr'); const cell = element('td', 'No source files in this view.'); cell.colSpan = 5; row.append(cell); byId('source-files').append(row); }
@@ -535,6 +584,7 @@
     offlineSimulated = false;
     revision += 1;
     byId('report').hidden = false;
+    document.body.classList.add('has-result');
     byId('empty-state').hidden = true;
     byId('export-bar').hidden = false;
     byId('rescan').hidden = snapshot;
@@ -557,6 +607,9 @@
     text('parsed-count', result.coverage.parsed_files);
     text('diagnostic-count', result.diagnostics.length);
     text('identity-count', (result.identity_requests || []).length);
+    byId('findings-section').classList.toggle('single-finding', result.findings.length === 1);
+    byId('change-options').open = !snapshot && result.findings.length > 1;
+    byId('evidence-details').open = false;
     const identitySummary = result.identity_summary || {};
     text('identity-headline', `${identitySummary.workflow_jobs || 0} declared jobs / ${identitySummary.expanded_job_variants || 0} expanded variants`);
     text('identity-conclusion', result.conclusion);
@@ -573,7 +626,7 @@
     if (result.findings.length) renderFinding();
     byId('coverage').replaceChildren();
     text('coverage-headline', `${result.coverage.selected_files} selected / ${result.coverage.inventory_files ?? result.coverage.selected_files} inventoried files. ${result.coverage.out_of_profile_files ?? 0} outside the source profile.`);
-    for (const [key, label] of [['inventory_files', 'Inventoried files'], ['selected_files', 'Selected files'], ['parsed_files', 'Parsed files'], ['unsupported_files', 'Unparsed files'], ['out_of_profile_files', 'Outside profile'], ['skipped_entries', 'Skipped entries']]) {
+    for (const [key, label] of [['inventory_files', 'Inventoried files'], ['selected_files', 'Selected files'], ['parsed_files', 'Parsed files'], ['unsupported_files', 'Unparsed files'], ['out_of_profile_files', 'Outside profile'], ['skipped_entries', 'Skipped entries'], ['terraform_hcl_files', 'Terraform HCL / not assessed']]) {
       if (result.coverage[key] === undefined) continue;
       const group = element('div'); group.append(element('dt', label), element('dd', result.coverage[key])); byId('coverage').append(group);
     }
@@ -624,6 +677,7 @@
   byId('source-toggle').setAttribute('aria-label', 'Repository source');
   byId('source-toggle').title = 'Choose repository source';
   byId('rescan').addEventListener('click', () => { if (lastInput) analyze(lastInput); });
+  byId('cancel-analysis').addEventListener('click', cancelAnalysis);
   byId('source-form').addEventListener('submit', event => {
     event.preventDefault();
     analyze(sourceMode === 'local' ? {source: 'local', path: byId('repository-path').value.trim(), slug: byId('repository-slug').value.trim()} : {source: 'github', url: byId('repository-url').value.trim(), ref: byId('repository-ref').value.trim() || null});
@@ -650,7 +704,7 @@
     else { const identifier = controlFor(current.findings[selected]); stageControl(identifier, !controls.has(identifier)); }
   });
   byId('reset').addEventListener('click', async () => {
-    try { await request('clear', {}); lastInput = null; clearView(); byId('source-form').reset(); setMode('local'); toggleSource(true); byId('repository-path').focus(); }
+    try { await request('clear', {}); lastInput = null; clearView(); saveExample(); byId('source-form').reset(); setMode('local'); toggleSource(true); byId('repository-path').focus(); }
     catch (failure) { error(failure.message); }
   });
   byId('export').addEventListener('click', async () => {
@@ -680,5 +734,8 @@
     text('session-label', 'Saved snapshot');
     byId('export-format').querySelector('[value=html]').remove();
     showResult(configuration.result);
+  } else {
+    try { const saved = JSON.parse(sessionStorage.getItem('br-example-review')); if (saved?.version === 1 && ['single', 'shared'].includes(saved.example)) analyze({source: 'example', example: saved.example}, saved); } catch {}
   }
+  addEventListener('beforeunload', event => { if (activeOperation) cancelAnalysis(); if (busy || (!snapshot && current && !current.repository.is_example)) { event.preventDefault(); event.returnValue = ''; } });
 })();

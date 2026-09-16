@@ -1,0 +1,16 @@
+{
+  "resource": {
+    "aws_iam_role": {
+      "deploy": {
+        "name": "github-production",
+        "assume_role_policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Federated\":\"arn:aws:iam::123456789012:oidc-provider/token.actions.githubusercontent.com\"},\"Action\":\"sts:AssumeRoleWithWebIdentity\",\"Condition\":{\"StringEquals\":{\"token.actions.githubusercontent.com:aud\":\"sts.amazonaws.com\",\"token.actions.githubusercontent.com:sub\":\"repo:acme/terraform-service:ref:refs/heads/main\"}}}]}"
+      }
+    },
+    "aws_iam_role_policy": {
+      "production_secret": {
+        "role": "github-production",
+        "policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":\"secretsmanager:GetSecretValue\",\"Resource\":\"arn:aws:secretsmanager:us-east-1:123456789012:secret:production/database\"}]}"
+      }
+    }
+  }
+}

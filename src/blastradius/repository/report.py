@@ -18,6 +18,9 @@ COVERAGE_LABELS = {
     "unsupported_files": "Unsupported files",
     "workflow_files": "Workflow files",
     "cloudformation_files": "CloudFormation files",
+    "terraform_files": "Terraform JSON files",
+    "terraform_relevant_files": "Terraform JSON files with IAM/module declarations",
+    "terraform_hcl_files": "Terraform HCL files (not assessed)",
     "archive_skipped_files": "Archive skipped files",
     "out_of_profile_files": "Outside source profile",
     "skipped_entries": "Skipped entries",
@@ -98,9 +101,7 @@ def render_repository_markdown(result: dict) -> str:
             f"Declared reachable secrets: {summary['declared_reachable_secrets']}",
         ])
         if findings:
-            high = sum(finding.get("priority") == "high" for finding in findings)
-            noun = "path" if high == 1 else "paths"
-            lines.extend(["", f"{high} high-priority declared {noun}."])
+            lines.extend(["", f"{len(findings)} declared capabilities. Necessity, exploitability and policy violations have not been assessed."])
         else:
             lines.extend(["", _safe(result["conclusion"])])
 
@@ -149,7 +150,10 @@ def render_repository_markdown(result: dict) -> str:
                 f"Applied automatically: {_yes(remediation['applied'])}",
                 f"Before: {remediation['before_absolute_reach']} | After: {remediation['after_absolute_reach']} | Path broken: {_yes(remediation['path_broken'])}",
                 f"Deployed AWS state: {_safe(finding['deployed_aws_state'])}",
+                _safe(remediation.get("scope", "Modeled routes only; remaining deployed access is unverified.")),
             ])
+            for alternative in finding.get("unmodeled_alternatives", []):
+                lines.append(f"Unmodeled alternative: {_safe(', '.join(alternative.get('subjects', [])))} at {_location(alternative['location'])}")
 
         identities = result.get("identity_requests", [])
         if identities:
@@ -284,7 +288,8 @@ def render_repository_sarif(result: dict) -> dict:
                 f"{finding['impact']['resource_arn']}. Deployed AWS state: {finding['deployed_aws_state']}. "
                 f"Simulation only: {remediation['description']} "
                 f"Reach {remediation['before_absolute_reach']} -> {remediation['after_absolute_reach']}; "
-                f"path broken: {_yes(remediation['path_broken'])}. No change was applied."
+                f"modeled path broken: {_yes(remediation['path_broken'])}. No change was applied. "
+                f"{remediation.get('scope', 'Deployed access remains unverified.')}"
             )
             locations, flow, seen = [], [], set()
             for step in path:
@@ -299,7 +304,7 @@ def render_repository_sarif(result: dict) -> dict:
                         locations.append({"id": len(locations) + 1, **location})
             fingerprint = sha256(canonical([result["repository"]["slug"], path[0]["evidence"]["location"]["path"], finding["start_condition"], finding["impact"]])).hexdigest()
             results.append({
-                "ruleId": "BR-REPO-001", "level": "warning", "kind": "review",
+                "ruleId": "BR-REPO-001", "level": "note", "kind": "review",
                 "message": {"text": _display(message)}, "locations": [locations[0]],
                 "relatedLocations": locations[1:], "codeFlows": [{"threadFlows": [{"locations": flow}]}],
                 "partialFingerprints": {"declaredPath/v1": fingerprint},
@@ -315,8 +320,8 @@ def render_repository_sarif(result: dict) -> dict:
             "$schema": "https://json.schemastore.org/sarif-2.1.0.json", "version": "2.1.0",
             "runs": [{"tool": {"driver": {"name": "Blast Radius Repository Review", "version": __version__,
                       "rules": [{"id": "BR-REPO-001", "shortDescription": {"text": "Declared workflow identity can read a declared secret"},
-                                 "fullDescription": {"text": "Review a source-backed GitHub Actions OIDC to CloudFormation Secrets Manager path under an assumed job compromise. This is not proof of compromise, exploitability or deployed AWS access."},
-                                 "defaultConfiguration": {"level": "warning"}, "properties": {"tags": ["security", "configuration", "review"]}}]}},
+                                 "fullDescription": {"text": "Review a source-backed GitHub Actions OIDC to declared AWS Secrets Manager path under an assumed job compromise. This is a capability, not proof of excessive access, exploitability or deployed AWS access."},
+                                 "defaultConfiguration": {"level": "note"}, "properties": {"tags": ["security", "configuration", "review"]}}]}},
                       "results": results, "invocations": [{"executionSuccessful": True, "toolExecutionNotifications": notifications}],
                       "properties": {"profile": PROFILE, "repository": result["repository"], "coverage": result["coverage"],
                                      "identitySummary": result.get("identity_summary", {}), "evidenceGaps": result.get("evidence_gaps", []),

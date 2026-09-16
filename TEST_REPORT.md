@@ -1,5 +1,62 @@
 # Test Report
 
+## Educational Audit Implementation: 2026-09-17
+
+The [original audit](reviews/2026-09-17-educational-audit.md) is preserved as a historical observation. This release implements its bounded next-release recommendation, not all 520 backlog goals or an educational-effectiveness certification.
+
+| Audit Finding | Implemented Outcome | Verification |
+| --- | --- | --- |
+| 1. Edited graph lost on model change | Draft text/hash survives model/view changes, including invalid input; reset is explicit | Combined edit/model and invalid-input browser regressions |
+| 2. Attached deny ignored | Literal same-template policies join role policies; unresolved targets block affected claims | Attached allow/deny/unresolved-target tests |
+| 3. Build discards working corrections | Exact captions, figure selection and narrative-copy fallback restored in source; all generated copies checked | Bounded 25/71, weighted ratios, source/packaged parity |
+| 4. Excluded alternatives hidden | Matching wildcard trusts remain in results/comparisons; zero modeled reach explicitly leaves access unknown | Python comparison and visible browser warning regression |
+| 5. Action case changes semantics | Case-insensitive action matching with original spelling retained; no ARN/subject lowercasing | Mixed-case trust and secret-action test |
+| 6. Every capability high priority | Informational declared capabilities, not assessed violations; lesson uses an explicit required read | Report/SARIF assertions and least-privilege lesson |
+| 7. Repeated validation/no cancellation | Reuse by trust-removal set and credential; guarded cooperative cancellation/stages/deadlines | 512 findings with one changed-graph validation; HTTP/browser cancellation |
+| 8. Fresh launcher fails | Offline lesson works before installation; existing environment diagnosed and preserved | Fresh path-with-spaces launcher and installed `learn` tests |
+| 9. Fragmented learning route | Existing lab now opens on three predict/change/explain exercises; same HTML in wheel | Installed offline lesson completion |
+| 10. Terraform scope confusing | Metadata-only files do not erase evidence; HCL counted and intake caveat visible | Version-only/HCL/module-boundary tests |
+| 11. Refresh loses review | Fictional lesson progress and bundled review/control choices restored; real reviews warn without automatic storage | Reload and before-unload browser checks |
+| 12. Journey not gated | CI source checks generated parity, installed lesson, browser errors/a11y, and source-shaped responsiveness | Local gate commands; hosted execution remains unverified |
+| 13. Conflicting docs | One learning entry point, optional analyzer setup, current architecture/direction; history linked separately | Documentation diagnostics and current links |
+
+### Executed Gates
+
+- Final `tools/verify.py`: **323 passed, 1 skipped in 86.86 seconds**. Coverage **3511/3934 statements, 89.247585%**. The skip remains Windows symlink privileges; no elevation or bypass was used. This is line coverage, not an independent correctness proof.
+- Source and final installed artifact: **34 lesson/lab interaction contracts passed**, including all three independently checked exercises, repeating changes, matching visible/accessible result metadata, exact captions, valid/invalid edit/model continuity, fictional refresh and no network/script errors.
+- Review: **16 browser accessibility audits, zero violations**, including visible excluded-alternative warnings, cooperative cancel UI, refresh restoration, real-source unload warning, all four baseline and two change-request export formats. The isolated installed wheel passed the review journey as well.
+- Visual lab: **18 accessibility runs, zero violations; 18/18 same-run screenshot repeats byte-identical; no HTTP requests or script errors**. These assertions now fail the check rather than only recording totals. Desktop/mobile screenshots were inspected.
+- Public reference conformance: **JavaScript 120/120 and isolated installed Python 120/120**, with the Python runner repeating each case. No core metric or frozen conformance fixture was changed.
+- Build check verifies authoritative sources produce byte-identical lab and packaged lesson. Final HTML: **4,083,537 bytes**, SHA-256 `b9085e1845ee535081ac30668ee85d03837f0b5eac206da79ed90f72de669559`.
+- Final wheel under `dist/educational-20260917/`: SHA-256 `8207ea2f8386a288c47467f6ed0b76fa6e28ef0e01a379733df64e8df3162be7`. Installed into a new temporary venv with only cached declared runtime dependencies; isolated `learn` resolved the installed HTML, whose bytes matched the source. This is not an uncached fresh-OS installation test.
+
+### Responsiveness Measurement
+
+Same bounded workload shapes used in the audit, local Windows Python 3.12.10, no profiling/coverage overhead in this measurement. Timing covers `analyze_repository`; final serialized-size computation is outside that call.
+
+| Jobs | Secrets | Findings | Analysis Seconds | Result Bytes | Changed-Graph Validations |
+| --- | --- | --- | --- | --- | --- |
+| 8 | 8 | 64 | 0.0701 | 388,993 | 1 |
+| 32 | 16 | 512 | 0.2019 | 3,072,412 | 1 |
+
+Every finding remains present. The regression budget is 10 seconds for these fixtures, not a promise for arbitrary repositories. Cancellation is cooperative between bounded operations; an in-flight read may finish before acknowledgement. No partial result is published.
+
+### Verification Limits
+
+One intermediate suite run exposed a pre-existing fake ZIP fixture using wall-clock entry timestamps; its archive hash differed across clock ticks. Test archive timestamps are now fixed and a clock-change regression passes. The analyzer continues hashing actual archive bytes. An installed-conformance invocation initially failed because backslashes were consumed by command splitting; a forward-slash command passed all cases. The launcher's initial prerequisite check had an escaped Python comparison; the corrected Windows command and fresh-checkout tests pass.
+
+Hosted CI, uncached Windows/macOS/Linux installation, Firefox/Safari, manual assistive technology, representative provider accuracy and actual newcomer comprehension remain unverified. Required-access semantics are explicit in this fictional lesson, not a general organization policy engine. HCL/expression evaluation, full provider policy composition, real-source automatic persistence and hard OS-enforced cancellation are not delivered. No cloud request, target execution, credential read, commit or push was part of these fixes.
+
+## Terraform JSON Evidence: 2026-09-17
+
+- Added a bounded `*.tf.json` source profile for literal same-file `aws_iam_role` and `aws_iam_role_policy` declarations. The positive regression reaches one finite Secrets Manager resource through the existing GitHub Actions OIDC path and verifies `terraform-json` provenance in the validated graph.
+- Negative tests cover Terraform references/interpolation, malformed policy JSON, wildcard secret resources, permission boundaries, managed-policy/inline-policy restrictions, explicit deny across separate policy resources and unsupported multi-file joins. These inputs remain diagnostics and cannot establish a complete path. Terraform and target code are never executed.
+- Authoritative `tools/verify.py` rerun: **306 passed, 1 skipped in 57.88 seconds; 3338/3739 executable lines covered (89.2752%)**. The skip remains the Windows file-symlink privilege case. An initial full run hit the documented Windows malformed-request socket race; the isolated server test passed immediately and the complete rerun passed.
+- `node tools/test_repository_review.mjs`: **15 accessibility audits, zero violations** across desktop/laptop/mobile/offline states. Existing evidence selection, filtering, counterfactuals and six export paths passed; no page errors and no offline network requests.
+- Executed fixture simulation `tests/fixtures/repositories/aws-oidc-terraform-json`: one GitHub Actions job, one literal Terraform role/trust, one finite secret grant and one finding. Removing control `aws-trust-67673e72b8da7e9eb3f1` changes absolute reach **1 -> 0** and marks the path broken. Analysis hash: `5341d684e6eca1b76c204da8a444cd9e23388615d34f91621d77edc80a5715cc`. JSON, Markdown and offline HTML are under `results/terraform-json-simulation.*`.
+- `git diff --check` and editor diagnostics for all touched Python files pass. No live AWS/Terraform operation, credential access, hosted workflow execution, commit or push was performed.
+- User-facing clarity follow-up: a one-finding report now hides its redundant queue/search controls, keeps source evidence and advanced change options collapsed, and opens saved reports on the modeled result. The shared 544px viewport shows `1 -> 0 reachable secrets` in the first view; analyzed-header height fell from 144px to 94px. All 15 browser/accessibility audits still pass with zero violations or page errors.
+
 ## Expanded Identity Evidence: 2026-09-16
 
 - Latest user request to improve the tool after its real-input test: implemented bounded matrix expansion, literal env substitution, unresolved identity observations, broader literal CloudFormation recognition and the Identities/evidence-needed workflow. No engine/provider or live access claim was added.

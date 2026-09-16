@@ -1,6 +1,39 @@
 # Architecture
 
-Blast Radius v0.1 is a local, synthetic-only Python prototype. The src-layout package is `blastradius`; `jsonschema==4.26.0` is its only direct runtime dependency. CLI entry point: `blastradius`. There is no hosted service, no live collection CLI, no secret extraction and no platform mutation.
+## Current Architecture
+
+The current entry point is an offline learning journey in [ui/index.html](ui/index.html), generated from the lab source and also shipped as [src/blastradius/assets/lesson.html](src/blastradius/assets/lesson.html). The installed `blastradius learn` command opens it without a server. The lesson calls the existing JavaScript reference engine on BR-001 and compares reach with an explicit required-access set.
+
+The optional Python package `blastradius` requires Python 3.12+, `jsonschema==4.26.0` and `PyYAML==6.0.3`. `blastradius review` is loopback-only. It accepts chosen repository declarations, not merely synthetic inputs; it neither executes target source nor evaluates deployed permissions.
+
+```mermaid
+flowchart LR
+    L[Offline lesson and advanced lab] --> J[JavaScript reference / synthetic graph v0.1]
+    R[Chosen local or pinned public repository] --> A[Bounded acquisition]
+    A --> P[Marked source / IAM evidence / explicit gaps]
+    P --> G[Repository graph v0.2]
+    G --> E[Existing deterministic Python engine]
+    E --> C[Declared capabilities and cached modeled removals]
+    C --> V[Local review / JSON / MD / SARIF / offline HTML]
+    P --> V
+```
+
+The repository result contract is `repository-attack-path-v0.1`; it is not a synthetic engine result v0.1 accepted by the lab. Graph v0.1 remains frozen. Graph v0.2 records non-synthetic source provenance. Neither SHA-256 content hashes nor parser confidence authenticate deployed state.
+
+| Boundary | Owner |
+| --- | --- |
+| Lesson, draft/model continuity, captions | [ui/app.js](ui/app.js) |
+| Authoritative source and packaged HTML parity | [tools/build_ui.mjs](tools/build_ui.mjs) |
+| Read-only local and public input | [acquisition.py](src/blastradius/repository/acquisition.py), [github.py](src/blastradius/repository/github.py) |
+| Supported source semantics and gaps | [evidence.py](src/blastradius/repository/evidence.py), [aws_cloudformation.py](src/blastradius/repository/aws_cloudformation.py), [aws_terraform.py](src/blastradius/repository/aws_terraform.py) |
+| Capability classification / removal reuse | [findings.py](src/blastradius/repository/findings.py), [scenarios.py](src/blastradius/repository/scenarios.py) |
+| Session guards, stages, cooperative cancellation | [server.py](src/blastradius/repository/server.py), [operation.py](src/blastradius/repository/operation.py) |
+
+Only fictional lesson progress and bundled-example selection/control IDs persist in browser storage. Real source results remain in process memory unless exported; leaving warns. Unknown alternatives remain separate from modeled reach. A zero modeled count is not a safe verdict. Cancellation/deadlines are checked between bounded operations, not an OS sandbox or a forced interruption of an in-flight read.
+
+## Historical Prototype Architecture
+
+The diagram and measurements below describe the earlier synthetic research pipeline, not the current first-run or repository-input contract. Historical release evidence is retained in [HANDOVER.md](HANDOVER.md) and [TEST_REPORT.md](TEST_REPORT.md).
 
 ```mermaid
 flowchart LR

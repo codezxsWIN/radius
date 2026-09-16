@@ -1,6 +1,16 @@
-# Project Scope: Standard, Conformance, Open Data
+# Project Direction
 
-This direction supersedes the earlier product/prototype roadmap. Blast Radius is an open metric standard, a public conformance suite with reference code, and a planned open aggregate dataset. It is not a CIEM product, and no real-world dataset or exclusive novelty claim is established by the synthetic work in this repository.
+## Current: Education First
+
+The next release demonstrates one short offline predict-change-explain lesson using the existing deterministic model. It preserves learner input across model changes, teaches required versus unnecessary permissions, and keeps advanced source review optional. See [README.md](README.md), [ARCHITECTURE.md](ARCHITECTURE.md), and the [educational audit](reviews/2026-09-17-educational-audit.md).
+
+The goal is not another dashboard, AI component, provider expansion, or all 520 backlog goals. Fix the demonstrated state, parser, uncertainty and build failures; protect the installed/offline journey in CI; test it with newcomers before broader readiness claims. No real source is automatically persisted, no target code is executed, and no modeled capability is automatically a high-priority vulnerability.
+
+## Historical: Standards-Only Direction
+
+The following September 9 decision is historical. It no longer controls the current educational/repository-review scope; its governance and real-data cautions remain relevant.
+
+That iteration superseded the earlier product/prototype roadmap with an open metric standard, a public conformance suite with reference code, and a planned open aggregate dataset. It was not a CIEM product, and no real-world dataset or exclusive novelty claim was established by the synthetic work.
 
 Code is Apache-2.0; specification/schema are CC BY 4.0; published aggregate data will be CC0. There are no paid tiers, enterprise edition, certification charges, SSO, multi-tenant consoles, compliance packs, SIEM or ticketing integrations. Neutral governance must exist before the first public real-data aggregate.
 

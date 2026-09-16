@@ -15,6 +15,7 @@ from ..model import GraphError, canonical
 from .acquisition import MAX_DEPTH, MAX_FILE_BYTES, MAX_FILES, MAX_PATH_CHARACTERS, MAX_TOTAL_BYTES
 from .evidence import SLUG
 from .findings import analyze_repository
+from .operation import checkpoint
 
 
 MAX_ARCHIVE_BYTES = 25 * 1024 * 1024
@@ -95,6 +96,7 @@ def _https_transport(host, path, limit):
 
 
 def _request(transport, host, path, limit, expected_status):
+    checkpoint("Acquiring pinned public source")
     try:
         status, headers, payload = transport(host, path, limit)
     except GraphError:
@@ -177,6 +179,7 @@ def extract_public_github_archive(payload: bytes, destination: Path) -> Path:
             file_count = 0
             total_size = 0
             for info in bundle.infolist():
+                checkpoint("Checking public archive entries")
                 parts = _safe_segments(info.filename)
                 if root_name is None:
                     root_name = parts[0]
@@ -236,6 +239,7 @@ def extract_public_github_archive(payload: bytes, destination: Path) -> Path:
                 written = 0
                 with bundle.open(info, "r") as source, output.open("xb") as stream:
                     while chunk := source.read(DOWNLOAD_CHUNK_BYTES):
+                        checkpoint("Reading bounded public archive")
                         written += len(chunk)
                         extracted_total += len(chunk)
                         if written > info.file_size or written > MAX_FILE_BYTES or extracted_total > MAX_TOTAL_BYTES:

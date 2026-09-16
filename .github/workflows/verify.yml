@@ -1,4 +1,4 @@
-name: Verify standard and synthetic artifacts
+name: Verify learning journey and reference artifacts
 on:
   push:
   pull_request:
@@ -17,6 +17,8 @@ jobs:
           node-version: '25'
       - name: Install pinned project and test dependencies
         run: python -m pip install -e '.[test]'
+      - name: Check authoritative UI build parity
+        run: node tools/build_ui.mjs --check
       - name: Run Python tests and coverage
         run: python -B tools/verify.py
       - name: Check JavaScript reference
@@ -25,6 +27,25 @@ jobs:
         run: blastradius conformance run --tool 'python -B -m blastradius conformance adapter' --out conformance/reports/ci-python
       - name: Run public JavaScript conformance
         run: blastradius conformance run --tool 'node reference-js/reference.mjs' --out conformance/reports/ci-javascript
+      - name: Build and install an isolated learner package
+        run: |
+          python -m pip wheel --no-deps --wheel-dir "$RUNNER_TEMP/lesson-wheels" .
+          python -m venv "$RUNNER_TEMP/lesson-venv"
+          "$RUNNER_TEMP/lesson-venv/bin/python" -m pip install "$RUNNER_TEMP"/lesson-wheels/*.whl
+          echo "BR_PYTHON=$RUNNER_TEMP/lesson-venv/bin/python" >> "$GITHUB_ENV"
+          echo "BR_LAB_HTML=$(cd "$RUNNER_TEMP" && "$RUNNER_TEMP/lesson-venv/bin/python" -I -c 'from pathlib import Path; import blastradius; print(Path(blastradius.__file__).with_name("assets") / "lesson.html")')" >> "$GITHUB_ENV"
+      - name: Complete the installed offline lesson and edit/model journey
+        env:
+          BR_BROWSER: /usr/bin/google-chrome
+        run: node tools/test_ui_contract.mjs
+      - name: Verify the visual lab across viewports
+        env:
+          BR_BROWSER: /usr/bin/google-chrome
+        run: node tools/test_ui_browser.mjs
+      - name: Verify repository review and retention boundaries
+        env:
+          BR_BROWSER: /usr/bin/google-chrome
+        run: node tools/test_repository_review.mjs
       - name: Save synthetic artifacts only
         uses: actions/upload-artifact@v4
         with:
@@ -36,4 +57,6 @@ jobs:
             reconstructions/
             results/coverage.json
             results/junit.xml
+            ui/reports/
+            results/repository-review-browser/checks.json
           retention-days: 14

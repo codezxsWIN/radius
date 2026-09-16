@@ -132,6 +132,8 @@ def parser():
     review = commands.add_parser("review", help="Open the loopback-only repository review interface; source is never executed.")
     review.add_argument("--port", type=int, default=8765)
     review.add_argument("--no-open", action="store_true", help="Do not launch a browser automatically.")
+    learn = commands.add_parser("learn", help="Open the bundled offline first lesson; no server or credentials required.")
+    learn.add_argument("--no-open", action="store_true", help="Print the offline lesson URI without launching a browser.")
     submit = commands.add_parser("submit", help="Print a local structural preview only; not anonymized or approved for publication.")
     submit.add_argument("result", type=Path)
     submit.add_argument("--dry-run", action="store_true", required=True)
@@ -151,7 +153,17 @@ def main(argv=None):
     arguments = parser().parse_args(argv)
     try:
         command = arguments.command
-        if command == "conformance":
+        if command == "learn":
+            import webbrowser
+            lesson = Path(__file__).with_name("assets") / "lesson.html"
+            if not lesson.is_file():
+                raise GraphError("Offline lesson is missing. Rebuild with node tools/build_ui.mjs or reinstall the package.")
+            uri = lesson.resolve().as_uri()
+            print(uri)
+            if not arguments.no_open:
+                webbrowser.open(uri)
+            return 0
+        elif command == "conformance":
             from .conformance import reference_response, run_suite
             if arguments.conformance_action == "adapter":
                 from .model import read_json

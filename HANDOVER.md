@@ -1,5 +1,27 @@
 # Handover
 
+## Educational Release: 2026-09-17
+
+Start at [ui/index.html](ui/index.html) or installed `blastradius learn`. The existing lab now provides one offline three-exercise lesson with explicit required/excess access; the advanced graph/repository views are optional. The original educational audit remains unchanged, and [TEST_REPORT.md](TEST_REPORT.md) maps all 13 findings to implemented bounded outcomes and remaining external gates.
+
+Final gates: **323 Python tests passed, one Windows privilege skip; 89.247585% line coverage; 34 learning/lab contracts; 16 review accessibility audits and 18 visual-lab audits with zero violations; both references 120/120**. The wheel was installed into a separate temporary environment and the final installed HTML completed the lesson/model-continuity suite. Cached-package success is not a fresh-OS/newcomer claim.
+
+Important changes: preserved model-switch drafts; source/generated/packaged HTML parity; attached IAM restriction and action-case fixes; informational capabilities with visible excluded-alternative uncertainty; equivalent comparison reuse; cooperative cancel/stages/deadline; fictional-only refresh restoration and warnings before leaving real reviews; explicit HCL/intake gaps; current README/architecture/direction and CI journey gates.
+
+No target code, credentials or cloud permissions were exercised. Changes remain uncommitted/unpushed, including previous work. Keep the raw local 10k/50k performance payloads out of publication. Next: observe actual newcomers on the lesson, then separately verify hosted CI and uncached OS installation. Do not restart provider expansion or the 520-goal backlog as a launch requirement.
+
+## Terraform JSON Evidence: 2026-09-17
+
+The repository-first analyzer now recognizes bounded `*.tf.json` IAM declarations. Literal same-file `aws_iam_role` and `aws_iam_role_policy` blocks can establish the existing GitHub Actions OIDC -> role -> finite Secrets Manager path, with Terraform source locations and graph provenance retained. The implementation reuses the established conservative trust and permission evaluators rather than creating different IAM semantics for Terraform.
+
+This is not general Terraform support. HCL, references/interpolation, modules, data sources, state, plans, cross-file role-policy joins, managed-policy composition and permission-boundary evaluation remain unsupported. Terraform is never invoked. Unsupported or malformed values emit diagnostics and cannot establish a complete path.
+
+Final gate: **306 passed, 1 Windows privilege skip in 57.88 seconds; 3338/3739 lines covered (89.2752%)**. All 15 repository-review browser accessibility audits pass with no violations, page errors or offline network requests. The initial full run encountered the known Windows malformed-request socket race; its focused retry and the complete rerun passed. No live cloud/Terraform action, commit or push was performed.
+
+Executed fixture `tests/fixtures/repositories/aws-oidc-terraform-json` produces one source-backed finding against `production/database`. Its saved trust-removal simulation changes absolute reach **1 -> 0** and visually marks the path blocked in the offline report. Analysis hash: `5341d684e6eca1b76c204da8a444cd9e23388615d34f91621d77edc80a5715cc`; reports are under `results/terraform-json-simulation.*`.
+
+After user feedback that the report remained unclear, the default one-finding view was simplified around the decision: reachable resource, originating job, smallest modeled change and explicit before/after result. The redundant one-item queue is hidden, source evidence and advanced controls are collapsed, and the analyzed header is compact. Multi-finding queues and all evidence remain available when relevant. Fifteen browser/accessibility audits remain clean.
+
 ## Expanded Evidence Iteration: 2026-09-16
 
 Latest user request: "imrpove it as much as possible", following the external-repository test. This iteration fixes measurable coverage gaps while preserving unknowns: bounded finite matrices, literal env/matrix substitutions with source regions, unresolved/local-action identity observations, conventional literal CloudFormation YAML/JSON and an actionable Identities view. It does not add live IAM, Terraform evaluation, arbitrary action execution, credentials or an LLM.
@@ -10,7 +32,7 @@ Retested `aws-actions/configure-aws-credentials` at the same immutable `ec8e6082
 
 Current external result `results/aws-actions-expanded-evidence-20260916.{json,md,html}` has analysis hash `de5f8b91f9cb1456cd9867a6dd30f1e39081992b84e6a2e02d8737ed8dbef419`. No remote code, secret values or AWS operations were used. Earlier same-day hashes/counts below are retained as history; no commit/push or hosted CI was performed.
 
-The refreshed wheel is `dist/repository-expanded-evidence-20260916/blastradius_prototype-0.1.0-py3-none-any.whl`, SHA-256 `fc75c19f6aa7cc0eb62a1f412dad1212615678572dcba1883b580af0840c4a42`. Its isolated installed-package check from temporary cwd passed finite matrix/env resolution with source coordinates, intrinsic opacity, the packaged shared scenario (5 -> 1), external-result HTML and SARIF 2.1.0 schema validation. Playwright opened the real external snapshot offline with zero HTTP requests, then submitted the same pinned commit through the restarted app and verified 36 request variants, 17 declaration rows, 33 expanded job variants and zero path findings. The app remains at http://127.0.0.1:8765/ with the external repository's Identities view open.
+The refreshed wheel is `dist/repository-expanded-evidence-20260916/blastradius_prototype-0.1.0-py3-none-any.whl`, SHA-256 `fc75c19f6aa7cc0eb62a1f412dad1212615678572dcba1883b580af0840c4a42`. Its isolated installed-package check from temporary cwd passed finite matrix/env resolution with source coordinates, intrinsic opacity, the packaged shared scenario (5 -> 1), external-result HTML and SARIF 2.1.0 schema validation. Playwright opened the real external snapshot offline with zero HTTP requests, then submitted the same pinned commit through the restarted app and verified 36 request variants, 17 declaration rows, 33 expanded job variants and zero path findings. The app remains at <http://127.0.0.1:8765/> with the external repository's Identities view open.
 
 ## Investigation Iteration: 2026-09-16
 
@@ -20,7 +42,7 @@ The new `repository/scenarios.py` recomputes the retained declared graph for up 
 
 The packaged shared-access example has five findings across three jobs and three secrets: one production trust removal leaves 5 -> 5, both production trusts give 5 -> 1, and all controls give 5 -> 0. The second path test also found and fixed a real inspector error: for a job with multiple role requests, the displayed role is now taken from the actual role-assumption correlation rather than the starting credential. Markdown baselines carry matched subjects/audience/account and file coverage too.
 
-Current checks: **280 passed, one platform skip in 55.57s**, coverage **2983/3361 lines (88.753347%)**. Twelve real-Chromium accessibility audits passed with zero violations at 1440, 1280, 390 and 320px and offline. Browser tests exercise queue/status/file filtering, rapid toggles, simulated comparison outage, four baseline exports, two change-request exports, and source/no-proof/error states. Final model module Pylance diagnostics are empty. The refreshed live app also passed the 5 -> 5 -> 1 -> 5 stage/clear sequence and is left at the shared example's unmodified baseline on http://127.0.0.1:8765/.
+Current checks: **280 passed, one platform skip in 55.57s**, coverage **2983/3361 lines (88.753347%)**. Twelve real-Chromium accessibility audits passed with zero violations at 1440, 1280, 390 and 320px and offline. Browser tests exercise queue/status/file filtering, rapid toggles, simulated comparison outage, four baseline exports, two change-request exports, and source/no-proof/error states. Final model module Pylance diagnostics are empty. The refreshed live app also passed the 5 -> 5 -> 1 -> 5 stage/clear sequence and is left at the shared example's unmodified baseline on <http://127.0.0.1:8765/>.
 
 The current wheel is `dist/repository-investigation-20260916/blastradius_prototype-0.1.0-py3-none-any.whl`, SHA-256 `1a46d48128c483945e9b01643fd1681df463316b2ec0e047543159eb0cd9dd50`. Its clean isolated install, run from the OS temporary directory, passed packaged shared-example analysis, alternate/combined trust removal, proposed change-request rendering and embedded-font HTML. Current shared-example analysis hash: `1df8e5e9a188ab11e8177a7aabf164785cf039c2fa4623fa65f24b7d9c5daf7e`. Regenerated baseline SARIF passes its 2.1.0 schema. Prior same-day release hashes below remain historical.
 

@@ -1,59 +1,67 @@
 {
   "checks": [
     {
+      "name": "first screen is the offline lesson",
+      "passed": true
+    },
+    {
+      "name": "lesson title, input hash and announcement describe its own graph",
+      "passed": true
+    },
+    {
+      "name": "lesson exercise 0 has independently checked outcome",
+      "passed": true
+    },
+    {
+      "name": "lesson exercise 1 has independently checked outcome",
+      "passed": true
+    },
+    {
+      "name": "lesson exercise 2 has independently checked outcome",
+      "passed": true
+    },
+    {
+      "name": "least privilege preserves required read rather than zeroing access",
+      "passed": true
+    },
+    {
+      "name": "least-privilege graph and count agree after change",
+      "passed": true
+    },
+    {
+      "name": "repeating an exercise recomputes its chosen change",
+      "passed": true
+    },
+    {
+      "name": "fictional lesson progress survives refresh",
+      "passed": true
+    },
+    {
+      "name": "lesson has no accessibility violations",
+      "passed": true
+    },
+    {
+      "name": "lesson fits a phone viewport",
+      "passed": true
+    },
+    {
+      "name": "phone lesson keeps advanced controls hidden",
+      "passed": true
+    },
+    {
       "name": "exact structural summary parity",
       "passed": true
     },
     {
-      "name": "bounded metric caption uses bounded pair count",
+      "name": "bounded caption uses exact bounded count, not unbounded reach",
       "passed": true
     },
     {
-      "name": "weighted metric captions identify exact weighted ratios",
+      "name": "weighted captions state their exact weighted ratios",
       "passed": true
     },
     {
-      "name": "path narrative retains model and result provenance",
-      "passed": true
-    },
-    {
-      "name": "path narrative retains complete edge provenance",
-      "passed": true
-    },
-    {
-      "name": "evidence copy unavailable",
-      "passed": true
-    },
-    {
-      "name": "evidence copy denied",
-      "passed": true
-    },
-    {
-      "name": "evidence copy available",
-      "passed": true
-    },
-    {
-      "name": "manual evidence-copy dialog has no accessibility violations",
-      "passed": true
-    },
-    {
-      "name": "pseudonymized narrative is deterministic and explicitly non-anonymous",
-      "passed": true
-    },
-    {
-      "name": "no-path evidence retains the result context",
-      "passed": true
-    },
-    {
-      "name": "views without a figure disable and reject figure exports",
-      "passed": true
-    },
-    {
-      "name": "exported figure follows the explicit figure selector",
-      "passed": true
-    },
-    {
-      "name": "unsupported export formats and dimensions are rejected",
+      "name": "narrative carries model, snapshot and full provenance",
       "passed": true
     },
     {
@@ -70,10 +78,6 @@
     },
     {
       "name": "model focus remains on selected control",
-      "passed": true
-    },
-    {
-      "name": "narrative tracks the currently selected model",
       "passed": true
     },
     {
@@ -94,6 +98,18 @@
     },
     {
       "name": "device constraint blocks edited grant path",
+      "passed": true
+    },
+    {
+      "name": "model changes preserve the edited graph and input hash",
+      "passed": true
+    },
+    {
+      "name": "invalid edits survive model changes without a stale score",
+      "passed": true
+    },
+    {
+      "name": "only explicit reset restores the preset",
       "passed": true
     },
     {
@@ -121,7 +137,7 @@
       "passed": true
     }
   ],
-  "passed": 30,
+  "passed": 34,
   "errors": [],
   "audit": []
 }

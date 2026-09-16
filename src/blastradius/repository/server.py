@@ -8,6 +8,7 @@ from pathlib import Path
 import secrets
 import threading
 import webbrowser
+from uuid import uuid4
 
 from ..model import GraphError, canonical, read_json
 from .findings import analyze_repository
@@ -15,6 +16,7 @@ from .github import analyze_public_github_repository
 from .report import render_repository_result
 from .scenarios import simulate_repository_review, render_change_request
 from .view import ASSETS, render_repository_workbench
+from .operation import AnalysisCancelled, AnalysisOperation, checkpoint, operation_scope
 
 
 MAX_REQUEST_BYTES = 8192
@@ -58,6 +60,8 @@ class ReviewServer(ThreadingHTTPServer):
             raise GraphError("Review port must be between 0 and 65535.")
         self.token = secrets.token_urlsafe(32)
         self.analysis_lock = threading.Lock()
+        self.operation_lock = threading.Lock()
+        self.operation = None
         self.last_result = None
         self.review_context = {}
         super().__init__(("127.0.0.1", port), ReviewHandler)
@@ -97,7 +101,7 @@ class ReviewHandler(BaseHTTPRequestHandler):
         self.close_connection = True
         try:
             self.wfile.write(encoded)
-        except (BrokenPipeError, ConnectionResetError, TimeoutError):
+        except (BrokenPipeError, ConnectionResetError, ConnectionAbortedError, TimeoutError):
             pass
 
     def _valid_host(self):
@@ -106,6 +110,8 @@ class ReviewHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         if not self._valid_host():
             self._respond(403, {"error": "Invalid local host."})
+        elif self.path == "/learn":
+            self._respond(200, (ASSETS / "lesson.html").read_bytes(), "text/html")
         elif self.path != "/":
             self._respond(404, {"error": "Route not found."})
         else:
@@ -142,6 +148,20 @@ class ReviewHandler(BaseHTTPRequestHandler):
         except (GraphError, UnicodeError, ValueError, TimeoutError, RecursionError):
             self._respond(400, {"error": "Invalid JSON request."})
             return
+        if self.path in {"/api/status", "/api/cancel"}:
+            with self.server.operation_lock:
+                operation = self.server.operation
+                if set(payload) != {"operation_id"} or not isinstance(payload["operation_id"], str):
+                    self._respond(400, {"error": "A current operation identifier is required."})
+                elif operation is None or operation.finished:
+                    self._respond(200 if self.path == "/api/status" else 409, {"state": "idle", "error": "No matching operation is running."})
+                elif operation.identifier != payload["operation_id"]:
+                    self._respond(409, {"error": "The operation changed; this request is stale."})
+                else:
+                    if self.path == "/api/cancel":
+                        operation.cancelled.set()
+                    self._respond(202 if self.path == "/api/cancel" else 200, {"state": "cancelling" if operation.cancelled.is_set() else "running", "stage": operation.stage})
+            return
         if not self.server.analysis_lock.acquire(blocking=False):
             self._respond(409, {"error": "An analysis or export is already in progress."})
             return
@@ -149,8 +169,19 @@ class ReviewHandler(BaseHTTPRequestHandler):
             if self.path == "/api/analyze":
                 self.server.last_result = None
                 self.server.review_context.clear()
-                result = _analyze(payload, self.server.review_context)
-                self.server.last_result = result
+                identifier = payload.pop("operation_id", uuid4().hex)
+                if not isinstance(identifier, str) or not 1 <= len(identifier) <= 64 or any(character not in "0123456789abcdef-" for character in identifier):
+                    raise GraphError("Operation identifier is invalid.")
+                operation = AnalysisOperation(identifier)
+                with self.server.operation_lock:
+                    self.server.operation = operation
+                with operation_scope(operation):
+                    checkpoint("Reading source")
+                    result = _analyze(payload, self.server.review_context)
+                    with self.server.operation_lock:
+                        checkpoint("Completing analysis")
+                        self.server.last_result = result
+                        operation.finished = True
                 self._respond(200, result)
             elif self.path in {"/api/simulate", "/api/export-plan"}:
                 keys = {"analysis_hash", "controls"} | ({"format"} if self.path == "/api/export-plan" else set())
@@ -184,11 +215,17 @@ class ReviewHandler(BaseHTTPRequestHandler):
                 self._respond(200, {"cleared": True})
             else:
                 self._respond(404, {"error": "Route not found."})
+        except AnalysisCancelled as failure:
+            self.server.last_result = None
+            self.server.review_context.clear()
+            self._respond(409, {"error": str(failure), "cancelled": True})
         except GraphError as failure:
             self._respond(400, {"error": str(failure)})
         except (OSError, ValueError, TypeError, KeyError, RecursionError):
             self._respond(400, {"error": "Input could not be analyzed. Check the supported source profile and local paths."})
         finally:
+            with self.server.operation_lock:
+                self.server.operation = None
             self.server.analysis_lock.release()
 
 

@@ -45,7 +45,7 @@
     },
     {
       "view": "playground",
-      "svg": 5,
+      "svg": 6,
       "heading": "A small graph, a verifiable result",
       "overflow": false
     },
@@ -60,368 +60,6 @@
       "svg": 0,
       "heading": "The same definition, two implementations",
       "overflow": false
-    }
-  ],
-  "export_controls": [
-    {
-      "view": "disc",
-      "viewport": "desktop",
-      "controls": [
-        {
-          "id": "figure-kind",
-          "label": "Credential reach",
-          "width": 208,
-          "required": 121.22784423828125,
-          "fits": true
-        },
-        {
-          "id": "column-width",
-          "label": "IEEE double",
-          "width": 99,
-          "required": 98.69187927246094,
-          "fits": true
-        }
-      ]
-    },
-    {
-      "view": "treemap",
-      "viewport": "desktop",
-      "controls": [
-        {
-          "id": "figure-kind",
-          "label": "Credential population",
-          "width": 208,
-          "required": 148.0358123779297,
-          "fits": true
-        },
-        {
-          "id": "column-width",
-          "label": "IEEE double",
-          "width": 99,
-          "required": 98.69187927246094,
-          "fits": true
-        }
-      ]
-    },
-    {
-      "view": "distribution",
-      "viewport": "desktop",
-      "controls": [
-        {
-          "id": "figure-kind",
-          "label": "Lorenz curve",
-          "width": 208,
-          "required": 101.65586853027344,
-          "fits": true
-        },
-        {
-          "id": "column-width",
-          "label": "IEEE double",
-          "width": 99,
-          "required": 98.69187927246094,
-          "fits": true
-        }
-      ]
-    },
-    {
-      "view": "models",
-      "viewport": "desktop",
-      "controls": [
-        {
-          "id": "figure-kind",
-          "label": "Model comparison",
-          "width": 208,
-          "required": 131.99188232421875,
-          "fits": true
-        },
-        {
-          "id": "column-width",
-          "label": "IEEE double",
-          "width": 99,
-          "required": 98.69187927246094,
-          "fits": true
-        }
-      ]
-    },
-    {
-      "view": "whatif",
-      "viewport": "desktop",
-      "controls": [
-        {
-          "id": "figure-kind",
-          "label": "Counterfactual comparison",
-          "width": 208,
-          "required": 176.58380126953125,
-          "fits": true
-        },
-        {
-          "id": "column-width",
-          "label": "IEEE double",
-          "width": 99,
-          "required": 98.69187927246094,
-          "fits": true
-        }
-      ]
-    },
-    {
-      "view": "privacy",
-      "viewport": "desktop",
-      "controls": [
-        {
-          "id": "figure-kind",
-          "label": "Structural silhouette",
-          "width": 208,
-          "required": 140.35580444335938,
-          "fits": true
-        },
-        {
-          "id": "column-width",
-          "label": "IEEE double",
-          "width": 99,
-          "required": 98.69187927246094,
-          "fits": true
-        }
-      ]
-    },
-    {
-      "view": "playground",
-      "viewport": "desktop",
-      "controls": [
-        {
-          "id": "figure-kind",
-          "label": "Fixture reach",
-          "width": 208,
-          "required": 103.08387756347656,
-          "fits": true
-        },
-        {
-          "id": "column-width",
-          "label": "IEEE double",
-          "width": 99,
-          "required": 98.69187927246094,
-          "fits": true
-        }
-      ]
-    },
-    {
-      "view": "incidents",
-      "viewport": "desktop",
-      "controls": [
-        {
-          "id": "figure-kind",
-          "label": "Reconstructed reach",
-          "width": 208,
-          "required": 143.0078125,
-          "fits": true
-        },
-        {
-          "id": "column-width",
-          "label": "IEEE double",
-          "width": 99,
-          "required": 98.69187927246094,
-          "fits": true
-        }
-      ]
-    },
-    {
-      "view": "conformance",
-      "viewport": "desktop",
-      "controls": [
-        {
-          "id": "figure-kind",
-          "label": "No exportable figure",
-          "width": 208,
-          "required": 142.39581298828125,
-          "fits": true
-        },
-        {
-          "id": "column-width",
-          "label": "IEEE double",
-          "width": 99,
-          "required": 98.69187927246094,
-          "fits": true
-        }
-      ]
-    },
-    {
-      "view": "disc",
-      "viewport": "mobile",
-      "controls": [
-        {
-          "id": "figure-kind",
-          "label": "Credential reach",
-          "width": 290,
-          "required": 121.22784423828125,
-          "fits": true
-        },
-        {
-          "id": "column-width",
-          "label": "IEEE double",
-          "width": 123,
-          "required": 98.69187927246094,
-          "fits": true
-        }
-      ]
-    },
-    {
-      "view": "treemap",
-      "viewport": "mobile",
-      "controls": [
-        {
-          "id": "figure-kind",
-          "label": "Credential population",
-          "width": 290,
-          "required": 148.0358123779297,
-          "fits": true
-        },
-        {
-          "id": "column-width",
-          "label": "IEEE double",
-          "width": 123,
-          "required": 98.69187927246094,
-          "fits": true
-        }
-      ]
-    },
-    {
-      "view": "distribution",
-      "viewport": "mobile",
-      "controls": [
-        {
-          "id": "figure-kind",
-          "label": "Lorenz curve",
-          "width": 290,
-          "required": 101.65586853027344,
-          "fits": true
-        },
-        {
-          "id": "column-width",
-          "label": "IEEE double",
-          "width": 123,
-          "required": 98.69187927246094,
-          "fits": true
-        }
-      ]
-    },
-    {
-      "view": "models",
-      "viewport": "mobile",
-      "controls": [
-        {
-          "id": "figure-kind",
-          "label": "Model comparison",
-          "width": 290,
-          "required": 131.99188232421875,
-          "fits": true
-        },
-        {
-          "id": "column-width",
-          "label": "IEEE double",
-          "width": 123,
-          "required": 98.69187927246094,
-          "fits": true
-        }
-      ]
-    },
-    {
-      "view": "whatif",
-      "viewport": "mobile",
-      "controls": [
-        {
-          "id": "figure-kind",
-          "label": "Counterfactual comparison",
-          "width": 290,
-          "required": 176.58380126953125,
-          "fits": true
-        },
-        {
-          "id": "column-width",
-          "label": "IEEE double",
-          "width": 123,
-          "required": 98.69187927246094,
-          "fits": true
-        }
-      ]
-    },
-    {
-      "view": "privacy",
-      "viewport": "mobile",
-      "controls": [
-        {
-          "id": "figure-kind",
-          "label": "Structural silhouette",
-          "width": 290,
-          "required": 140.35580444335938,
-          "fits": true
-        },
-        {
-          "id": "column-width",
-          "label": "IEEE double",
-          "width": 123,
-          "required": 98.69187927246094,
-          "fits": true
-        }
-      ]
-    },
-    {
-      "view": "playground",
-      "viewport": "mobile",
-      "controls": [
-        {
-          "id": "figure-kind",
-          "label": "Fixture reach",
-          "width": 290,
-          "required": 103.08387756347656,
-          "fits": true
-        },
-        {
-          "id": "column-width",
-          "label": "IEEE double",
-          "width": 123,
-          "required": 98.69187927246094,
-          "fits": true
-        }
-      ]
-    },
-    {
-      "view": "incidents",
-      "viewport": "mobile",
-      "controls": [
-        {
-          "id": "figure-kind",
-          "label": "Reconstructed reach",
-          "width": 290,
-          "required": 143.0078125,
-          "fits": true
-        },
-        {
-          "id": "column-width",
-          "label": "IEEE double",
-          "width": 123,
-          "required": 98.69187927246094,
-          "fits": true
-        }
-      ]
-    },
-    {
-      "view": "conformance",
-      "viewport": "mobile",
-      "controls": [
-        {
-          "id": "figure-kind",
-          "label": "No exportable figure",
-          "width": 290,
-          "required": 142.39581298828125,
-          "fits": true
-        },
-        {
-          "id": "column-width",
-          "label": "IEEE double",
-          "width": 123,
-          "required": 98.69187927246094,
-          "fits": true
-        }
-      ]
     }
   ],
   "accessibility": [
@@ -539,127 +177,127 @@
       "view": "disc",
       "viewport": "desktop",
       "byte_identical": true,
-      "first_sha256": "e607036a13a3eaa07267d590da2dfc75da2e5d795538219ab1589396607add7a",
-      "second_sha256": "e607036a13a3eaa07267d590da2dfc75da2e5d795538219ab1589396607add7a"
+      "first_sha256": "4f6fc62606f09be905cb72aea84124a8e6c7346179c677fd3da63eef37ceb7f6",
+      "second_sha256": "4f6fc62606f09be905cb72aea84124a8e6c7346179c677fd3da63eef37ceb7f6"
     },
     {
       "view": "treemap",
       "viewport": "desktop",
       "byte_identical": true,
-      "first_sha256": "5b9107d8f3e3d1d22c924480ce7d737904f396c909546de65064b49fc8cf1b9e",
-      "second_sha256": "5b9107d8f3e3d1d22c924480ce7d737904f396c909546de65064b49fc8cf1b9e"
+      "first_sha256": "8694c043e2154a8e6b687b53bc0ad2a08b6093f2bf792b571906cc9854e16b69",
+      "second_sha256": "8694c043e2154a8e6b687b53bc0ad2a08b6093f2bf792b571906cc9854e16b69"
     },
     {
       "view": "distribution",
       "viewport": "desktop",
       "byte_identical": true,
-      "first_sha256": "ebb620563779bc42a8be53d91d110e00fab3ffa93261aeecb5cfcd239587ac2a",
-      "second_sha256": "ebb620563779bc42a8be53d91d110e00fab3ffa93261aeecb5cfcd239587ac2a"
+      "first_sha256": "e0948ffa4c542659ee24aec51f69e95ceb24d2cb45fa2ec8f6583e70a1480bbb",
+      "second_sha256": "e0948ffa4c542659ee24aec51f69e95ceb24d2cb45fa2ec8f6583e70a1480bbb"
     },
     {
       "view": "models",
       "viewport": "desktop",
       "byte_identical": true,
-      "first_sha256": "77694231fae0b5489eaf58e588f1d07d9b657f65ff00da5fbdde69c758d748f4",
-      "second_sha256": "77694231fae0b5489eaf58e588f1d07d9b657f65ff00da5fbdde69c758d748f4"
+      "first_sha256": "e80da1800c0e538a2847d87e6e28f89dea536e241eb11e80e33966d82ae73c08",
+      "second_sha256": "e80da1800c0e538a2847d87e6e28f89dea536e241eb11e80e33966d82ae73c08"
     },
     {
       "view": "whatif",
       "viewport": "desktop",
       "byte_identical": true,
-      "first_sha256": "d316905facfb4511a9ff669e475f11e4361152915482a5b393ab2e6464e3c40e",
-      "second_sha256": "d316905facfb4511a9ff669e475f11e4361152915482a5b393ab2e6464e3c40e"
+      "first_sha256": "dcd0e88c6b570b2a799171760ecf797ba0131619af48904d9d7a90381689e494",
+      "second_sha256": "dcd0e88c6b570b2a799171760ecf797ba0131619af48904d9d7a90381689e494"
     },
     {
       "view": "privacy",
       "viewport": "desktop",
       "byte_identical": true,
-      "first_sha256": "527bfb676c67754e2d03106367b699a8e1ecc08cbf2242864278dc4e980dae81",
-      "second_sha256": "527bfb676c67754e2d03106367b699a8e1ecc08cbf2242864278dc4e980dae81"
+      "first_sha256": "1e49fc471d753d1d2cdc7e4e19e5b5bb42b1e3688c964ddc0e806f5cc6242c80",
+      "second_sha256": "1e49fc471d753d1d2cdc7e4e19e5b5bb42b1e3688c964ddc0e806f5cc6242c80"
     },
     {
       "view": "playground",
       "viewport": "desktop",
       "byte_identical": true,
-      "first_sha256": "21da78626e57e7ed94b3a6a0fa3c3a52e4aa22919a5416a6f0f625e751340c92",
-      "second_sha256": "21da78626e57e7ed94b3a6a0fa3c3a52e4aa22919a5416a6f0f625e751340c92"
+      "first_sha256": "ff52f94babc26d6e63b80437ef0fa1c2118a3845a36e114f300a7311c2dcbd39",
+      "second_sha256": "ff52f94babc26d6e63b80437ef0fa1c2118a3845a36e114f300a7311c2dcbd39"
     },
     {
       "view": "incidents",
       "viewport": "desktop",
       "byte_identical": true,
-      "first_sha256": "5fcd3962c112dddabc24e6e3e611a62cfa467b8b5630844ec868ff76df773ef1",
-      "second_sha256": "5fcd3962c112dddabc24e6e3e611a62cfa467b8b5630844ec868ff76df773ef1"
+      "first_sha256": "269248fd94fa86be3fbddb6a13b69bc35321dc96997aa3a1e9b4174be7493789",
+      "second_sha256": "269248fd94fa86be3fbddb6a13b69bc35321dc96997aa3a1e9b4174be7493789"
     },
     {
       "view": "conformance",
       "viewport": "desktop",
       "byte_identical": true,
-      "first_sha256": "e3b383fb655313a2b9abda0ce1fbbc01497855876c0d57691b6b25a29d41c192",
-      "second_sha256": "e3b383fb655313a2b9abda0ce1fbbc01497855876c0d57691b6b25a29d41c192"
+      "first_sha256": "a0caa0bbf49a927628b41ac79acb4a5149c4091e33bf2f6f667c2812d0b06a91",
+      "second_sha256": "a0caa0bbf49a927628b41ac79acb4a5149c4091e33bf2f6f667c2812d0b06a91"
     },
     {
       "view": "disc",
       "viewport": "mobile",
       "byte_identical": true,
-      "first_sha256": "194a788cf46fedea41f02920a92c17ff3974c5d30077a2d1c9503d0e94b1ebd7",
-      "second_sha256": "194a788cf46fedea41f02920a92c17ff3974c5d30077a2d1c9503d0e94b1ebd7"
+      "first_sha256": "3c0e7263e31d6451787a1117bf4cecdbbe7c0dcebebdbd41be075216c9186ac2",
+      "second_sha256": "3c0e7263e31d6451787a1117bf4cecdbbe7c0dcebebdbd41be075216c9186ac2"
     },
     {
       "view": "treemap",
       "viewport": "mobile",
       "byte_identical": true,
-      "first_sha256": "842d0e7d046ea3c03b8946009d06fb571b59807efa9e0ca58bcc35c540f0d628",
-      "second_sha256": "842d0e7d046ea3c03b8946009d06fb571b59807efa9e0ca58bcc35c540f0d628"
+      "first_sha256": "ecfeda9c693cac8e7798e7ac6db0eaa1470995c69560c275ebd5c72b829b1db2",
+      "second_sha256": "ecfeda9c693cac8e7798e7ac6db0eaa1470995c69560c275ebd5c72b829b1db2"
     },
     {
       "view": "distribution",
       "viewport": "mobile",
       "byte_identical": true,
-      "first_sha256": "42d097e21899ab8e15957bb5b80f1e2a13c25b56c5a84accdab0fdc1ff135536",
-      "second_sha256": "42d097e21899ab8e15957bb5b80f1e2a13c25b56c5a84accdab0fdc1ff135536"
+      "first_sha256": "84a4b0d1b803b5b79c8ca0979493275fd3397a83cca6c53a973018cb7dddaefa",
+      "second_sha256": "84a4b0d1b803b5b79c8ca0979493275fd3397a83cca6c53a973018cb7dddaefa"
     },
     {
       "view": "models",
       "viewport": "mobile",
       "byte_identical": true,
-      "first_sha256": "cf342839a23fde4b27ea59cf879a3297c7f07e71f4ce02bcc7445f090124846b",
-      "second_sha256": "cf342839a23fde4b27ea59cf879a3297c7f07e71f4ce02bcc7445f090124846b"
+      "first_sha256": "892eb4ed704576311caf21ec5a4e9333bfc56ac519cefc20d0c1e803268cff07",
+      "second_sha256": "892eb4ed704576311caf21ec5a4e9333bfc56ac519cefc20d0c1e803268cff07"
     },
     {
       "view": "whatif",
       "viewport": "mobile",
       "byte_identical": true,
-      "first_sha256": "1ebe5eae90a9e258c675d8ab54f2a8e595e9a309152a83b8c038d3f4f0ed368e",
-      "second_sha256": "1ebe5eae90a9e258c675d8ab54f2a8e595e9a309152a83b8c038d3f4f0ed368e"
+      "first_sha256": "616c95857ae75b71091c091f0c02916e9a97b49c5ceaec6e2db16828ac822a59",
+      "second_sha256": "616c95857ae75b71091c091f0c02916e9a97b49c5ceaec6e2db16828ac822a59"
     },
     {
       "view": "privacy",
       "viewport": "mobile",
       "byte_identical": true,
-      "first_sha256": "69b8b038cd021a88fdd1f809ea2636ae5942d681d6e1b0965650552def3f82e9",
-      "second_sha256": "69b8b038cd021a88fdd1f809ea2636ae5942d681d6e1b0965650552def3f82e9"
+      "first_sha256": "8b11bbaf791c4b79f3a2a9367e87d37613d238fb318f2fb03f55c119b1e89a9e",
+      "second_sha256": "8b11bbaf791c4b79f3a2a9367e87d37613d238fb318f2fb03f55c119b1e89a9e"
     },
     {
       "view": "playground",
       "viewport": "mobile",
       "byte_identical": true,
-      "first_sha256": "1dbbf368ec5440453b070a99871b2ee57205d228cacb0473cbf2c871fbbc479f",
-      "second_sha256": "1dbbf368ec5440453b070a99871b2ee57205d228cacb0473cbf2c871fbbc479f"
+      "first_sha256": "ddbbbc78c55ac82c62a1583b387f696c62adc05471f30b84662107f49f92ab26",
+      "second_sha256": "ddbbbc78c55ac82c62a1583b387f696c62adc05471f30b84662107f49f92ab26"
     },
     {
       "view": "incidents",
       "viewport": "mobile",
       "byte_identical": true,
-      "first_sha256": "94b2b2d681f6c87f5989ae2e32d5e56d8cf4d5dfce2ab036e272c5ba63345da7",
-      "second_sha256": "94b2b2d681f6c87f5989ae2e32d5e56d8cf4d5dfce2ab036e272c5ba63345da7"
+      "first_sha256": "aaf9fb899942d4674d1ea2f9442e24e9dde7de237ed287041978025bf2e5a209",
+      "second_sha256": "aaf9fb899942d4674d1ea2f9442e24e9dde7de237ed287041978025bf2e5a209"
     },
     {
       "view": "conformance",
       "viewport": "mobile",
       "byte_identical": true,
-      "first_sha256": "71948ca0cfa4e4dbc20123d3a1963f4c8898acaa3228d8c770d388304d237465",
-      "second_sha256": "71948ca0cfa4e4dbc20123d3a1963f4c8898acaa3228d8c770d388304d237465"
+      "first_sha256": "9a4a2358e477b2cf914213193b6ff97918a450f82392a279f1abb10e481424d5",
+      "second_sha256": "9a4a2358e477b2cf914213193b6ff97918a450f82392a279f1abb10e481424d5"
     }
   ],
   "interaction": [

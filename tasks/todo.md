@@ -1,5 +1,26 @@
 # WP_ Task List: Safe Local Repository Acquisition
 
+## Educational Audit Acceptance
+
+- [x] Same edited/invalid graph survives model changes; explicit reset and input hash/model state are distinct.
+- [x] Same-template attached deny cannot disappear; unknown targets fail closed; action spelling is preserved.
+- [x] Build parity protects exact captions, figure choices and evidence-copy behavior.
+- [x] Unmodeled trust alternatives qualify zero-reach outcomes, while declared capability is not automatically a vulnerability.
+- [x] One offline lesson compares 1/4 -> 0/4 -> 2/4 -> 1/4 with required and excess access shown separately.
+- [x] Equivalent trust removals reuse validation; cancellation/stages/deadlines are tested.
+- [x] Package includes the offline lab; fresh launcher diagnoses prerequisites without destroying environments.
+- [x] Metadata-only Terraform files preserve evidence, HCL is explicitly unassessed, and real reviews stay opt-in for retention.
+- [x] CI source enforces installed/offline journeys, source/artifact parity and zero browser/a11y failures.
+- [ ] Observe actual newcomers, run uncached OS installs and execute hosted CI before educational-readiness claims.
+
+## Terraform JSON Evidence: WP_033-WP_036
+
+- [x] `WP_033`: Recognize `*.tf.json` as a bounded source while leaving HCL and Terraform execution unsupported.
+- [x] `WP_034`: Extract literal IAM role, GitHub OIDC trust and finite Secrets Manager grants with exact source evidence.
+- [x] `WP_035`: Reject dynamic policy/reference values, wildcard resources and unresolved role restrictions from complete paths.
+- [x] `WP_036`: Carry Terraform provenance and coverage through graph, reports and the review app.
+- [x] Final checkpoint: 306 tests passed with one Windows privilege skip; all 15 browser audits passed with zero violations.
+
 ## Evidence Coverage Acceptance: WP_029-WP_032
 
 - [x] Finite matrix assignments expand deterministically with include/exclude semantics and distinct job principals; dynamic/excessive input is not executed.

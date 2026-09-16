@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
-const read=relative=>fs.readFileSync(path.join(root,relative),'utf8');
+const read=relative=>fs.readFileSync(path.join(root,relative),'utf8').replaceAll('\r\n','\n');
 const json=relative=>JSON.parse(read(relative));
 const safe=value=>JSON.stringify(value).replaceAll('<','\\u003c').replaceAll('>','\\u003e').replaceAll('&','\\u0026');
 const tokens=json('ui/tokens.json'), manifest=json('ui/data/manifest.json');
@@ -19,6 +19,13 @@ const css=`@font-face{font-family:'Atkinson Hyperlegible';src:url(data:font/ttf;
 const assets=['d3.min.js','sha256.min.js','jspdf.umd.min.js','svg2pdf.umd.min.js','axe.min.js'];
 const parts={__CSS__:css,__VENDOR__:assets.map(name=>read('ui/vendor/'+name)).join('\n'),__REFERENCE__:reference,__DATA__:`globalThis.BR_INPUT=${safe({manifest,files,tokens,icons,font,serif})};`,__RENDER__:read('ui/render.js')+'\n'+read('ui/population.js'),__APP__:read('ui/app.js')};
 const html=read('ui/index.template.html').replace(/__CSS__|__VENDOR__|__REFERENCE__|__DATA__|__RENDER__|__APP__/g,match=>parts[match]);
-fs.writeFileSync(path.join(root,'ui/index.html'),html);
-fs.writeFileSync(path.join(root,'ui/reference.browser.js'),reference);
+if(process.argv.includes('--check')){
+	for(const [name,content] of [['ui/index.html',html],['ui/reference.browser.js',reference],['src/blastradius/assets/lesson.html',html]]){
+		if(read(name)!==content)throw Error('Generated artifact is stale: '+name+'; run node tools/build_ui.mjs');
+	}
+}else{
+	fs.writeFileSync(path.join(root,'ui/index.html'),html);
+	fs.writeFileSync(path.join(root,'ui/reference.browser.js'),reference);
+	fs.writeFileSync(path.join(root,'src/blastradius/assets/lesson.html'),html);
+}
 console.log(JSON.stringify({html_bytes:Buffer.byteLength(html),result_files:Object.keys(files).length,sha256:createHash('sha256').update(html).digest('hex')}));

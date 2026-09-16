@@ -23,7 +23,8 @@ def test_positive_repository_report_is_evidence_first_and_deterministic():
     assert first == second
     assert result == original
     assert "# Blast Radius Repository Analysis" in first
-    assert "1 high-priority declared path" in first
+    assert "1 declared capabilities" in first
+    assert "policy violations have not been assessed" in first
     assert "assumed compromised" in first
     assert "secretsmanager:GetSecretValue" in first
     assert "arn:aws:secretsmanager:us-east-1:123456789012:secret:production/database" in first

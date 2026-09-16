@@ -12,6 +12,16 @@ const artifacts = path.join(ROOT, 'results/repository-review-browser');
 const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'br-review-check-'));
 fs.mkdirSync(artifacts, {recursive: true});
 fs.writeFileSync(path.join(temporary, 'broken.cfn.json'), '{');
+const alternativeRepository = path.join(temporary, 'alternative-case');
+fs.cpSync(path.join(ROOT, 'tests/fixtures/repositories/aws-oidc-path'), alternativeRepository, {recursive: true});
+const alternativeTemplate = path.join(alternativeRepository, 'infra/identity.template.json');
+const alternativeDocument = JSON.parse(fs.readFileSync(alternativeTemplate, 'utf8'));
+const alternateTrusts = alternativeDocument.Resources.GitHubProductionRole.Properties.AssumeRolePolicyDocument.Statement;
+const broadTrust = structuredClone(alternateTrusts[0]);
+delete broadTrust.Condition.StringEquals['token.actions.githubusercontent.com:sub'];
+broadTrust.Condition.StringLike = {'token.actions.githubusercontent.com:sub': 'repo:acme/payments:*'};
+alternateTrusts.push(broadTrust);
+fs.writeFileSync(alternativeTemplate, JSON.stringify(alternativeDocument));
 const identityRepository = path.join(temporary, 'identity-case');
 fs.mkdirSync(path.join(identityRepository, '.github/workflows'), {recursive: true});
 const identitySteps = Array.from({length: 23}, (unused, index) => ({uses: 'aws-actions/configure-aws-credentials@v4', with: {'role-to-assume': '${{ secrets.DEPLOY_ROLE_' + String(index + 1).padStart(2, '0') + ' }}'}}));
@@ -33,6 +43,11 @@ try {
     service.on('exit', code => { if (code) reject(Error('Review service exited: ' + serviceErrors)); });
   });
   browser = await openBrowser(1440, 1080);
+  const discardWarnings = [];
+  browser.on('Page.javascriptDialogOpening', dialog => {
+    discardWarnings.push(dialog.type);
+    browser.send('Page.handleJavaScriptDialog', {accept: true});
+  });
   await browser.navigate(address);
   browser.errors.length = 0;
   browser.requests.length = 0;
@@ -57,10 +72,27 @@ try {
 
   assert.equal(await browser.evaluate(`document.getElementById('report').hidden`), true);
   await audit('desktop-empty');
+  await browser.evaluate(`globalThis.__savedFetch=fetch;globalThis.fetch=(url,options)=>{
+    if(String(url).endsWith('/analyze'))return new Promise(resolve=>{globalThis.__pendingAnalysis=resolve;});
+    if(String(url).endsWith('/status'))return Promise.resolve(new Response(JSON.stringify({state:'running',stage:'Parsing source declarations'}),{status:200}));
+    if(String(url).endsWith('/cancel')){globalThis.__pendingAnalysis(new Response(JSON.stringify({error:'Analysis cancelled. No partial result was retained.',cancelled:true}),{status:409}));return Promise.resolve(new Response('{}',{status:202}));}
+    return globalThis.__savedFetch(url,options);
+  };document.getElementById('example').click();`);
+  await waitFor(`document.body.classList.contains('busy') && !document.getElementById('cancel-analysis').hidden`);
+  await browser.evaluate(`document.getElementById('cancel-analysis').click()`);
+  await waitFor(`!document.body.classList.contains('busy')`);
+  assert.equal(await browser.evaluate(`document.getElementById('report').hidden`), true);
+  assert.match(await browser.evaluate(`document.getElementById('activity').textContent`), /cancelled/);
+  await browser.evaluate(`globalThis.fetch=globalThis.__savedFetch`);
   await browser.evaluate(`document.getElementById('example').click()`);
   await waitFor(`!document.body.classList.contains('busy') && !document.getElementById('report').hidden`);
   assert.equal(await browser.evaluate(`document.getElementById('finding-count').textContent`), '1');
   assert.match(await browser.evaluate(`document.getElementById('context-label').textContent`), /Bundled example/);
+  assert.equal(await browser.evaluate(`document.getElementById('findings-section').classList.contains('single-finding')`), true);
+  assert.equal(await browser.evaluate(`getComputedStyle(document.querySelector('.finding-queue')).display`), 'none');
+  assert.equal(await browser.evaluate(`document.getElementById('evidence-details').open`), false);
+  assert.equal(await browser.evaluate(`document.getElementById('stage-label').textContent`), 'Simulate removal');
+  assert((await browser.evaluate(`document.querySelector('.titlebar').getBoundingClientRect().height`)) < 100);
   await audit('desktop-example');
   await browser.screenshot(path.join(artifacts, 'desktop.png'));
   await browser.evaluate(`document.querySelector('[data-node="4"]').click()`);
@@ -69,6 +101,10 @@ try {
   await waitFor(`document.getElementById('changes-panel').getAttribute('aria-busy') === 'false'`);
   assert.equal(await browser.evaluate(`document.getElementById('after-reach').textContent`), '0');
   assert.equal(await browser.evaluate(`document.querySelectorAll('.simulated').length`), 1);
+  await browser.navigate(address);
+  await waitFor(`!document.body.classList.contains('busy') && document.getElementById('after-reach').textContent === '0'`);
+  assert.equal(await browser.evaluate(`document.getElementById('change-count').textContent`), '1');
+  assert.equal(await browser.evaluate(`document.getElementById('context-label').textContent.includes('Bundled example')`), true);
 
   await browser.evaluate(`globalThis.__download=null;const originalClick=HTMLAnchorElement.prototype.click;HTMLAnchorElement.prototype.click=function(){if(this.download){globalThis.__filename=this.download;}else{originalClick.call(this);}};const originalURL=URL.createObjectURL;URL.createObjectURL=blob=>{globalThis.__download=blob;return originalURL(blob);};`);
   for (const format of ['json', 'md', 'sarif', 'html']) {
@@ -81,6 +117,15 @@ try {
     if (format === 'json') assert.equal(JSON.parse(contents).findings[0].remediation.after_absolute_reach, 0);
     if (format === 'sarif') assert.equal(JSON.parse(contents).runs[0].results[0].kind, 'review');
   }
+  await browser.evaluate(`document.getElementById('source-toggle').click();document.getElementById('repository-path').value=${JSON.stringify(alternativeRepository)};document.getElementById('repository-slug').value='acme/payments';document.getElementById('source-form').requestSubmit()`);
+  await waitFor(`!document.body.classList.contains('busy') && !document.getElementById('alternative-warning').hidden`);
+  assert.match(await browser.evaluate(`document.getElementById('alternative-warning').textContent`), /repo:acme\/payments:\*/);
+  await browser.evaluate(`document.getElementById('after').click()`);
+  await waitFor(`document.getElementById('changes-panel').getAttribute('aria-busy') === 'false'`);
+  assert.equal(await browser.evaluate(`document.getElementById('after-reach').textContent`), '0');
+  assert.match(await browser.evaluate(`document.getElementById('simulation-result').textContent`), /remaining access unknown/);
+  assert.equal(await browser.evaluate(`getComputedStyle(document.getElementById('alternative-warning')).display === 'none'`), false);
+  await audit('unmodeled-alternative');
   await browser.evaluate(`document.getElementById('source-toggle').click();document.getElementById('example-shared').click()`);
   await waitFor(`!document.body.classList.contains('busy') && document.getElementById('finding-count').textContent === '5'`);
   assert.equal(await browser.evaluate(`document.querySelectorAll('#control-list input').length`), 3);
@@ -190,9 +235,13 @@ try {
   await browser.navigate(pathToFileURL(path.join(artifacts, 'analysis.html')).href);
   await audit('offline-snapshot');
   assert.equal(await browser.evaluate(`document.getElementById('finding-count').textContent`), '1');
+  assert.equal(await browser.evaluate(`document.getElementById('after-label').textContent`), 'Current model');
   await browser.evaluate(`document.getElementById('after').click()`);
-  assert.match(await browser.evaluate(`document.getElementById('simulation-result').textContent`), /blocked in the modified model/);
+  assert.equal(await browser.evaluate(`document.getElementById('after-reach').textContent`), '0');
+  assert.equal(await browser.evaluate(`document.getElementById('stage-label').textContent`), 'Show baseline');
+  assert.match(await browser.evaluate(`document.getElementById('simulation-result').textContent`), /Model only: 1 -> 0 reachable secrets/);
   assert.equal(browser.requests.some(request => /^https?:/.test(request)), false, 'Offline report made a network request');
+  assert(discardWarnings.includes('beforeunload'), 'Leaving a real-source review must warn about losing the visible session');
   assert.deepEqual(browser.errors, []);
   assert.equal(serviceErrors, '');
   const report = {audits, exports: ['json', 'md', 'sarif', 'html'], change_request_exports: ['md', 'json'], evidence_selection: true, queue_filtering: true, file_coverage: true, unresolved_identity_evidence: true, identity_filtering: true, simulation: '1 -> 0', alternate_trust: '5 -> 5', shared_change_set: '5 -> 1', offline_network_requests: 0, page_errors: browser.errors};

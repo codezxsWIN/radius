@@ -1,5 +1,25 @@
 # WP_ Implementation Plan: Safe Local Repository Acquisition
 
+## Educational Audit Release: 2026-09-17
+
+- [x] Preserve graph drafts across model changes and restore authoritative lab source/artifact parity.
+- [x] Repair attached IAM restrictions, action-case semantics, and excluded-alternative comparisons.
+- [x] Separate capabilities from violations; use explicit required access in a three-exercise lesson.
+- [x] Reuse equivalent comparisons and add cancellation/stages/deadlines with no partial result.
+- [x] Ship the same offline lesson in source/package; restore fictional progress and warn for real-source loss.
+- [x] Clarify Terraform/HCL intake, current architecture, quickstart and small contribution path.
+- [x] Enforce lesson/browser/build/performance gates in CI source.
+- [x] Complete final local release receipt: 323 Python tests / one platform skip; 34 lesson contracts; 16 review and 18 lab accessibility audits clean; installed lesson/reference checks passed.
+- [ ] Execute hosted CI, uncached OS setup and observed newcomer validation as separate external gates.
+
+## Terraform JSON Evidence: 2026-09-17
+
+- [x] Select bounded `*.tf.json` source without executing Terraform or adding an HCL evaluator.
+- [x] Extract literal `aws_iam_role` trust and same-file `aws_iam_role_policy` finite secret grants through the existing conservative IAM policy rules.
+- [x] Preserve source locations and `terraform-json` graph provenance; expose file coverage in reports and the review app.
+- [x] Reject expressions, references, malformed policy JSON, wildcards, boundaries and managed-policy restrictions from complete paths.
+- [x] Run the complete Python and browser verification gates and record final measurements: 306 passed / 1 skip; 15 browser audits clean.
+
 ## Evidence Coverage Improvement: 2026-09-16
 
 - [x] `WP_029`: Bounded literal matrices/include/exclude, source-linked env/matrix substitutions and per-variant authorization isolation.

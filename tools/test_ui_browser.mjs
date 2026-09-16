@@ -41,4 +41,8 @@ try{
  report.network_requests=browser.requests.filter(url=>/^https?:/.test(url));report.errors=browser.errors;
  report.summary={viewports:2,view_checks:report.view_checks.length,accessibility_runs:report.accessibility.length,critical:report.accessibility.reduce((sum,item)=>sum+item.violations.filter(rule=>rule.impact==='critical').length,0),violations:report.accessibility.reduce((sum,item)=>sum+item.violations.length,0),visual_regressions:report.regressions.length,identical:report.regressions.filter(item=>item.byte_identical).length,network_requests:report.network_requests.length,script_errors:report.errors.length};
  fs.writeFileSync(path.join(ROOT,'ui/reports/browser-tests.json'),JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report.summary));
+ assert.equal(report.summary.violations,0,'Visual lab accessibility violations');
+ assert.equal(report.summary.identical,report.summary.visual_regressions,'Repeated rendering changed screenshots');
+ assert.deepEqual(report.errors,[],'Visual lab browser exceptions');
+ assert.deepEqual(report.network_requests,[],'Offline lab performed a network request');
 }finally{await browser.close();}

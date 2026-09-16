@@ -6,6 +6,7 @@ from pathlib import Path, PurePosixPath
 import stat
 
 from ..model import GraphError, canonical
+from .operation import checkpoint
 
 
 PROFILE = "safe-local-v0.1"
@@ -78,6 +79,7 @@ def _hash_regular_file(path, expected_size):
             if reparse_flag and attributes & reparse_flag:
                 raise GraphError("A repository entry changed type during acquisition.")
             while chunk := stream.read(HASH_CHUNK_BYTES):
+                checkpoint("Reading repository files")
                 total += len(chunk)
                 if total > expected_size or total > MAX_FILE_BYTES:
                     raise GraphError("A repository file changed during acquisition.")
@@ -178,6 +180,7 @@ def acquire_repository(root: Path) -> dict:
         except OSError:
             raise GraphError("A repository directory could not be read safely.") from None
         for entry in entries:
+            checkpoint("Inventorying repository files")
             path = Path(entry.path)
             relative = _normalized_relative(source, path)
             register(relative)

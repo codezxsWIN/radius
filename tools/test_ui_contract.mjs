@@ -5,7 +5,32 @@ import {openBrowser,ROOT} from './browser_ui.mjs';
 const browser=await openBrowser(),checks=[];
 const check=(name,condition)=>{assert.ok(condition,name);checks.push({name,passed:true});};
 try{
+ check('first screen is the offline lesson',await browser.evaluate(`BRApp.state.view==='lesson'&&document.querySelector('#lesson-form')!==null`));
+ check('lesson title, input hash and announcement describe its own graph',await browser.evaluate(`document.title==='Blast Radius | First lesson'&&document.querySelector('#live-status').textContent.includes('1 of 4 pairs')&&new URLSearchParams(location.hash.slice(1)).get('snapshot')===BRApp.result().snapshot_hash&&BRApp.result().credentials[0].universe_size===4`));
+ for(const [exercise,prediction,count,required] of [[0,'1','1 / 4','Preserved'],[1,'0','0 / 4','Missing'],[2,'2','2 / 4','Preserved']]){
+	 await browser.evaluate(`document.querySelector('[data-exercise="${exercise}"]').click();document.querySelector('#lesson-form input[value="${prediction}"]').checked=true;document.querySelector('#lesson-form').requestSubmit()`);
+	 check('lesson exercise '+exercise+' has independently checked outcome',await browser.evaluate(`document.querySelector('#lesson-result').textContent.includes(${JSON.stringify(count)})&&document.querySelector('#lesson-result').textContent.includes(${JSON.stringify(required)})`));
+ }
+ await browser.evaluate(`document.querySelector('#lesson-least-privilege').click()`);
+ check('least privilege preserves required read rather than zeroing access',await browser.evaluate(`document.querySelector('#lesson-followup').textContent.includes('Required read preserved; excess actions: 0')`));
+ check('least-privilege graph and count agree after change',await browser.evaluate(`document.querySelector('#lesson-result dd').textContent==='1 / 4'&&document.querySelector('.lesson-route').textContent.includes('Read')&&!document.querySelector('.lesson-route').textContent.includes('Read + write')`));
+ await browser.evaluate(`document.querySelector('#lesson-form').requestSubmit()`);
+ check('repeating an exercise recomputes its chosen change',await browser.evaluate(`document.querySelector('#lesson-result dd').textContent==='2 / 4'&&document.querySelector('.lesson-route').textContent.includes('Read + write')`));
+ await browser.navigate();
+ check('fictional lesson progress survives refresh',await browser.evaluate(`BRApp.lesson.exercise===2&&BRApp.lesson.completed.length===3`));
+ const lessonAudit=await browser.evaluate(`axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa']}}).then(result=>result.violations.map(item=>item.id))`);
+ check('lesson has no accessibility violations',lessonAudit.length===0);
+ await browser.screenshot(path.join(ROOT,'ui/reports/lesson-desktop.png'));
+ await browser.send('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:true});
+ check('lesson fits a phone viewport',await browser.evaluate(`document.documentElement.scrollWidth<=innerWidth`));
+ check('phone lesson keeps advanced controls hidden',await browser.evaluate(`getComputedStyle(document.querySelector('.export-controls')).display==='none'`));
+ await browser.screenshot(path.join(ROOT,'ui/reports/lesson-mobile.png'));
+ await browser.send('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
+ await browser.evaluate(`BRApp.selectView('disc')`);
  check('exact structural summary parity',await browser.evaluate(`JSON.stringify(BRApp.summary())===JSON.stringify(BR_INPUT.files[BRApp.state.dataset.structural_summary])||BRReference.canonical(BRApp.summary())===BRReference.canonical(BR_INPUT.files[BRApp.state.dataset.structural_summary])`));
+ check('bounded caption uses exact bounded count, not unbounded reach',await browser.evaluate(`document.querySelector('[data-definition="step_bounded_radius"] small').textContent==='25 / 71 pairs'`));
+ check('weighted captions state their exact weighted ratios',await browser.evaluate(`document.querySelector('[data-definition="sensitivity_weighted_radius"] small').textContent==='Exact weighted ratio '+BRApp.result().credentials[0].exact.sensitivity&&document.querySelector('[data-definition="action_weighted_radius"] small').textContent==='Exact weighted ratio '+BRApp.result().credentials[0].exact.action`));
+ check('narrative carries model, snapshot and full provenance',await browser.evaluate(`BRApp.narrative().includes(BRApp.result().snapshot_hash)&&BRApp.narrative().includes('Model: default')&&BRApp.narrative().includes(BRApp.result().credentials[0].explanation.steps[0].provenance.evidence_ref)`));
  const sizes=await browser.evaluate(`(()=>{const svg=BRApp.svg('disc',{compact:true}),parsed=new DOMParser().parseFromString(svg,'image/svg+xml');return {viewBox:parsed.documentElement.getAttribute('viewBox'),hash:parsed.documentElement.textContent.includes(BRApp.result().snapshot_hash.slice(32)),font:svg.includes('data:font/ttf;base64,')};})()`);check('compact figure has embedded font and full hash',sizes.viewBox==='0 0 420 700'&&sizes.hash&&sizes.font);
  await browser.evaluate(`document.querySelector('#step-back').click()`);const step=await browser.evaluate('BRApp.state.step');await browser.evaluate(`document.querySelector('#step-next').click()`);check('step controls advance minimum-cost ring',await browser.evaluate('BRApp.state.step')===step+1);
  await browser.send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'reduce'}]});
@@ -16,10 +41,20 @@ try{
  await browser.evaluate(`document.querySelector('#fixture-select').value='BR-001';document.querySelector('#fixture-select').dispatchEvent(new Event('change',{bubbles:true}));document.querySelector('[data-edit="node"]').click()`);check('resource addition changes denominator without adding reach',await browser.evaluate('BRApp.result().credentials[0].absolute_reach===1&&BRApp.result().credentials[0].universe_size===5'));
  await browser.evaluate(`document.querySelector('[data-edit="edge"]').click()`);check('grant addition recomputes reach',await browser.evaluate('BRApp.result().credentials[0].absolute_reach===2'));
  await browser.evaluate(`document.querySelector('[data-edit="constraint"]').click()`);check('device constraint blocks edited grant path',await browser.evaluate('BRApp.result().credentials[0].absolute_reach===0'));
+ const edited=await browser.evaluate(`({text:document.querySelector('#graph-editor').value,hash:BRApp.result().snapshot_hash})`);
+ await browser.evaluate(`document.querySelector('[data-model="strict"]').click()`);
+ check('model changes preserve the edited graph and input hash',await browser.evaluate(`document.querySelector('#graph-editor').value===${JSON.stringify(edited.text)}&&BRApp.result().snapshot_hash===${JSON.stringify(edited.hash)}&&BRApp.result().constraint_model==='strict'&&BRApp.result().credentials[0].absolute_reach===0`));
+ await browser.evaluate(`document.querySelector('[data-model="default"]').click()`);
+ await browser.evaluate(`document.querySelector('#graph-editor').value='{';document.querySelector('#graph-editor').dispatchEvent(new Event('input',{bubbles:true}));document.querySelector('[data-model="strict"]').click()`);
+ check('invalid edits survive model changes without a stale score',await browser.evaluate(`document.querySelector('#graph-editor').value==='{'&&BRApp.state.editorInvalid&&document.querySelectorAll('#metric-strip button').length===0&&document.querySelector('#export-svg').disabled`));
+ await browser.evaluate(`document.querySelector('#reset-playground').click()`);
+ check('only explicit reset restores the preset',await browser.evaluate(`JSON.parse(document.querySelector('#graph-editor').value).nodes.length===5&&BRApp.result().credentials[0].absolute_reach===1`));
  await browser.evaluate(`BRApp.selectView('whatif');document.querySelector('#add-binding').click();document.querySelector('#add-principal').value='principal-00000';document.querySelector('#add-resource').value='resource-00000';document.querySelector('#add-action').value='read_secret';document.querySelector('#add-form').requestSubmit()`);check('binding addition preserves universe and produces local result',await browser.evaluate(`BRApp.state.preview?.engine_version==='0.1.0-js-reference'&&BRApp.result().universe_size===BRApp.state.baseline.universe_size`));
  await browser.evaluate(`BRApp.state.preview=null;BRApp.state.baseline=null;BRApp.selectView('incidents');document.querySelector('#incident-select').value='circleci-2023';document.querySelector('#incident-select').dispatchEvent(new Event('change',{bubbles:true}));document.querySelector('[data-model="session-theft-aware"]').click()`);check('session theft reconstruction reaches represented resource',await browser.evaluate('BRApp.result().credentials[0].absolute_reach===1'));
  await browser.evaluate(`document.querySelector('#incident-control').click()`);check('fresh independent approval cuts session path',await browser.evaluate('BRApp.result().credentials[0].absolute_reach===0'));
  const audit=await browser.evaluate(`axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21aa','wcag22aa']}}).then(result=>result.violations.map(item=>({id:item.id,impact:item.impact})))`);
- check('workflow final state has no critical accessibility findings',audit.every(item=>item.impact!=='critical'));
+ check('workflow final state has no accessibility findings',audit.length===0);
+ check('workflow has no browser exceptions',browser.errors.length===0);
+ check('workflow has no network dependencies',!browser.requests.some(address=>/^https?:/.test(address)));
  const result={checks,passed:checks.length,errors:browser.errors,audit};fs.writeFileSync(path.join(ROOT,'ui/reports/contract-tests.json'),JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result));
 }finally{await browser.close();}
